@@ -23,6 +23,7 @@
 #include <expat.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <string.h>
 
 #include "name_extractor.hh"
 

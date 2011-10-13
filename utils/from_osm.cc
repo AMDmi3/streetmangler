@@ -203,7 +203,7 @@ int main(int argc, char** argv) {
 
 	fprintf(stderr, "Processing names...\n");
 	NameProcessor processor(database, statsflag);
-	if (strcmp(argv[0], "-") == 0)
+	if (argv[0][0] == '-' && argv[0][1] == '\0')
 		processor.ParseStdin();
 	else
 		processor.ParseFile(argv[0]);
