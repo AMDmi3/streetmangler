@@ -49,7 +49,7 @@ private:
 		std::string text;
 		const Locale::StatusPart* status_part;
 
-		Token() : status_part(NULL) {
+		Token() : type(NONE), status_part(NULL) {
 		}
 
 		Token(TokenType ty, std::string tx) : type(ty), text(tx), status_part(NULL) {
