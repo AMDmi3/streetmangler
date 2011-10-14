@@ -92,12 +92,12 @@ public:
 				count_no_match_, (float)count_no_match_/(float)count_all_*100.0f);
 		}
 		fprintf(stderr, "Unique: %8d %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%)\n",
-			all_.size(),
-			exact_match_.size(), (float)exact_match_.size()/(float)all_.size()*100.0f,
-			canonical_form_.size(), (float)canonical_form_.size()/(float)all_.size()*100.0f,
-			spelling_fixed_.size(), (float)spelling_fixed_.size()/(float)all_.size()*100.0f,
-			stripped_status_.size(), (float)stripped_status_.size()/(float)all_.size()*100.0f,
-			no_match_.size(), (float)no_match_.size()/(float)all_.size()*100.0f);
+			(int)all_.size(),
+			(int)exact_match_.size(), (float)exact_match_.size()/(float)all_.size()*100.0f,
+			(int)canonical_form_.size(), (float)canonical_form_.size()/(float)all_.size()*100.0f,
+			(int)spelling_fixed_.size(), (float)spelling_fixed_.size()/(float)all_.size()*100.0f,
+			(int)stripped_status_.size(), (float)stripped_status_.size()/(float)all_.size()*100.0f,
+			(int)no_match_.size(), (float)no_match_.size()/(float)all_.size()*100.0f);
 	}
 
 	void DumpData() {
