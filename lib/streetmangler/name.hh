@@ -27,13 +27,20 @@ namespace StreetMangler {
 class Name {
 public:
 	enum JoinFlags {
-		STATUS_TO_LEFT       = 0x01,
-		STATUS_TO_RIGHT      = 0x02,
-		EXPAND_STATUS        = 0x04,
-		SHRINK_STATUS        = 0x08,
-		NORMALIZE_WHITESPACE = 0x10,
-		REMOVE_ALL_STATUSES  = 0x20,
-		NORMALIZE_PUNCT      = 0x40,
+		STATUS_TO_LEFT       = 0x0001,
+		STATUS_TO_RIGHT      = 0x0002,
+
+		STATUS_POS_MASK      = 0x0003,
+
+		EXPAND_STATUS        = 0x0010,
+		SHRINK_STATUS        = 0x0020,
+		CANONICALIZE_STATUS  = 0x0030,
+		REMOVE_ALL_STATUSES  = 0x0040,
+
+		STATUS_MODE_MASK     = 0x0070,
+
+		NORMALIZE_PUNCT      = 0x0100,
+		NORMALIZE_WHITESPACE = 0x0200,
 	};
 
 private:

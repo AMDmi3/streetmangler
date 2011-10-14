@@ -87,12 +87,13 @@ std::string Name::Join(int flags) const {
 
 		OutList::iterator tmp;
 		/* change status part inplace */
-		if (flags & (EXPAND_STATUS | SHRINK_STATUS | NORMALIZE_PUNCT)) {
+		if (flags & (STATUS_MODE_MASK | NORMALIZE_PUNCT)) {
 			/* modify status */
-			if (flags & EXPAND_STATUS)
-				status->text = status->status_part->GetFull();
-			if (flags & SHRINK_STATUS)
-				status->text = status->status_part->GetAbbrev();
+			switch (flags & STATUS_MODE_MASK) {
+			case EXPAND_STATUS:       status->text = status->status_part->GetFull(); break;
+			case SHRINK_STATUS:       status->text = status->status_part->GetAbbrev(); break;
+			case CANONICALIZE_STATUS: status->text = status->status_part->GetCanonical(); break;
+			}
 
 			/* if there was a dot, merge it into status */
 			OutList::iterator dot = status;
