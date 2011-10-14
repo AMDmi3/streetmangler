@@ -104,8 +104,9 @@ void Database::Add(const std::string& name) {
 	canonical_map_.insert(std::make_pair(hash, name));
 
 	/* for CheckStrippedStatus  */
-	static const int stripflags = Name::REMOVE_ALL_STATUSES;
-	stripped_map_.insert(std::make_pair(tokenized.Join(stripflags), tokenized.Join()));
+	std::string stripped = tokenized.Join(Name::REMOVE_ALL_STATUSES);
+	if (stripped != name)
+		stripped_map_.insert(std::make_pair(stripped, name));
 }
 
 /*

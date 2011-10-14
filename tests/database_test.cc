@@ -38,6 +38,11 @@
 		EXPECT_TRUE(db.CheckStrippedStatus(sample, suggestions) == 1); \
 	}
 
+#define CHECK_NO_STRIPPED_STATUS(sample) { \
+		std::vector<std::string> suggestions; \
+		EXPECT_TRUE(db.CheckStrippedStatus(sample, suggestions) == 0); \
+	}
+
 BEGIN_TEST()
 	using StreetMangler::Database;
 	using StreetMangler::Locale;
@@ -49,6 +54,7 @@ BEGIN_TEST()
 
 	db.Add("улица Ленина");
 	db.Add("Зелёная улица");
+	db.Add("МКАД");
 
 	/* simple matches */
 	EXPECT_TRUE(db.CheckExactMatch("улица Ленина") == 1);
@@ -85,5 +91,9 @@ BEGIN_TEST()
 	/* missing status part */
 	CHECK_STRIPPED_STATUS("Ленина");
 	CHECK_STRIPPED_STATUS("Зелёная");
+
+	/* names with no status part originally should not be counted
+	 * as stripped of status part */
+	CHECK_NO_STRIPPED_STATUS("МКАД");
 
 END_TEST()
