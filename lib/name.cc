@@ -50,7 +50,7 @@ Name::Name(const std::string& name, const Locale& locale) : locale_(locale), sta
 
 	/* find status part */
 	const Locale::StatusPart* bestpart = NULL;
-	for (int i = 0; i < tokens_.size(); ++i) {
+	for (unsigned int i = 0; i < tokens_.size(); ++i) {
 		std::string lowercase;
 		UnicodeString::fromUTF8(tokens_[i].text).toLower().toUTF8String(lowercase);
 
@@ -194,7 +194,6 @@ std::string Name::Join(int flags) const {
 
 	/* join string together performing final whitespace normalization if needed */
 	std::string out;
-	bool prevspace;
 	if (flags & NORMALIZE_WHITESPACE) {
 		OutList::const_iterator i = outtokens.begin();
 		for (; i != outtokens.end() && i->type == SPACE; ++i) {}

@@ -47,7 +47,7 @@ void Database::Load(const char* filename) {
 		throw std::runtime_error(std::string("Cannot open database: ") + strerror(errno));
 
 	char buffer[1024];
-	size_t nread;
+	ssize_t nread;
 
 	std::string name;
 	int line = 1;
@@ -130,7 +130,7 @@ int Database::CheckCanonicalForm(const Name& name, std::vector<std::string>& sug
 	return count;
 }
 
-int Database::CheckSpelling(const Name& name, std::vector<std::string>& suggestions, int depth) const {
+int Database::CheckSpelling(const Name& /*name*/, std::vector<std::string>& /*suggestions*/, int /*depth*/) const {
 	/* TODO: unimplemented */
 	return 0;
 }
