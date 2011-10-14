@@ -25,51 +25,52 @@ namespace {
 using namespace StreetMangler;
 
 StatusPartData status_parts[] = {
-	/* full status
-	   |             canonical abbreviation
-	   |             |          possible abbreviations
-	   |             |          |                                    */
-	{ "улица",      "ул.",   { "ул",                           NULL } },
+	/* canonical full form
+	   |             generic canonical form
+	   |             |     canonical abbreviated form
+	   |             |     |          variants
+	   |             |     |          |                                         */
+	{ "улица",      NULL, "ул.",   { "улица", "ул",                        NULL } },
 
-	{ "площадь",    "пл.",   { "пл",                           NULL } },
-	{ "проезд",     "пр.",   { "пр-д",                         NULL } },
-	{ "переулок",   "пер.",  { "пер", "пер-к",                 NULL } },
-	{ "шоссе",      "ш.",    { "ш",                            NULL } },
+	{ "площадь",    NULL, "пл.",   { "площадь", "пл",                      NULL } },
+	{ "проезд",     NULL, "пр.",   { "проезд", "пр-д",                     NULL } },
+	{ "переулок",   NULL, "пер.",  { "переулок", "пер", "пер-к",           NULL } },
+	{ "шоссе",      NULL, "ш.",    { "шоссе", "ш",                         NULL } },
 
-	{ "бульвар",    "бул.",  { "бул", "б-р",                   NULL } },
-	{ "тупик",      "туп.",  { "туп",                          NULL } },
-	{ "набережная", "наб.",  { "наб",                          NULL } },
-	{ "проспект",   "пр-т.", { "просп", "пр-кт", "пр-т",       NULL } },
-	{ "линия",      NULL,    {                                 NULL } },
-	{ "аллея",      NULL,    {                                 NULL } },
+	{ "бульвар",    NULL, "бул.",  { "бульвар", "бул", "б-р",              NULL } },
+	{ "тупик",      NULL, "туп.",  { "тупик", "туп",                       NULL } },
+	{ "набережная", NULL, "наб.",  { "набережная", "наб",                  NULL } },
+	{ "проспект",   NULL, "пр-т.", { "проспект", "просп", "пр-кт", "пр-т", NULL } },
+	{ "линия",      NULL, NULL,    { "линия",                              NULL } },
+	{ "аллея",      NULL, NULL,    { "аллея",                              NULL } },
 
-	{ "метромост",  NULL,    {                                 NULL } },
-	{ "мост",       NULL,    {                                 NULL } },
-	{ "просек",     NULL,    {                                 NULL } },
-	{ "просека",    NULL,    {                                 NULL } },
-	{ "путепровод", NULL,    {                                 NULL } },
+	{ "метромост",  NULL, NULL,    { "метромост",                          NULL } },
+	{ "мост",       NULL, NULL,    { "мост",                               NULL } },
+	{ "просек",     NULL, NULL,    { "просек",                             NULL } },
+	{ "просека",    NULL, NULL,    { "просека",                            NULL } },
+	{ "путепровод", NULL, NULL,    { "путепровод",                         NULL } },
 	/* после шоссе т.е. "шоссе ***й Тракт" */
-	{ "тракт",      NULL,    { "тр-т", "тр",                   NULL } },
-	{ "тропа",      NULL,    {                                 NULL } },
-	{ "туннель",    NULL,    {                                 NULL } },
-	{ "тоннель",    NULL,    {                                 NULL } },
-	{ "эстакада",   NULL,    { "эст",                          NULL } },
-	{ "дорога",     "дор.",  { "дор",                          NULL } },
+	{ "тракт",      NULL, NULL,    { "тракт", "тр-т", "тр",                NULL } },
+	{ "тропа",      NULL, NULL,    { "тропа",                              NULL } },
+	{ "туннель",    NULL, NULL,    { "туннель",                            NULL } },
+	{ "тоннель",    NULL, NULL,    { "тоннель",                            NULL } },
+	{ "эстакада",   NULL, NULL,    { "эстакада", "эст",                    NULL } },
+	{ "дорога",     NULL, "дор.",  { "дорога", "дор",                      NULL } },
 
-	{ "спуск",      NULL,    {                                 NULL } },
-	{ "подход",     NULL,    {                                 NULL } },
-	{ "подъезд",    NULL,    {                                 NULL } },
-	{ "съезд",      NULL,    {                                 NULL } },
-	{ "заезд",      NULL,    {                                 NULL } },
-	{ "разъезд",    NULL,    {                                 NULL } },
+	{ "спуск",      NULL, NULL,    { "спуск",                              NULL } },
+	{ "подход",     NULL, NULL,    { "подход",                             NULL } },
+	{ "подъезд",    NULL, NULL,    { "подъезд",                            NULL } },
+	{ "съезд",      NULL, NULL,    { "съезд",                              NULL } },
+	{ "заезд",      NULL, NULL,    { "заезд",                              NULL } },
+	{ "разъезд",    NULL, NULL,    { "разъезд",                            NULL } },
 
-	{ NULL,         NULL,    {                                 NULL } },
+	{ NULL,         NULL, NULL,    {                                       NULL } },
 };
 
 /* register this locale data so it may be created as Locale("ru") */
 Locale::Registrar registrars[] = {
 	Locale::Registrar("ru", status_parts),
-	/* TODO: maybe use ru_RU notation? */
+	Locale::Registrar("ru_RU", status_parts),
 };
 
 };

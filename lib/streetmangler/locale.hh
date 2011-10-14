@@ -29,8 +29,9 @@ namespace StreetMangler {
 
 struct StatusPartData {
 	const char* full;
-	const char* canonical_abbrev;
-	const char* abbrevs[10];
+	const char* canonical;
+	const char* abbrev;
+	const char* variants[10];
 };
 
 /**
@@ -59,16 +60,19 @@ public:
 	private:
 		int priority_;
 		std::string full_;
+		std::string canonical_;
 		std::string abbrev_;
 
 	public:
-		StatusPart(int priority, const std::string& full, const std::string& abbrev)
+		StatusPart(int priority, const std::string& full, const std::string& canonical, const std::string& abbrev)
 			  : priority_(priority),
 			    full_(full),
+			    canonical_(canonical),
 			    abbrev_(abbrev) {
 		}
 
 		const std::string& GetFull() const { return full_; }
+		const std::string& GetCanonical() const { return canonical_; }
 		const std::string& GetAbbrev() const { return abbrev_; }
 
 		bool IsPrior(const StatusPart* other) const { return other == NULL || priority_ < other->priority_; }

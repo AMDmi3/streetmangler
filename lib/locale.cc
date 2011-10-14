@@ -55,17 +55,18 @@ Locale::Locale(const std::string& name) {
 	int priority = 1;
 	for (StatusPartData* in = locale->status_parts_; in->full; ++in, ++priority) {
 		/* (use full status as abbreviation where there's no canonical abbreviation */
-		status_parts_.push_back(StatusPart(priority, in->full, in->canonical_abbrev ? in->canonical_abbrev : in->full));
+		assert(in->full);
+		std::string canonical = in->canonical ? in->canonical : in->full;
+		std::string abbrev = in->abbrev ? in->abbrev : canonical;
+		status_parts_.push_back(StatusPart(priority, in->full, canonical, abbrev));
 	}
 
 	/* now vector won't change so it's safe to use pointers */
 	int i = 0;
 	std::pair<StatusPartMap::iterator, bool> res;
 	for (StatusPartData* in = locale->status_parts_; in->full; ++in, ++i) {
-		res = status_part_by_any_.insert(std::make_pair(in->full, &status_parts_[i]));
-		assert(res.second); /* duplicate keys not allowed */
-		for (const char** abbrev = in->abbrevs; *abbrev; ++abbrev) {
-			res = status_part_by_any_.insert(std::make_pair(*abbrev, &status_parts_[i]));
+		for (const char** variant = in->variants; *variant; ++variant) {
+			res = status_part_by_any_.insert(std::make_pair(*variant, &status_parts_[i]));
 			assert(res.second); /* duplicate keys not allowed */
 		}
 	}
