@@ -19,29 +19,7 @@
 
 #include <streetmangler/database.hh>
 #include <streetmangler/locale.hh>
-#include "testing.hh"
-
-#define CHECK_CANONICAL_FORM(sample, expected) { \
-		std::vector<std::string> suggestions; \
-		EXPECT_TRUE(db.CheckCanonicalForm(sample, suggestions) == 1); \
-		if (!suggestions.empty()) EXPECT_STRING(suggestions.front(), expected); \
-	}
-
-#define CHECK_SPELLING(sample, expected) { \
-		std::vector<std::string> suggestions; \
-		EXPECT_TRUE(db.CheckSpelling(sample, suggestions) == 1); \
-		if (!suggestions.empty()) EXPECT_STRING(suggestions.front(), expected); \
-	}
-
-#define CHECK_STRIPPED_STATUS(sample) { \
-		std::vector<std::string> suggestions; \
-		EXPECT_TRUE(db.CheckStrippedStatus(sample, suggestions) == 1); \
-	}
-
-#define CHECK_NO_STRIPPED_STATUS(sample) { \
-		std::vector<std::string> suggestions; \
-		EXPECT_TRUE(db.CheckStrippedStatus(sample, suggestions) == 0); \
-	}
+#include "database_testing.hh"
 
 BEGIN_TEST()
 	using StreetMangler::Database;
@@ -57,43 +35,43 @@ BEGIN_TEST()
 	db.Add("МКАД");
 
 	/* simple matches */
-	EXPECT_TRUE(db.CheckExactMatch("улица Ленина") == 1);
-	EXPECT_TRUE(db.CheckExactMatch("Зелёная улица") == 1);
-	EXPECT_TRUE(db.CheckExactMatch("улица Сталина") == 0);
-	EXPECT_TRUE(db.CheckExactMatch("переулок Ленина") == 0);
+	CHECK_EXACT_MATCH(db, "улица Ленина");
+	CHECK_EXACT_MATCH(db, "Зелёная улица");
+	CHECK_NO_EXACT_MATCH(db, "улица Сталина");
+	CHECK_NO_EXACT_MATCH(db, "переулок Ленина");
 
 	/* canonical forms (see also tokenizer_test.cc) */
-	CHECK_CANONICAL_FORM("ул.Ленина", "улица Ленина");
-	CHECK_CANONICAL_FORM("ул. Ленина", "улица Ленина");
-	CHECK_CANONICAL_FORM("Ленина улица", "улица Ленина");
-	CHECK_CANONICAL_FORM("Ленина ул", "улица Ленина");
-	CHECK_CANONICAL_FORM("Ленина ул.", "улица Ленина");
-	CHECK_CANONICAL_FORM("Ленина, ул", "улица Ленина");
-	CHECK_CANONICAL_FORM("Ленина, ул.", "улица Ленина");
-	CHECK_CANONICAL_FORM("Ленина,ул", "улица Ленина");
-	CHECK_CANONICAL_FORM("Ленина,ул.", "улица Ленина");
-	CHECK_CANONICAL_FORM("Ленина,улица", "улица Ленина");
-	CHECK_CANONICAL_FORM("Ленина, улица", "улица Ленина");
-	CHECK_CANONICAL_FORM("лЕНИНА, УЛИЦА", "улица Ленина");
-	CHECK_CANONICAL_FORM("УЛИЦА ЛЕНИНА", "улица Ленина");
-	CHECK_CANONICAL_FORM("   улица  ленина    ", "улица Ленина");
-	CHECK_CANONICAL_FORM("\tулица\tленина\t", "улица Ленина");
+	CHECK_CANONICAL_FORM(db, "ул.Ленина", "улица Ленина");
+	CHECK_CANONICAL_FORM(db, "ул. Ленина", "улица Ленина");
+	CHECK_CANONICAL_FORM(db, "Ленина улица", "улица Ленина");
+	CHECK_CANONICAL_FORM(db, "Ленина ул", "улица Ленина");
+	CHECK_CANONICAL_FORM(db, "Ленина ул.", "улица Ленина");
+	CHECK_CANONICAL_FORM(db, "Ленина, ул", "улица Ленина");
+	CHECK_CANONICAL_FORM(db, "Ленина, ул.", "улица Ленина");
+	CHECK_CANONICAL_FORM(db, "Ленина,ул", "улица Ленина");
+	CHECK_CANONICAL_FORM(db, "Ленина,ул.", "улица Ленина");
+	CHECK_CANONICAL_FORM(db, "Ленина,улица", "улица Ленина");
+	CHECK_CANONICAL_FORM(db, "Ленина, улица", "улица Ленина");
+	CHECK_CANONICAL_FORM(db, "лЕНИНА, УЛИЦА", "улица Ленина");
+	CHECK_CANONICAL_FORM(db, "УЛИЦА ЛЕНИНА", "улица Ленина");
+	CHECK_CANONICAL_FORM(db, "   улица  ленина    ", "улица Ленина");
+	CHECK_CANONICAL_FORM(db, "\tулица\tленина\t", "улица Ленина");
 
 	/* spelling */
-	CHECK_SPELLING("улица Ленена", "улица Ленина");  /* letter changed */
-	CHECK_SPELLING("улица Ленна", "улица Ленина");   /* letter removed */
-	CHECK_SPELLING("улица Ленинаа", "улица Ленина"); /* letter added */
-	CHECK_SPELLING("улица Леинна", "улица Ленина");  /* letters changed places */
+	CHECK_SPELLING(db, "улица Ленена", "улица Ленина");  /* letter changed */
+	CHECK_SPELLING(db, "улица Ленна", "улица Ленина");   /* letter removed */
+	CHECK_SPELLING(db, "улица Ленинаа", "улица Ленина"); /* letter added */
+	CHECK_SPELLING(db, "улица Леинна", "улица Ленина");  /* letters changed places */
 
-	CHECK_SPELLING("улиа Ленина", "улица Ленина");   /* error in status part */
-	CHECK_SPELLING("уилца Ленина", "улица Ленина");  /* error in status part */
+	CHECK_SPELLING(db, "улиа Ленина", "улица Ленина");   /* error in status part */
+	CHECK_SPELLING(db, "уилца Ленина", "улица Ленина");  /* error in status part */
 
 	/* missing status part */
-	CHECK_STRIPPED_STATUS("Ленина");
-	CHECK_STRIPPED_STATUS("Зелёная");
+	CHECK_STRIPPED_STATUS(db, "Ленина");
+	CHECK_STRIPPED_STATUS(db, "Зелёная");
 
 	/* names with no status part originally should not be counted
 	 * as stripped of status part */
-	CHECK_NO_STRIPPED_STATUS("МКАД");
+	CHECK_NO_STRIPPED_STATUS(db, "МКАД");
 
 END_TEST()
