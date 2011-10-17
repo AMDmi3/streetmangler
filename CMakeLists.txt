@@ -46,7 +46,11 @@ TARGET_LINK_LIBRARIES(tokenizer_test streetmangler)
 ADD_EXECUTABLE(database_test tests/database_test.cc)
 TARGET_LINK_LIBRARIES(database_test streetmangler)
 
+ADD_EXECUTABLE(canonical_test tests/canonical_test.cc)
+TARGET_LINK_LIBRARIES(canonical_test streetmangler)
+
 ENABLE_TESTING()
 ADD_TEST(locale_test locale_test)
 ADD_TEST(tokenizer_test tokenizer_test)
 ADD_TEST(database_test database_test)
+ADD_TEST(canonical_test canonical_test)
