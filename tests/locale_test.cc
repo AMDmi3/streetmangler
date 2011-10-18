@@ -27,9 +27,9 @@ BEGIN_TEST()
 	EXPECT_EXCEPTION(Locale locale("NONEXISTENT"), Locale::UnknownLocale);
 
 	/* using builtin locale whould not throw */
-	EXPECT_NO_EXCEPTION(Locale locale("ru"));
+	EXPECT_NO_EXCEPTION(Locale locale("ru_RU"));
 
-	Locale locale("ru");
+	Locale locale("ru_RU");
 
 	const Locale::StatusPart* p;
 	const Locale::StatusPart* p1;

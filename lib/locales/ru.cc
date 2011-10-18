@@ -67,9 +67,8 @@ StatusPartData status_parts[] = {
 	{ NULL,         NULL, NULL,    {                                       NULL } },
 };
 
-/* register this locale data so it may be created as Locale("ru") */
+/* register this locale data so it may be used as Locale("ru_RU") */
 Locale::Registrar registrars[] = {
-	Locale::Registrar("ru", status_parts),
 	Locale::Registrar("ru_RU", status_parts),
 };
 

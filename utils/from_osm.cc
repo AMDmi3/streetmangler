@@ -32,6 +32,10 @@
 #	define DATAFILE "streets.txt"
 #endif
 
+#ifndef DEFAULT_LOCALE
+#	define DEFAULT_LOCALE "ru_RU"
+#endif
+
 class NameProcessor : public NameExtractor {
 public:
 	NameProcessor(StreetMangler::Database& db, bool perstreet_stats) :
@@ -169,7 +173,7 @@ int usage(const char* progname, int code) {
 	fprintf(stderr, "  -s  display per-street statistics (takes extra time)\n");
 	fprintf(stderr, "  -d  dump street lists into dump.*\n");
 	fprintf(stderr, "  -h  display this help\n");
-	fprintf(stderr, "  -l  set locale (default \"ru\")\n");
+	fprintf(stderr, "  -l  set locale (default \""DEFAULT_LOCALE"\")\n");
 	fprintf(stderr, "  -f  specify path to street names database (default "DATAFILE")\n");
 	return code;
 }
@@ -177,7 +181,7 @@ int usage(const char* progname, int code) {
 int main(int argc, char** argv) {
 	const char* progname = argv[0];
 	const char* datafile = DATAFILE;
-	const char* localename = "ru";
+	const char* localename = DEFAULT_LOCALE;
 	bool dumpflag = false;
 	bool statsflag = false;
 

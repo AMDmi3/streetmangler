@@ -26,7 +26,7 @@ BEGIN_TEST()
 	using StreetMangler::Locale;
 
 	/* assumes working locale, see locale_test */
-	Locale locale("ru");
+	Locale locale("ru_RU");
 
 	Database db(locale);
 

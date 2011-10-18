@@ -25,7 +25,7 @@ BEGIN_TEST()
 	using StreetMangler::Name;
 
 	/* assumes working locale, see locale_test */
-	Locale locale("ru");
+	Locale locale("ru_RU");
 
 	/* passthrough: should not change string without flags  */
 	EXPECT_STRING(Name("улица Ленина", locale).Join(), "улица Ленина");

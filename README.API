@@ -28,7 +28,7 @@ StreetMangler::Locale
   данные локали автоматически связываются с именем и становятся
   доступны для использования:
 
-    Locale::Registrar("ru", status_parts),
+    Locale::Registrar("ru_RU", status_parts),
 
   Следует заметить что каноническое сокращение НЕ ИСПОЛЬЗУЕТСЯ
   для поиска статусной части, поэтому скорее всего должно быть
@@ -40,7 +40,7 @@ StreetMangler::Locale
   -------------
 
     // Получить локаль
-    Locale locale("ru"); // Кидает Locale::UnknownLocale если локаль
+    Locale locale("ru_RU"); // Кидает Locale::UnknownLocale если локаль
                          // с таким именем не найдена
 
     // Получить и использовать данные по статусной части
@@ -84,7 +84,7 @@ StreetMangler::Name
   -------------
 
     // Нужна локаль
-    Locale locale("ru");
+    Locale locale("ru_RU");
 
     Name name("улица Ленина", locale);
 
@@ -127,7 +127,7 @@ StreetMangler::Database
   -------------
 
     // Нужна локаль
-    Locale locale("ru");
+    Locale locale("ru_RU");
 
     Database database(locale);
 
