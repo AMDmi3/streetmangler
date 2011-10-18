@@ -25,6 +25,7 @@
 
 #include <streetmangler/database.hh>
 #include <streetmangler/locale.hh>
+#include <streetmangler/name.hh>
 #include "name_extractor.hh"
 
 #ifndef DATAFILE
@@ -131,6 +132,11 @@ public:
 		dump.open("dump.no_match.txt");
 		for (NameSet::const_iterator i = no_match_.begin(); i != no_match_.end(); ++i)
 			dump << *i << std::endl;
+		dump.close();
+
+		dump.open("dump.base_appendable.txt");
+		for (NameSet::const_iterator i = no_match_.begin(); i != no_match_.end(); ++i)
+			dump << StreetMangler::Name(*i, database_.GetLocale()).Join(StreetMangler::Name::EXPAND_STATUS) << std::endl;
 		dump.close();
 	}
 
