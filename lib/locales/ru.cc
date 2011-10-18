@@ -28,8 +28,8 @@ StatusPartData status_parts[] = {
 	/* full form
 	   |             canonical form (if NULL, comes from full form)
 	   |             |     abbreviated form (if NULL, comes from canonical form)
-	   |             |     |          variants (used for detection)
-	   |             |     |          |                                         */
+	   |             |     |          variants (used for detection, so no
+	   |             |     |          |                   duplicates are allowed */
 	{ "улица",      NULL, "ул.",   { "улица", "ул",                        NULL } },
 
 	{ "площадь",    NULL, "пл.",   { "площадь", "пл",                      NULL } },
