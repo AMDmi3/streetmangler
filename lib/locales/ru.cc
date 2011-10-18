@@ -63,6 +63,7 @@ StatusPartData status_parts[] = {
 	{ "съезд",      NULL, NULL,    { "съезд",                              NULL } },
 	{ "заезд",      NULL, NULL,    { "заезд",                              NULL } },
 	{ "разъезд",    NULL, NULL,    { "разъезд",                            NULL } },
+	{ "слобода",    NULL, NULL,    { "слобода",                            NULL } },
 
 	{ NULL,         NULL, NULL,    {                                       NULL } },
 };
