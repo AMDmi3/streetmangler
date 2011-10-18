@@ -25,10 +25,10 @@ namespace {
 using namespace StreetMangler;
 
 StatusPartData status_parts[] = {
-	/* canonical full form
-	   |             generic canonical form
-	   |             |     canonical abbreviated form
-	   |             |     |          variants
+	/* full form
+	   |             canonical form (if NULL, comes from full form)
+	   |             |     abbreviated form (if NULL, comes from canonical form)
+	   |             |     |          variants (used for detection)
 	   |             |     |          |                                         */
 	{ "улица",      NULL, "ул.",   { "улица", "ул",                        NULL } },
 
@@ -49,7 +49,7 @@ StatusPartData status_parts[] = {
 	{ "просек",     NULL, NULL,    { "просек",                             NULL } },
 	{ "просека",    NULL, NULL,    { "просека",                            NULL } },
 	{ "путепровод", NULL, NULL,    { "путепровод",                         NULL } },
-	/* после шоссе т.е. "шоссе ***й Тракт" */
+	/* после шоссе т.к. "шоссе ***й Тракт" */
 	{ "тракт",      NULL, NULL,    { "тракт", "тр-т", "тр",                NULL } },
 	{ "тропа",      NULL, NULL,    { "тропа",                              NULL } },
 	{ "туннель",    NULL, NULL,    { "туннель",                            NULL } },
