@@ -97,16 +97,20 @@ void Database::Add(const std::string& name) {
 	std::string hash;
 	NameToHash(tokenized, hash);
 
+	/* for the locales in which canonical form != full form,
+	 * we need to use canonical form as a reference */
+	std::string canonical = tokenized.Join(Name::CANONICALIZE_STATUS);
+
 	/* for CheckExactMatch */
-	names_.insert(name);
+	names_.insert(canonical);
 
 	/* for CheckCanonicalForm  */
-	canonical_map_.insert(std::make_pair(hash, name));
+	canonical_map_.insert(std::make_pair(hash, canonical));
 
 	/* for CheckStrippedStatus  */
 	std::string stripped = tokenized.Join(Name::REMOVE_ALL_STATUSES);
 	if (stripped != name)
-		stripped_map_.insert(std::make_pair(stripped, name));
+		stripped_map_.insert(std::make_pair(stripped, canonical));
 }
 
 /*
