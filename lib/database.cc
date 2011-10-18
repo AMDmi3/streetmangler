@@ -86,6 +86,10 @@ void Database::Load(const char* filename) {
 	close(f);
 }
 
+const StreetMangler::Locale& StreetMangler::Database::GetLocale() const {
+	return locale_;
+}
+
 void Database::NameToHash(const Name& name, std::string& hash) const {
 	static const int flags = Name::STATUS_TO_LEFT | Name::EXPAND_STATUS | Name::NORMALIZE_WHITESPACE | Name::NORMALIZE_PUNCT;
 	UnicodeString::fromUTF8(name.Join(flags)).toLower().toUTF8String(hash);

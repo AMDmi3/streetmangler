@@ -37,6 +37,8 @@ public:
 	void Load(const char* filename);
 	void Add(const std::string& name);
 
+	const Locale& GetLocale() const;
+
 	int CheckExactMatch(const std::string& name) const;
 	int CheckCanonicalForm(const std::string& name, std::vector<std::string>& suggestions) const;
 	int CheckSpelling(const std::string& name, std::vector<std::string>& suggestions, int depth = 1) const;
