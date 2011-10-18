@@ -26,8 +26,8 @@ using namespace StreetMangler;
 namespace {
 	/* locale with custom (in this case, abbreviated) canonical form */
 	StatusPartData status_parts[] = {
-		{ "ул.", "улица", "ул.", { "улица", "ул", NULL } },
-		{ "просп.", "проспект", "пр.", { "проспект", "просп", "пр", NULL } },
+		{ "улица", "ул.", "ул.", { "улица", "ул", NULL } },
+		{ "проспект", "просп.", "пр.", { "проспект", "просп", "пр", NULL } },
 		{ NULL, NULL, NULL, { NULL } },
 	};
 
