@@ -138,7 +138,7 @@ public:
 			dump << *i << std::endl;
 		dump.close();
 
-		dump.open("dump.base_appendable.txt");
+		dump.open("dump.no_match.full.txt");
 		for (NameSet::const_iterator i = no_match_.begin(); i != no_match_.end(); ++i)
 			dump << StreetMangler::Name(*i, database_.GetLocale()).Join(StreetMangler::Name::EXPAND_STATUS) << std::endl;
 		dump.close();
