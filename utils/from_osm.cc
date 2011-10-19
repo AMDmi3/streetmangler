@@ -28,8 +28,8 @@
 #include <streetmangler/name.hh>
 #include "name_extractor.hh"
 
-#ifndef DATAFILE
-#	define DATAFILE "streets.txt"
+#ifndef DEFAULT_DATAFILE
+#	define DEFAULT_DATAFILE "streets.txt"
 #endif
 
 #ifndef DEFAULT_LOCALE
@@ -174,29 +174,34 @@ int usage(const char* progname, int code) {
 	fprintf(stderr, "  -d  dump street lists into dump.*\n");
 	fprintf(stderr, "  -h  display this help\n");
 	fprintf(stderr, "  -l  set locale (default \""DEFAULT_LOCALE"\")\n");
-	fprintf(stderr, "  -f  specify path to street names database (default "DATAFILE")\n");
+	fprintf(stderr, "  -f  specify pats to street names database (default "DEFAULT_DATAFILE")\n");
+	fprintf(stderr, "      (may be specified more than once)\n");
 	return code;
 }
 
 int main(int argc, char** argv) {
 	const char* progname = argv[0];
-	const char* datafile = DATAFILE;
 	const char* localename = DEFAULT_LOCALE;
 	bool dumpflag = false;
 	bool statsflag = false;
+
+	std::vector<const char*> datafiles;
 
 	int c;
     while ((c = getopt(argc, argv, "sdhf:l:")) != -1) {
 		switch (c) {
 			case 's': statsflag = true; break;
 			case 'd': dumpflag = true; break;
-			case 'f': datafile = optarg; break;
+			case 'f': datafiles.push_back(optarg); break;
 			case 'l': localename = optarg; break;
 			case 'h': return usage(progname, 0);
 			default:
 				return usage(progname, 1);
 		}
 	}
+
+	if (datafiles.empty())
+		datafiles.push_back(DEFAULT_DATAFILE);
 
 	argc -= optind;
 	argv += optind;
@@ -208,8 +213,10 @@ int main(int argc, char** argv) {
 
 	StreetMangler::Database database(locale);
 
-	fprintf(stderr, "Loading database...\n");
-	database.Load(datafile);
+	for (std::vector<const char*>::const_iterator i = datafiles.begin(); i != datafiles.end(); ++i) {
+		fprintf(stderr, "Loading database \"%s\"...\n", *i);
+		database.Load(*i);
+	}
 
 	fprintf(stderr, "Processing names...\n");
 	NameProcessor processor(database, statsflag);
