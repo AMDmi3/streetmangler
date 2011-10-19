@@ -66,6 +66,11 @@ BEGIN_TEST()
 	CHECK_SPELLING(db, "улиа Ленина", "улица Ленина");   /* error in status part */
 	CHECK_SPELLING(db, "уилца Ленина", "улица Ленина");  /* error in status part */
 
+	CHECK_NO_SPELLING(db, "улица Феника");   /* >1 errors */
+	CHECK_NO_SPELLING(db, "улица Ленинааа"); /* >1 errors */
+	CHECK_NO_SPELLING(db, "ууулица Ленина"); /* >1 errors */
+	CHECK_NO_SPELLING(db, "улица Линена");   /* >1 errors */
+
 	/* missing status part */
 	CHECK_STRIPPED_STATUS(db, "Ленина");
 	CHECK_STRIPPED_STATUS(db, "Зелёная");

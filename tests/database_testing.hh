@@ -37,6 +37,11 @@
 		if (!suggestions.empty()) EXPECT_STRING(suggestions.front(), expected); \
 	}
 
+#define CHECK_NO_SPELLING(database, sample) { \
+		std::vector<std::string> suggestions; \
+		EXPECT_TRUE(database.CheckSpelling(sample, suggestions) == 0); \
+	}
+
 #define CHECK_STRIPPED_STATUS(database, sample) { \
 		std::vector<std::string> suggestions; \
 		EXPECT_TRUE(database.CheckStrippedStatus(sample, suggestions) == 1); \
