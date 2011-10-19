@@ -25,6 +25,8 @@
 #include <vector>
 #include <map>
 
+#include <tspell/unitrie.hh>
+
 namespace StreetMangler {
 
 class Locale;
@@ -51,6 +53,7 @@ public:
 
 private:
 	void NameToHash(const Name& name, std::string& hash) const;
+	void NameToUnicodeHash(const Name& name, UnicodeString& hash) const;
 
 private:
 	typedef std::set<std::string> NamesSet;
@@ -61,6 +64,8 @@ private:
 	NamesSet names_;
 	NamesMap canonical_map_;
 	NamesMap stripped_map_;
+
+	TSpell::UnicodeTrie spell_trie_;
 };
 
 }

@@ -93,27 +93,38 @@ const StreetMangler::Locale& StreetMangler::Database::GetLocale() const {
 }
 
 void Database::NameToHash(const Name& name, std::string& hash) const {
+	UnicodeString temp;
+	NameToUnicodeHash(name, temp);
+	temp.toUTF8String(hash);
+}
+
+void Database::NameToUnicodeHash(const Name& name, UnicodeString& hash) const {
 	static const int flags = Name::STATUS_TO_LEFT | Name::EXPAND_STATUS | Name::NORMALIZE_WHITESPACE | Name::NORMALIZE_PUNCT;
-	UnicodeString::fromUTF8(name.Join(flags)).toLower().toUTF8String(hash);
+	hash = UnicodeString::fromUTF8(name.Join(flags)).toLower();
 }
 
 void Database::Add(const std::string& name) {
 	Name tokenized(name, locale_);
 
 	std::string hash;
-	NameToHash(tokenized, hash);
+	UnicodeString uhash;
+	NameToUnicodeHash(tokenized, uhash);
+	uhash.toUTF8String(hash);
 
 	/* for the locales in which canonical form != full form,
 	 * we need to use canonical form as a reference */
 	std::string canonical = tokenized.Join(Name::CANONICALIZE_STATUS);
 
-	/* for CheckExactMatch */
+	/* for exact match */
 	names_.insert(canonical);
 
-	/* for CheckCanonicalForm  */
+	/* for canonical form  */
 	canonical_map_.insert(std::make_pair(hash, canonical));
 
-	/* for CheckStrippedStatus  */
+	/* for spelling */
+	spell_trie_.Insert(uhash);
+
+	/* for stripped status  */
 	std::string stripped = tokenized.Join(Name::REMOVE_ALL_STATUSES);
 	if (stripped != name)
 		stripped_map_.insert(std::make_pair(stripped, canonical));
@@ -140,9 +151,26 @@ int Database::CheckCanonicalForm(const Name& name, std::vector<std::string>& sug
 	return count;
 }
 
-int Database::CheckSpelling(const Name& /*name*/, std::vector<std::string>& /*suggestions*/, int /*depth*/) const {
-	/* TODO: unimplemented */
-	return 0;
+int Database::CheckSpelling(const Name& name, std::vector<std::string>& suggestions, int depth) const {
+	std::set<UnicodeString> matches;
+
+	UnicodeString hash;
+	NameToUnicodeHash(name, hash);
+
+	spell_trie_.FindApprox(hash, depth, matches);
+
+	int count = 0;
+	std::string temp;
+	for (std::set<UnicodeString>::const_iterator i = matches.begin(); i != matches.end(); ++i) {
+		i->toUTF8String(temp);
+		std::pair<NamesMap::const_iterator, NamesMap::const_iterator> range =
+			canonical_map_.equal_range(temp);
+
+		for (NamesMap::const_iterator i = range.first; i != range.second; ++i, ++count)
+			suggestions.push_back(i->second);
+	}
+
+	return count;
 }
 
 int Database::CheckStrippedStatus(const Name& name, std::vector<std::string>& matches) const {
