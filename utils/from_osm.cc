@@ -36,9 +36,9 @@
 #	define DEFAULT_LOCALE "ru_RU"
 #endif
 
-class NameProcessor : public NameExtractor {
+class NameAggregator {
 public:
-	NameProcessor(StreetMangler::Database& db, bool perstreet_stats) :
+	NameAggregator(StreetMangler::Database& db, bool perstreet_stats) :
 		database_(db),
 		count_all_(0),
 		count_exact_match_(0),
@@ -49,7 +49,7 @@ public:
 		perstreet_stats_(perstreet_stats) {
 	}
 
-	virtual void ProcessName(const std::string& name) {
+	void ProcessName(const std::string& name) {
 		++count_all_;
 
 		if (perstreet_stats_) {
@@ -168,6 +168,19 @@ private:
 	NameSet no_match_;
 };
 
+class OsmNameExtractor : public NameExtractor {
+private:
+	NameAggregator& aggregator_;
+
+public:
+	OsmNameExtractor(NameAggregator& aggregator) : aggregator_(aggregator) {
+	}
+
+	virtual void ProcessName(const std::string& name) {
+		aggregator_.ProcessName(name);
+	}
+};
+
 int usage(const char* progname, int code) {
 	fprintf(stderr, "Usage: %s [-dhs] [-l locale] [-f database] file.osm\n", progname);
 	fprintf(stderr, "  -s  display per-street statistics (takes extra time)\n");
@@ -187,6 +200,7 @@ int main(int argc, char** argv) {
 
 	std::vector<const char*> datafiles;
 
+	/* process options */
 	int c;
     while ((c = getopt(argc, argv, "sdhf:l:")) != -1) {
 		switch (c) {
@@ -200,17 +214,19 @@ int main(int argc, char** argv) {
 		}
 	}
 
+	/* if no databases were specified, use the default one */
 	if (datafiles.empty())
 		datafiles.push_back(DEFAULT_DATAFILE);
 
 	argc -= optind;
 	argv += optind;
 
+	/* there should be some input */
 	if (argc < 1)
 		return usage(progname, 1);
 
+	/* setup and load the database */
 	StreetMangler::Locale locale(localename);
-
 	StreetMangler::Database database(locale);
 
 	for (std::vector<const char*>::const_iterator i = datafiles.begin(); i != datafiles.end(); ++i) {
@@ -218,19 +234,28 @@ int main(int argc, char** argv) {
 		database.Load(*i);
 	}
 
-	fprintf(stderr, "Processing names...\n");
-	NameProcessor processor(database, statsflag);
-	if (argv[0][0] == '-' && argv[0][1] == '\0')
-		processor.ParseStdin();
-	else
-		processor.ParseFile(argv[0]);
+	/* process all input files */
+	NameAggregator aggregator(database, statsflag);
 
-	if (dumpflag) {
-		fprintf(stderr, "Dumping data...\n");
-		processor.DumpData();
+	for (int i = 0; i < argc; ++i) {
+		std::string file(argv[i]);
+		if (file.rfind(".osm") == file.length() - 4) {
+			fprintf(stderr, "Processing file \"%s\" as OSM data...\n", file.c_str());
+			OsmNameExtractor(aggregator).ParseFile(file.c_str());
+//		} else if (file.rfind(".txt") == file.length() - 4) {
+//			fprintf(stderr, "Processing file \"%s\" as strings list...\n", file.c_str());
+		} else {
+			errx(1, "%s: unknown format (we only support .osm and .txt)\n", file.c_str());
+		}
 	}
 
-	processor.DumpStats();
+	/* produce aggregated dump and statistics */
+	if (dumpflag) {
+		fprintf(stderr, "Dumping data...\n");
+		aggregator.DumpData();
+	}
+
+	aggregator.DumpStats();
 
 	return 0;
 }
