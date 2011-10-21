@@ -21,9 +21,10 @@
 #include <streetmangler/database.hh>
 #include "database_testing.hh"
 
-using namespace StreetMangler;
-
 namespace {
+	using StreetMangler::Locale;
+	using StreetMangler::StatusPartData;
+
 	/* locale with custom (in this case, abbreviated) canonical form */
 	StatusPartData status_parts[] = {
 		{ "улица", "ул.", "ул.", { "улица", "ул", NULL } },
@@ -37,6 +38,9 @@ namespace {
 }
 
 BEGIN_TEST()
+	using StreetMangler::Locale;
+	using StreetMangler::Database;
+
 	Locale locale("test");
 
 	Database db(locale);
