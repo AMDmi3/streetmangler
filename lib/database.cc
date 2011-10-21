@@ -56,8 +56,10 @@ void Database::Load(const char* filename) {
 	while ((nread = read(f, buffer, sizeof(buffer))) > 0) {
 		for (char* cur = buffer; cur != buffer + nread; ++cur) {
 			if (*cur == '\n') {
-				Add(name);
-				name.clear();
+				if (!name.empty()) {
+					Add(name);
+					name.clear();
+				}
 				line++;
 				comment = false;
 				space = false;
