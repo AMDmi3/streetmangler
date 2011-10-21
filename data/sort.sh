@@ -1,6 +1,6 @@
 #!/bin/sh
 
-files="*.txt"
+files="ru.txt"
 
 if [ -n "$*" ]; then
 	files="$@"
