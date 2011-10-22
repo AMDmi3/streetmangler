@@ -20,12 +20,9 @@
 #ifndef STREETMANGLER_DATABASE_HH
 #define STREETMANGLER_DATABASE_HH
 
-#include <set>
 #include <string>
 #include <vector>
-#include <map>
-
-#include <tspell/unitrie.hh>
+#include <memory>
 
 namespace StreetMangler {
 
@@ -52,20 +49,8 @@ public:
 	int CheckStrippedStatus(const Name& name, std::vector<std::string>& matches) const;
 
 private:
-	void NameToHash(const Name& name, std::string& hash) const;
-	void NameToUnicodeHash(const Name& name, UnicodeString& hash) const;
-
-private:
-	typedef std::set<std::string> NamesSet;
-	typedef std::multimap<std::string, std::string> NamesMap;
-
-private:
-	const Locale& locale_;
-	NamesSet names_;
-	NamesMap canonical_map_;
-	NamesMap stripped_map_;
-
-	TSpell::UnicodeTrie spell_trie_;
+	class Private;
+	std::auto_ptr<Private> private_;
 };
 
 }

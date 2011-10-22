@@ -18,6 +18,7 @@
  */
 
 #include <set>
+#include <map>
 #include <string>
 #include <stdexcept>
 #include <vector>
@@ -29,13 +30,49 @@
 
 #include <unicode/unistr.h>
 
+#include <tspell/unitrie.hh>
+
 #include <streetmangler/database.hh>
 #include <streetmangler/locale.hh>
 #include <streetmangler/name.hh>
 
 namespace StreetMangler {
 
-Database::Database(const Locale& locale) : locale_(locale) {
+class Database::Private {
+	friend class Database;
+private:
+	Private(const Locale& locale) : locale_(locale) {
+	}
+
+	const Locale& GetLocale() const {
+		return locale_;
+	}
+
+	void NameToHash(const Name& name, std::string& hash) const {
+		UnicodeString temp;
+		NameToUnicodeHash(name, temp);
+		temp.toUTF8String(hash);
+	}
+
+	void NameToUnicodeHash(const Name& name, UnicodeString& hash) const {
+		static const int flags = Name::STATUS_TO_LEFT | Name::EXPAND_STATUS | Name::NORMALIZE_WHITESPACE | Name::NORMALIZE_PUNCT;
+		hash = UnicodeString::fromUTF8(name.Join(flags)).toLower();
+	}
+
+private:
+    typedef std::set<std::string> NamesSet;
+    typedef std::multimap<std::string, std::string> NamesMap;
+
+private:
+    const Locale& locale_;
+    NamesSet names_;
+    NamesMap canonical_map_;
+    NamesMap stripped_map_;
+
+    TSpell::UnicodeTrie spell_trie_;
+};
+
+Database::Database(const Locale& locale) : private_(new Database::Private(locale)) {
 }
 
 Database::~Database() {
@@ -89,26 +126,15 @@ void Database::Load(const char* filename) {
 }
 
 const StreetMangler::Locale& StreetMangler::Database::GetLocale() const {
-	return locale_;
-}
-
-void Database::NameToHash(const Name& name, std::string& hash) const {
-	UnicodeString temp;
-	NameToUnicodeHash(name, temp);
-	temp.toUTF8String(hash);
-}
-
-void Database::NameToUnicodeHash(const Name& name, UnicodeString& hash) const {
-	static const int flags = Name::STATUS_TO_LEFT | Name::EXPAND_STATUS | Name::NORMALIZE_WHITESPACE | Name::NORMALIZE_PUNCT;
-	hash = UnicodeString::fromUTF8(name.Join(flags)).toLower();
+	return private_->locale_;
 }
 
 void Database::Add(const std::string& name) {
-	Name tokenized(name, locale_);
+	Name tokenized(name, private_->locale_);
 
 	std::string hash;
 	UnicodeString uhash;
-	NameToUnicodeHash(tokenized, uhash);
+	private_->NameToUnicodeHash(tokenized, uhash);
 	uhash.toUTF8String(hash);
 
 	/* for the locales in which canonical form != full form,
@@ -116,36 +142,36 @@ void Database::Add(const std::string& name) {
 	std::string canonical = tokenized.Join(Name::CANONICALIZE_STATUS);
 
 	/* for exact match */
-	names_.insert(canonical);
+	private_->names_.insert(canonical);
 
 	/* for canonical form  */
-	canonical_map_.insert(std::make_pair(hash, canonical));
+	private_->canonical_map_.insert(std::make_pair(hash, canonical));
 
 	/* for spelling */
-	spell_trie_.Insert(uhash);
+	private_->spell_trie_.Insert(uhash);
 
 	/* for stripped status  */
 	std::string stripped = tokenized.Join(Name::REMOVE_ALL_STATUSES);
 	if (stripped != name)
-		stripped_map_.insert(std::make_pair(stripped, canonical));
+		private_->stripped_map_.insert(std::make_pair(stripped, canonical));
 }
 
 /*
  * Checks
  */
 int Database::CheckExactMatch(const Name& name) const {
-	return names_.find(name.Join()) != names_.end();
+	return private_->names_.find(name.Join()) != private_->names_.end();
 }
 
 int Database::CheckCanonicalForm(const Name& name, std::vector<std::string>& suggestions) const {
 	std::string hash;
-	NameToHash(name, hash);
+	private_->NameToHash(name, hash);
 
 	int count = 0;
-	std::pair<NamesMap::const_iterator, NamesMap::const_iterator> range =
-		canonical_map_.equal_range(hash);
+	std::pair<Private::NamesMap::const_iterator, Private::NamesMap::const_iterator> range =
+		private_->canonical_map_.equal_range(hash);
 
-	for (NamesMap::const_iterator i = range.first; i != range.second; ++i, ++count)
+	for (Private::NamesMap::const_iterator i = range.first; i != range.second; ++i, ++count)
 		suggestions.push_back(i->second);
 
 	return count;
@@ -155,18 +181,18 @@ int Database::CheckSpelling(const Name& name, std::vector<std::string>& suggesti
 	std::set<UnicodeString> matches;
 
 	UnicodeString hash;
-	NameToUnicodeHash(name, hash);
+	private_->NameToUnicodeHash(name, hash);
 
-	spell_trie_.FindApprox(hash, depth, matches);
+	private_->spell_trie_.FindApprox(hash, depth, matches);
 
 	int count = 0;
 	std::string temp;
 	for (std::set<UnicodeString>::const_iterator i = matches.begin(); i != matches.end(); ++i) {
 		i->toUTF8String(temp);
-		std::pair<NamesMap::const_iterator, NamesMap::const_iterator> range =
-			canonical_map_.equal_range(temp);
+		std::pair<Private::NamesMap::const_iterator, Private::NamesMap::const_iterator> range =
+			private_->canonical_map_.equal_range(temp);
 
-		for (NamesMap::const_iterator i = range.first; i != range.second; ++i, ++count)
+		for (Private::NamesMap::const_iterator i = range.first; i != range.second; ++i, ++count)
 			suggestions.push_back(i->second);
 	}
 
@@ -175,10 +201,10 @@ int Database::CheckSpelling(const Name& name, std::vector<std::string>& suggesti
 
 int Database::CheckStrippedStatus(const Name& name, std::vector<std::string>& matches) const {
 	int count = 0;
-	std::pair<NamesMap::const_iterator, NamesMap::const_iterator> range =
-		stripped_map_.equal_range(name.Join(Name::NORMALIZE_WHITESPACE));
+	std::pair<Private::NamesMap::const_iterator, Private::NamesMap::const_iterator> range =
+		private_->stripped_map_.equal_range(name.Join(Name::NORMALIZE_WHITESPACE));
 
-	for (NamesMap::const_iterator i = range.first; i != range.second; ++i, ++count)
+	for (Private::NamesMap::const_iterator i = range.first; i != range.second; ++i, ++count)
 		matches.push_back(i->second);
 
 	return count;
@@ -189,20 +215,19 @@ int Database::CheckStrippedStatus(const Name& name, std::vector<std::string>& ma
  */
 int Database::CheckExactMatch(const std::string& name) const {
 	/* this one a shortcut, actually really */
-	return names_.find(name) != names_.end();
+	return private_->names_.find(name) != private_->names_.end();
 }
 
 int Database::CheckCanonicalForm(const std::string& name, std::vector<std::string>& suggestions) const {
-	return CheckCanonicalForm(Name(name, locale_), suggestions);
+	return CheckCanonicalForm(Name(name, private_->locale_), suggestions);
 }
 
 int Database::CheckSpelling(const std::string& name, std::vector<std::string>& suggestions, int depth) const {
-	return CheckSpelling(Name(name, locale_), suggestions, depth);
+	return CheckSpelling(Name(name, private_->locale_), suggestions, depth);
 }
 
 int Database::CheckStrippedStatus(const std::string& name, std::vector<std::string>& matches) const {
-	return CheckStrippedStatus(Name(name, locale_), matches);
+	return CheckStrippedStatus(Name(name, private_->locale_), matches);
 }
-
 
 }
