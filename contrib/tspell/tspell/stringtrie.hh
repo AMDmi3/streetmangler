@@ -20,6 +20,7 @@
 #ifndef TSPELL_STRINGTRIE_HH
 #define TSPELL_STRINGTRIE_HH
 
+#include <algorithm>
 #include <string>
 #include <set>
 
@@ -30,21 +31,21 @@ namespace TSpell {
 template<typename Char>
 class StringSetAppender {
 public:
-	typedef Node<Char> Node;
+	typedef Node<Char> node_type;
 
-	typedef std::basic_string<Char> String;
-	typedef std::set<String> Set;
+	typedef std::basic_string<Char> string_type;
+	typedef std::set<string_type> set_type;
 
 private:
-	Set& set_;
+	set_type& set_;
 
 public:
-	StringSetAppender(Set& set) : set_(set) {
+	StringSetAppender(set_type& set) : set_(set) {
 	}
 
-	void Append(const Node* node) {
-		String str;
-		for (const Node* cur = node; cur; cur = cur->parent)
+	void Append(const node_type* node) {
+		string_type str;
+		for (const node_type* cur = node; cur; cur = cur->parent)
 			str += cur->ch;
 		std::reverse(str.begin(), str.end());
 
@@ -54,39 +55,39 @@ public:
 
 class StringTrie : public TrieBase<char, StringSetAppender<char> > {
 private:
-	typedef TrieBase<char, StringSetAppender<char> > Base;
+	typedef TrieBase<char, StringSetAppender<char> > base_type;
 
 public:
 	void Insert(const std::string& string) {
-		Base::Insert(string.c_str(), string.length());
+		base_type::Insert(string.c_str(), string.length());
 	}
 
 	bool FindExact(const std::string& string) const {
-		return Base::FindExact(string.c_str(), string.length());
+		return base_type::FindExact(string.c_str(), string.length());
 	}
 
 	void FindApprox(const std::string& string, int distance, std::set<std::string>& out) const {
 		StringSetAppender<char> a(out);
-		Base::FindApprox(string.c_str(), string.length(), distance, a);
+		base_type::FindApprox(string.c_str(), string.length(), distance, a);
 	}
 };
 
 class WStringTrie : public TrieBase<wchar_t, StringSetAppender<wchar_t> > {
 private:
-	typedef TrieBase<wchar_t, StringSetAppender<wchar_t> > Base;
+	typedef TrieBase<wchar_t, StringSetAppender<wchar_t> > base_type;
 
 public:
 	void Insert(const std::wstring& string) {
-		Base::Insert(string.c_str(), string.length());
+		base_type::Insert(string.c_str(), string.length());
 	}
 
 	bool FindExact(const std::wstring& string) const {
-		return Base::FindExact(string.c_str(), string.length());
+		return base_type::FindExact(string.c_str(), string.length());
 	}
 
 	void FindApprox(const std::wstring& string, int distance, std::set<std::wstring>& out) const {
 		StringSetAppender<wchar_t> a(out);
-		Base::FindApprox(string.c_str(), string.length(), distance, a);
+		base_type::FindApprox(string.c_str(), string.length(), distance, a);
 	}
 };
 

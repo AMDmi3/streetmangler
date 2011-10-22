@@ -24,34 +24,34 @@ namespace TSpell {
 
 template<class Char>
 struct Node {
-	Node* parent;
-	Node* next;
-	Node* child;
+	Node<Char>* parent;
+	Node<Char>* next;
+	Node<Char>* child;
 	Char ch;
 	bool data;
 
-	Node(Node* p, Char c) : parent(p), next(NULL), child(NULL), ch(c), data(false) {
+	Node(Node<Char>* p, Char c) : parent(p), next(NULL), child(NULL), ch(c), data(false) {
 	}
 };
 
 template<class Char, class Appender>
 class TrieBase {
 protected:
-	typedef Node<Char> Node;
+	typedef Node<Char> node_type;
 
 protected:
-	Node* root_;
+	node_type* root_;
 
 private:
-	void Insert(Node* parent, Node** start, const Char* string, size_t length) {
-		Node** current = start;
+	void Insert(node_type* parent, node_type** start, const Char* string, size_t length) {
+		node_type** current = start;
 
 		for (; *current != NULL && (*current)->ch != *string; current = &((*current)->next)) {
 			/* empty */
 		}
 
 		if (*current == NULL)
-			*current = new Node(parent, *string);
+			*current = new node_type(parent, *string);
 
 		if (length == 1) {
 			(*current)->data = true;
@@ -61,8 +61,8 @@ private:
 	}
 
 	/* XXX: const */
-	bool FindExact(Node* start, const Char* string, size_t length) const {
-		Node* current = start;
+	bool FindExact(node_type* start, const Char* string, size_t length) const {
+		node_type* current = start;
 
 		for (; current != NULL && current->ch != *string; current = current->next) {
 			/* empty */
@@ -78,7 +78,7 @@ private:
 		}
 	}
 
-	void FindApprox(Node* last, Node* current, const Char* string, size_t length, int distance, Appender& appender) const {
+	void FindApprox(node_type* last, node_type* current, const Char* string, size_t length, int distance, Appender& appender) const {
 		/* remove character, we can do it regardless of position in a trie given we have distance */
 		if (length > 0 && distance > 0)
 			FindApprox(last, current, string + 1, length - 1, distance - 1, appender);
@@ -106,7 +106,7 @@ private:
 		}
 	}
 
-	void Destroy(Node* node) {
+	void Destroy(node_type* node) {
 		if (node->child)
 			Destroy(node->child);
 		if (node->next)

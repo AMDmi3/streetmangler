@@ -30,20 +30,20 @@ namespace TSpell {
 
 class UnicodeStringSetAppender {
 public:
-	typedef Node<UChar> Node;
+	typedef Node<UChar> node_type;
 
-	typedef std::set<UnicodeString> Set;
+	typedef std::set<UnicodeString> set_type;
 
 private:
-	Set& set_;
+	set_type& set_;
 
 public:
-	UnicodeStringSetAppender(Set& set) : set_(set) {
+	UnicodeStringSetAppender(set_type& set) : set_(set) {
 	}
 
-	void Append(const Node* node) {
+	void Append(const node_type* node) {
 		UnicodeString str;
-		for (const Node* cur = node; cur; cur = cur->parent)
+		for (const node_type* cur = node; cur; cur = cur->parent)
 			str += cur->ch;
 		str.reverse();
 
@@ -53,20 +53,20 @@ public:
 
 class UnicodeTrie : public TrieBase<UChar, UnicodeStringSetAppender> {
 private:
-	typedef TrieBase<UChar, UnicodeStringSetAppender> Base;
+	typedef TrieBase<UChar, UnicodeStringSetAppender> base_type;
 
 public:
 	void Insert(const UnicodeString& string) {
-		Base::Insert(string.getBuffer(), string.length());
+		base_type::Insert(string.getBuffer(), string.length());
 	}
 
 	bool FindExact(const UnicodeString& string) const {
-		return Base::FindExact(string.getBuffer(), string.length());
+		return base_type::FindExact(string.getBuffer(), string.length());
 	}
 
 	void FindApprox(const UnicodeString& string, int distance, std::set<UnicodeString>& out) const {
 		UnicodeStringSetAppender a(out);
-		Base::FindApprox(string.getBuffer(), string.length(), distance, a);
+		base_type::FindApprox(string.getBuffer(), string.length(), distance, a);
 	}
 };
 
