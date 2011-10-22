@@ -72,7 +72,7 @@ public:
 			++count_canonical_form_;
 			canonical_form_.insert(std::make_pair(name, suggestions.front()));
 			suggestions.clear();
-		} else if (database_.CheckSpelling(name, suggestions, spelldistance_)) {
+		} else if (spelldistance_ > 0 && database_.CheckSpelling(name, suggestions, spelldistance_)) {
 			++count_spelling_fixed_;
 			spelling_fixed_.insert(std::make_pair(name, suggestions.front()));
 			suggestions.clear();
