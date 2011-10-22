@@ -39,7 +39,7 @@
 
 class NameAggregator {
 public:
-	NameAggregator(StreetMangler::Database& db, bool perstreet_stats) :
+	NameAggregator(StreetMangler::Database& db, bool perstreet_stats, int spelldistance) :
 		database_(db),
 		count_all_(0),
 		count_exact_match_(0),
@@ -47,7 +47,8 @@ public:
 		count_spelling_fixed_(0),
 		count_stripped_status_(0),
 		count_no_match_(0),
-		perstreet_stats_(perstreet_stats) {
+		perstreet_stats_(perstreet_stats),
+		spelldistance_(spelldistance) {
 	}
 
 	void ProcessName(const std::string& name) {
@@ -71,7 +72,7 @@ public:
 			++count_canonical_form_;
 			canonical_form_.insert(std::make_pair(name, suggestions.front()));
 			suggestions.clear();
-		} else if (database_.CheckSpelling(name, suggestions, 1)) {
+		} else if (database_.CheckSpelling(name, suggestions, spelldistance_)) {
 			++count_spelling_fixed_;
 			spelling_fixed_.insert(std::make_pair(name, suggestions.front()));
 			suggestions.clear();
@@ -161,6 +162,8 @@ private:
 
 	bool perstreet_stats_;
 
+	int spelldistance_;
+
 	NameSet all_;
 	NameSet exact_match_;
 	SuggestionMap canonical_form_;
@@ -186,6 +189,7 @@ int usage(const char* progname, int code) {
 	fprintf(stderr, "Usage: %s [-dhs] [-l locale] [-f database] file.osm\n", progname);
 	fprintf(stderr, "  -s  display per-street statistics (takes extra time)\n");
 	fprintf(stderr, "  -d  dump street lists into dump.*\n");
+	fprintf(stderr, "  -p  spelling check distance (default 1)\n");
 	fprintf(stderr, "  -h  display this help\n");
 	fprintf(stderr, "  -l  set locale (default \""DEFAULT_LOCALE"\")\n");
 	fprintf(stderr, "  -f  specify pats to street names database (default "DEFAULT_DATAFILE")\n");
@@ -198,17 +202,19 @@ int main(int argc, char** argv) {
 	const char* localename = DEFAULT_LOCALE;
 	bool dumpflag = false;
 	bool statsflag = false;
+	int spelldistance = 1;
 
 	std::vector<const char*> datafiles;
 
 	/* process options */
 	int c;
-    while ((c = getopt(argc, argv, "sdhf:l:")) != -1) {
+    while ((c = getopt(argc, argv, "sdhf:l:p:")) != -1) {
 		switch (c) {
 			case 's': statsflag = true; break;
 			case 'd': dumpflag = true; break;
 			case 'f': datafiles.push_back(optarg); break;
 			case 'l': localename = optarg; break;
+			case 'p': spelldistance = (int)strtoul(optarg, 0, 10); break;
 			case 'h': return usage(progname, 0);
 			default:
 				return usage(progname, 1);
@@ -236,7 +242,7 @@ int main(int argc, char** argv) {
 	}
 
 	/* process all input files */
-	NameAggregator aggregator(database, statsflag);
+	NameAggregator aggregator(database, statsflag, spelldistance);
 
 	for (int i = 0; i < argc; ++i) {
 		std::string file(argv[i]);
