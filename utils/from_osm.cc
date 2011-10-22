@@ -22,6 +22,7 @@
 #include <map>
 #include <set>
 
+#include <stdlib.h>
 #include <err.h>
 
 #include <streetmangler/database.hh>
