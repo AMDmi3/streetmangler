@@ -44,6 +44,8 @@ namespace std {
         %template(StringVector) vector<string>;
 };
 
+%rename(_Database) Database;
+
 class Database {
 public:
         Database(const Locale& locale);
@@ -92,3 +94,13 @@ public:
                 return v;
         }
 };
+
+%pythoncode %{
+class Database(_Database):
+    def __init__(self, locale):
+        _Database.__init__(self, locale)
+        self._locale = locale
+
+    def GetLocale(self):
+        return self._locale
+%}
