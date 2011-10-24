@@ -1,3 +1,3 @@
 #!/bin/sh
 
-( cat ru.txt | sed -e 's|#.*||' | awk '{print;print}'; cat "$1") | sort | uniq -u
+( cat ru.txt | awk '{print;print}'; cat "$1") | sed -e 's| *#.*||' | sort | uniq -u
