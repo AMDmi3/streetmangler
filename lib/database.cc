@@ -188,6 +188,7 @@ int Database::CheckSpelling(const Name& name, std::vector<std::string>& suggesti
 	int count = 0;
 	std::string temp;
 	for (std::set<UnicodeString>::const_iterator i = matches.begin(); i != matches.end(); ++i) {
+		temp.clear();
 		i->toUTF8String(temp);
 		std::pair<Private::NamesMap::const_iterator, Private::NamesMap::const_iterator> range =
 			private_->canonical_map_.equal_range(temp);
