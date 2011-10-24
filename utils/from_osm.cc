@@ -247,7 +247,10 @@ int main(int argc, char** argv) {
 
 	for (int i = 0; i < argc; ++i) {
 		std::string file(argv[i]);
-		if (file.rfind(".osm") == file.length() - 4) {
+		if (file == "-") {
+			fprintf(stderr, "Processing stdin as OSM data...\n");
+			OsmNameExtractor(aggregator).ParseStdin();
+		} else if (file.rfind(".osm") == file.length() - 4 || file == "-") {
 			fprintf(stderr, "Processing file \"%s\" as OSM data...\n", file.c_str());
 			OsmNameExtractor(aggregator).ParseFile(file.c_str());
 //		} else if (file.rfind(".txt") == file.length() - 4) {
