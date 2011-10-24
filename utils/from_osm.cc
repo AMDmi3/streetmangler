@@ -17,10 +17,12 @@
  * along with streetmangler.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <cassert>
 #include <fstream>
 #include <iostream>
 #include <map>
 #include <set>
+#include <vector>
 
 #include <stdlib.h>
 #include <err.h>
@@ -75,8 +77,12 @@ public:
 			suggestions.clear();
 		} else if (spelldistance_ > 0 && database_.CheckSpelling(name, suggestions, spelldistance_)) {
 			++count_spelling_fixed_;
-			spelling_fixed_.insert(std::make_pair(name, suggestions.front()));
-			suggestions.clear();
+			std::pair<MultiSuggestionMap::iterator, bool> insresult =
+				spelling_fixed_.insert(std::make_pair(name, std::vector<std::string>()));
+			if (insresult.second)
+				suggestions.swap(insresult.first->second);
+			else /* possible in -s mode */
+				suggestions.clear();
 		} else if (database_.CheckStrippedStatus(name, suggestions)) {
 			++count_stripped_status_;
 			stripped_status_.insert(name);
@@ -127,8 +133,20 @@ public:
 		dump.close();
 
 		dump.open("dump.spelling_fixed.txt");
-		for (SuggestionMap::const_iterator i = spelling_fixed_.begin(); i != spelling_fixed_.end(); ++i)
-			dump << i->first << "|" << i->second << std::endl;
+		for (MultiSuggestionMap::const_iterator i = spelling_fixed_.begin(); i != spelling_fixed_.end(); ++i) {
+			dump << i->first;
+			if (i->second.size() == 1) {
+				dump << "|" << i->second.front() << std::endl;
+			} else {
+				dump << " # (";
+				for (std::vector<std::string>::const_iterator s = i->second.begin(); s != i->second.end(); ++s) {
+					if (s != i->second.begin())
+						dump << ", ";
+					dump << *s;
+				}
+				dump << ")" << std::endl;
+			}
+		}
 		dump.close();
 
 		dump.open("dump.stripped_status.txt");
@@ -150,6 +168,7 @@ public:
 private:
 	typedef std::set<std::string> NameSet;
 	typedef std::map<std::string, std::string> SuggestionMap;
+	typedef std::map<std::string, std::vector<std::string> > MultiSuggestionMap;
 
 private:
 	StreetMangler::Database& database_;
@@ -168,7 +187,7 @@ private:
 	NameSet all_;
 	NameSet exact_match_;
 	SuggestionMap canonical_form_;
-	SuggestionMap spelling_fixed_;
+	MultiSuggestionMap spelling_fixed_;
 	NameSet stripped_status_;
 	NameSet no_match_;
 };
