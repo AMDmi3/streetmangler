@@ -36,3 +36,8 @@ def test_spelling():
     for n in [street] + street_list:
         assert(db.CheckSpelling(n) == [street])
         assert(db.CheckSpelling(Name(n, locale)) == [street])
+
+test_exact()
+test_canonical()
+test_spelling()
+print "All OK"
