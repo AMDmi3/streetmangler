@@ -19,7 +19,10 @@ public:
 #include "streetmangler/name.hh"
 #include "streetmangler/locale.hh"
 #include "streetmangler/database.hh"
-using namespace StreetMangler;
+
+using StreetMangler::Name;
+using StreetMangler::Locale;
+using StreetMangler::Database;
 %}
 
 %{
