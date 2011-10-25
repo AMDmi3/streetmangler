@@ -4,6 +4,8 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6.0)
 
 SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
+ENABLE_TESTING()
+
 # options
 OPTION(WITH_PYTHON "Enable python bindings" ON)
 
@@ -57,7 +59,6 @@ TARGET_LINK_LIBRARIES(database_test streetmangler)
 ADD_EXECUTABLE(canonical_test tests/canonical_test.cc)
 TARGET_LINK_LIBRARIES(canonical_test streetmangler)
 
-ENABLE_TESTING()
 ADD_TEST(locale_test locale_test)
 ADD_TEST(tokenizer_test tokenizer_test)
 ADD_TEST(database_test database_test)
