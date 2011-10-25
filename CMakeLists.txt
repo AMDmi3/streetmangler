@@ -4,6 +4,11 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6.0)
 
 SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
+ENABLE_TESTING()
+
+# options
+OPTION(WITH_PYTHON "Enable python bindings" ON)
+
 # depends
 FIND_PACKAGE(EXPAT REQUIRED)
 FIND_PACKAGE(ICU REQUIRED)
@@ -31,6 +36,11 @@ INCLUDE_DIRECTORIES(${ICU_INCLUDE_DIR})
 ADD_LIBRARY(streetmangler SHARED ${LIBRARY_SRCS})
 TARGET_LINK_LIBRARIES(streetmangler ${ICU_LIBRARY})
 
+# bindings
+IF(WITH_PYTHON)
+	ADD_SUBDIRECTORY(swig)
+ENDIF(WITH_PYTHON)
+
 # utilities
 INCLUDE_DIRECTORIES(${EXPAT_INCLUDE_DIRS})
 ADD_EXECUTABLE(from_osm utils/from_osm.cc utils/name_extractor.cc)
@@ -49,7 +59,6 @@ TARGET_LINK_LIBRARIES(database_test streetmangler)
 ADD_EXECUTABLE(canonical_test tests/canonical_test.cc)
 TARGET_LINK_LIBRARIES(canonical_test streetmangler)
 
-ENABLE_TESTING()
 ADD_TEST(locale_test locale_test)
 ADD_TEST(tokenizer_test tokenizer_test)
 ADD_TEST(database_test database_test)
