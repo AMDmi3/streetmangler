@@ -27,10 +27,18 @@
 
 #include "name_extractor.hh"
 
-NameExtractor::NameExtractor() {
+NameExtractor::NameExtractor() : parse_addresses_(true) {
 }
 
 NameExtractor::~NameExtractor() {
+}
+
+void NameExtractor::AddNameTag(const std::string& tag) {
+	name_tags_.push_back(tag);
+}
+
+void NameExtractor::SetParseAddresses(bool parse) {
+	parse_addresses_ = parse;
 }
 
 void NameExtractor::ParseFile(const char* filename) {
@@ -89,7 +97,7 @@ void NameExtractor::StartElement(void* userData, const char* name, const char** 
 
 	if (strcmp(name, "node") == 0 || strcmp(name, "way") == 0) {
 		parser->addr_street_.clear();
-		parser->name_.clear();
+		parser->names_.clear();
 		parser->highway_.clear();
 	}
 	if (strcmp(name, "tag") != 0)
@@ -103,12 +111,17 @@ void NameExtractor::StartElement(void* userData, const char* name, const char** 
 			v = att[1];
 	}
 
-	if (k == "highway")
+	/* save relevant tags which will be processed in EndElement */
+	if (k == "highway") {
 		parser->highway_ = v;
-	else if (k == "name")
-		parser->name_ = v;
-	else if (k == "addr:street")
+	} else if (k == "addr:street") {
 		parser->addr_street_ = v;
+	} else {
+		for (std::vector<std::string>::const_iterator i = parser->name_tags_.begin(); i != parser->name_tags_.end(); ++i)
+			if (k == *i && !v.empty())
+				parser->names_.push_back(v);
+	}
+
 }
 
 void NameExtractor::EndElement(void* userData, const char* name) {
@@ -123,16 +136,17 @@ void NameExtractor::EndElement(void* userData, const char* name) {
 	else
 		return;
 
-	if (!parser->addr_street_.empty())
+	if (parser->parse_addresses_ && !parser->addr_street_.empty())
 		parser->ProcessName(parser->addr_street_);
 
-	if (tag == WAY && !parser->highway_.empty() && !parser->name_.empty() &&
+	if (tag == WAY && !parser->highway_.empty() && !parser->names_.empty() &&
 				parser->highway_ != "footway" &&
 				parser->highway_ != "cycleway" &&
 				parser->highway_ != "path" &&
 				parser->highway_ != "track" &&
 				parser->highway_ != "bus_stop" &&
 				parser->highway_ != "emergency_access_point") {
-		parser->ProcessName(parser->name_);
+		for (std::vector<std::string>::const_iterator i = parser->names_.begin(); i != parser->names_.end(); ++i)
+			parser->ProcessName(*i);
 	}
 }

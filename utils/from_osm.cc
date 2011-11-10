@@ -40,6 +40,10 @@
 #	define DEFAULT_LOCALE "ru_RU"
 #endif
 
+#ifndef DEFAULT_NAME_TAG
+#	define DEFAULT_NAME_TAG "name"
+#endif
+
 class NameAggregator {
 public:
 	NameAggregator(StreetMangler::Database& db, bool perstreet_stats, int spelldistance) :
@@ -206,12 +210,14 @@ public:
 };
 
 int usage(const char* progname, int code) {
-	fprintf(stderr, "Usage: %s [-dhs] [-l locale] [-f database] file.osm\n", progname);
+	fprintf(stderr, "Usage: %s [-dhsa] [-pN] [-l locale] [-n tag] [-f database] file.osm ...\n", progname);
 	fprintf(stderr, "  -s  display per-street statistics (takes extra time)\n");
 	fprintf(stderr, "  -d  dump street lists into dump.*\n");
 	fprintf(stderr, "  -p  spelling check distance (default 1)\n");
 	fprintf(stderr, "  -h  display this help\n");
 	fprintf(stderr, "  -l  set locale (default \""DEFAULT_LOCALE"\")\n");
+	fprintf(stderr, "  -n  specify name tags (default \"name\")\n");
+	fprintf(stderr, "  -a  ignore addr:street tags\n");
 	fprintf(stderr, "  -f  specify pats to street names database (default "DEFAULT_DATAFILE")\n");
 	fprintf(stderr, "      (may be specified more than once)\n");
 	return code;
@@ -222,19 +228,23 @@ int main(int argc, char** argv) {
 	const char* localename = DEFAULT_LOCALE;
 	bool dumpflag = false;
 	bool statsflag = false;
+	bool parseaddrs = true;
 	int spelldistance = 1;
 
 	std::vector<const char*> datafiles;
+	std::vector<const char*> name_tags;
 
 	/* process options */
 	int c;
-    while ((c = getopt(argc, argv, "sdhf:l:p:")) != -1) {
+    while ((c = getopt(argc, argv, "sdhf:l:p:n:a")) != -1) {
 		switch (c) {
 			case 's': statsflag = true; break;
 			case 'd': dumpflag = true; break;
 			case 'f': datafiles.push_back(optarg); break;
+			case 'n': name_tags.push_back(optarg); break;
 			case 'l': localename = optarg; break;
 			case 'p': spelldistance = (int)strtoul(optarg, 0, 10); break;
+			case 'a': parseaddrs = false; break;
 			case 'h': return usage(progname, 0);
 			default:
 				return usage(progname, 1);
@@ -244,6 +254,8 @@ int main(int argc, char** argv) {
 	/* if no databases were specified, use the default one */
 	if (datafiles.empty())
 		datafiles.push_back(DEFAULT_DATAFILE);
+	if (name_tags.empty())
+		name_tags.push_back(DEFAULT_NAME_TAG);
 
 	argc -= optind;
 	argv += optind;
@@ -261,17 +273,24 @@ int main(int argc, char** argv) {
 		database.Load(*i);
 	}
 
-	/* process all input files */
+	/* create tag aggregator */
 	NameAggregator aggregator(database, statsflag, spelldistance);
 
+	OsmNameExtractor extractor(aggregator);
+
+	extractor.SetParseAddresses(parseaddrs);
+	for (std::vector<const char*>::const_iterator i = name_tags.begin(); i != name_tags.end(); ++i)
+		extractor.AddNameTag(*i);
+
+	/* process all input files */
 	for (int i = 0; i < argc; ++i) {
 		std::string file(argv[i]);
 		if (file == "-") {
 			fprintf(stderr, "Processing stdin as OSM data...\n");
-			OsmNameExtractor(aggregator).ParseStdin();
+			extractor.ParseStdin();
 		} else if (file.rfind(".osm") == file.length() - 4 || file == "-") {
 			fprintf(stderr, "Processing file \"%s\" as OSM data...\n", file.c_str());
-			OsmNameExtractor(aggregator).ParseFile(file.c_str());
+			extractor.ParseFile(file.c_str());
 //		} else if (file.rfind(".txt") == file.length() - 4) {
 //			fprintf(stderr, "Processing file \"%s\" as strings list...\n", file.c_str());
 		} else {
