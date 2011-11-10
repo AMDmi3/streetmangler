@@ -41,6 +41,8 @@ class Name {
 public:
         Name(const std::string& name, const Locale& locale);
 
+        bool HasStatusPart();
+
         std::string Join(int flags = 0);
 };
 

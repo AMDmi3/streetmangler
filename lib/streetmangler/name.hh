@@ -80,6 +80,8 @@ public:
 
 	std::string Join(int flags = 0) const;
 
+	bool HasStatusPart() const { return status_pos_ != -1; }
+
 	operator std::string() const { return Join(); }
 };
 
