@@ -48,15 +48,40 @@ private:
 		return locale_;
 	}
 
-	void NameToHash(const Name& name, std::string& hash) const {
-		UnicodeString temp;
-		NameToUnicodeHash(name, temp);
-		temp.toUTF8String(hash);
-	}
-
-	void NameToUnicodeHash(const Name& name, UnicodeString& hash) const {
+	void NameToHashes(const Name& name, std::string* plainhash, UnicodeString* uhash, UnicodeString* uhashordered) const {
 		static const int flags = Name::STATUS_TO_LEFT | Name::EXPAND_STATUS | Name::NORMALIZE_WHITESPACE | Name::NORMALIZE_PUNCT;
-		hash = UnicodeString::fromUTF8(name.Join(flags)).toLower();
+		/* base for a hash - lowercase name with status part at left */
+		UnicodeString base_hash = UnicodeString::fromUTF8(name.Join(flags)).toLower();
+
+		if (uhash)
+			*uhash = base_hash;
+
+		if (plainhash)
+			base_hash.toUTF8String(*plainhash);
+
+		if (uhashordered) {
+			std::vector<UnicodeString> words;
+
+			int32_t start = 0;
+			int32_t end;
+			while ((end = base_hash.indexOf(' ', start)) != -1) {
+				if (start != end)
+					words.push_back(UnicodeString(base_hash, start, end-start));
+				start = end + 1;
+			}
+			if (start != base_hash.length())
+				words.push_back(UnicodeString(base_hash, start));
+
+			/* sort all words except for the status part */
+			std::sort(name.HasStatusPart() ? ++words.begin() : words.begin(), words.end());
+
+			*uhashordered = UnicodeString();
+			for (std::vector<UnicodeString>::iterator i = words.begin(); i != words.end(); ++i) {
+				if (i != words.begin())
+					*uhashordered += " ";
+				*uhashordered += *i;
+			}
+		}
 	}
 
 private:
@@ -134,8 +159,9 @@ void Database::Add(const std::string& name) {
 
 	std::string hash;
 	UnicodeString uhash;
-	private_->NameToUnicodeHash(tokenized, uhash);
-	uhash.toUTF8String(hash);
+	UnicodeString uhashordered;
+
+	private_->NameToHashes(tokenized, &hash, &uhash, &uhashordered);
 
 	/* for the locales in which canonical form != full form,
 	 * we need to use canonical form as a reference */
@@ -149,6 +175,8 @@ void Database::Add(const std::string& name) {
 
 	/* for spelling */
 	private_->spell_trie_.Insert(uhash);
+	if (uhash != uhashordered)
+		private_->spell_trie_.Insert(uhashordered);
 
 	/* for stripped status  */
 	std::string stripped = tokenized.Join(Name::REMOVE_ALL_STATUSES);
@@ -165,7 +193,7 @@ int Database::CheckExactMatch(const Name& name) const {
 
 int Database::CheckCanonicalForm(const Name& name, std::vector<std::string>& suggestions) const {
 	std::string hash;
-	private_->NameToHash(name, hash);
+	private_->NameToHashes(name, &hash, NULL, NULL);
 
 	int count = 0;
 	std::pair<Private::NamesMap::const_iterator, Private::NamesMap::const_iterator> range =
@@ -178,12 +206,12 @@ int Database::CheckCanonicalForm(const Name& name, std::vector<std::string>& sug
 }
 
 int Database::CheckSpelling(const Name& name, std::vector<std::string>& suggestions, int depth) const {
+	UnicodeString hash, hashordered;
+	private_->NameToHashes(name, NULL, &hash, &hashordered);
+
 	std::set<UnicodeString> matches;
-
-	UnicodeString hash;
-	private_->NameToUnicodeHash(name, hash);
-
 	private_->spell_trie_.FindApprox(hash, depth, matches);
+	private_->spell_trie_.FindApprox(hashordered, depth, matches);
 
 	int count = 0;
 	std::string temp;
