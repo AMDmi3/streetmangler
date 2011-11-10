@@ -22,6 +22,7 @@
 #include <string>
 #include <stdexcept>
 #include <vector>
+#include <algorithm>
 
 #include <stdio.h>
 #include <fcntl.h>
