@@ -101,21 +101,23 @@ public:
 		fprintf(stderr, "           Total       Exact match     Canonical form     Spelling fixed    Stripped status           No match\n");
 		/*                Total: 00000000 00000000 ( 00.00%) 00000000 ( 00.00%) 00000000 ( 00.00%) 00000000 ( 00.00%) 00000000 ( 00.00%)*/
 		if (perstreet_stats_) {
+			float total = count_all_ > 0 ? count_all_ : 1.0f;
 			fprintf(stderr, " Total: %8d %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%)\n",
 				count_all_,
-				count_exact_match_, (float)count_exact_match_/(float)count_all_*100.0f,
-				count_canonical_form_, (float)count_canonical_form_/(float)count_all_*100.0f,
-				count_spelling_fixed_, (float)count_spelling_fixed_/(float)count_all_*100.0f,
-				count_stripped_status_, (float)count_stripped_status_/(float)count_all_*100.0f,
-				count_no_match_, (float)count_no_match_/(float)count_all_*100.0f);
+				count_exact_match_, (float)count_exact_match_/total*100.0f,
+				count_canonical_form_, (float)count_canonical_form_/total*100.0f,
+				count_spelling_fixed_, (float)count_spelling_fixed_/total*100.0f,
+				count_stripped_status_, (float)count_stripped_status_/total*100.0f,
+				count_no_match_, (float)count_no_match_/total*100.0f);
 		}
+		float total = all_.size() > 0 ? all_.size() : 1.0f;
 		fprintf(stderr, "Unique: %8d %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%)\n",
 			(int)all_.size(),
-			(int)exact_match_.size(), (float)exact_match_.size()/(float)all_.size()*100.0f,
-			(int)canonical_form_.size(), (float)canonical_form_.size()/(float)all_.size()*100.0f,
-			(int)spelling_fixed_.size(), (float)spelling_fixed_.size()/(float)all_.size()*100.0f,
-			(int)stripped_status_.size(), (float)stripped_status_.size()/(float)all_.size()*100.0f,
-			(int)no_match_.size(), (float)no_match_.size()/(float)all_.size()*100.0f);
+			(int)exact_match_.size(), (float)exact_match_.size()/total*100.0f,
+			(int)canonical_form_.size(), (float)canonical_form_.size()/total*100.0f,
+			(int)spelling_fixed_.size(), (float)spelling_fixed_.size()/total*100.0f,
+			(int)stripped_status_.size(), (float)stripped_status_.size()/total*100.0f,
+			(int)no_match_.size(), (float)no_match_.size()/total*100.0f);
 	}
 
 	void DumpData() {
