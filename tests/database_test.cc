@@ -33,6 +33,7 @@ BEGIN_TEST()
 	db.Add("улица Ленина");
 	db.Add("Зелёная улица");
 	db.Add("МКАД");
+	db.Add("улица Льва Толстого");
 
 	/* simple matches */
 	CHECK_EXACT_MATCH(db, "улица Ленина");
@@ -56,6 +57,8 @@ BEGIN_TEST()
 	CHECK_CANONICAL_FORM(db, "УЛИЦА ЛЕНИНА", "улица Ленина");
 	CHECK_CANONICAL_FORM(db, "   улица  ленина    ", "улица Ленина");
 	CHECK_CANONICAL_FORM(db, "\tулица\tленина\t", "улица Ленина");
+
+	CHECK_CANONICAL_FORM(db, "Толстого Льва улица", "улица Льва Толстого");
 
 	/* spelling */
 	CHECK_SPELLING(db, "улица Ленена", "улица Ленина");  /* letter changed */
