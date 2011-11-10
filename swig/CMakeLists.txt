@@ -8,7 +8,7 @@ INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH})
 FIND_PACKAGE(PythonInterp)
 
 # definitions
-ADD_DEFINITIONS(-Wno-unused-parameter -Wno-self-assign -Wno-missing-field-initializers)
+ADD_DEFINITIONS(-w) # disable warnings for generated code
 
 # targets
 SET_SOURCE_FILES_PROPERTIES(streetmangler.i PROPERTIES CPLUSPLUS ON)
