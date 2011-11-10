@@ -7,6 +7,9 @@ INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH})
 
 FIND_PACKAGE(PythonInterp)
 
+# definitions
+ADD_DEFINITIONS(-Wno-unused-parameter -Wno-self-assign -Wno-missing-field-initializers)
+
 # targets
 SET_SOURCE_FILES_PROPERTIES(streetmangler.i PROPERTIES CPLUSPLUS ON)
 SWIG_ADD_MODULE(streetmangler python streetmangler.i)
