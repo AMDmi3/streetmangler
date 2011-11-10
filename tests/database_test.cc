@@ -34,6 +34,8 @@ BEGIN_TEST()
 	db.Add("Зелёная улица");
 	db.Add("МКАД");
 	db.Add("улица Льва Толстого");
+	db.Add("улица Лебедева-Кумача");
+	db.Add("улица Верхний переулок");
 
 	/* simple matches */
 	CHECK_EXACT_MATCH(db, "улица Ленина");
@@ -58,8 +60,6 @@ BEGIN_TEST()
 	CHECK_CANONICAL_FORM(db, "   улица  ленина    ", "улица Ленина");
 	CHECK_CANONICAL_FORM(db, "\tулица\tленина\t", "улица Ленина");
 
-	CHECK_CANONICAL_FORM(db, "Толстого Льва улица", "улица Льва Толстого");
-
 	/* spelling */
 	CHECK_SPELLING(db, "улица Ленена", "улица Ленина");  /* letter changed */
 	CHECK_SPELLING(db, "улица Ленна", "улица Ленина");   /* letter removed */
@@ -73,6 +73,11 @@ BEGIN_TEST()
 	CHECK_NO_SPELLING(db, "улица Ленинааа"); /* >1 errors */
 	CHECK_NO_SPELLING(db, "ууулица Ленина"); /* >1 errors */
 	CHECK_NO_SPELLING(db, "улица Линена");   /* >1 errors */
+
+	/* spelling: extra cases */
+	CHECK_SPELLING(db, "Толстого Льва улица", "улица Льва Толстого");     /* word order */
+	CHECK_SPELLING(db, "улица Лебедева Кумача", "улица Лебедева-Кумача"); /* word order should not break such typos */
+	CHECK_SPELLING(db, "улица Переулок Верхний", "улица Верхний переулок"); /* -//- */
 
 	/* missing status part */
 	CHECK_STRIPPED_STATUS(db, "Ленина");
