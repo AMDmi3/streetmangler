@@ -212,7 +212,7 @@ int Database::CheckSpelling(const Name& name, std::vector<std::string>& suggesti
 
 	std::set<UnicodeString> matches;
 	private_->spell_trie_.FindApprox(hash, depth, matches);
-	private_->spell_trie_.FindApprox(hashordered, depth, matches);
+	private_->spell_trie_.FindApprox(hashordered, depth-1, matches);
 
 	int count = 0;
 	std::string temp;
