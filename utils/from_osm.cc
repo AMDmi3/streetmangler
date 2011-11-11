@@ -20,6 +20,7 @@
 #include <cassert>
 #include <fstream>
 #include <iostream>
+#include <iomanip>
 #include <map>
 #include <set>
 #include <vector>
@@ -46,7 +47,7 @@
 
 class NameAggregator {
 public:
-	NameAggregator(StreetMangler::Database& db, bool perstreet_stats, int spelldistance) :
+	NameAggregator(StreetMangler::Database& db, bool perstreet_stats, bool count_names, int spelldistance) :
 		database_(db),
 		count_all_(0),
 		count_exact_match_(0),
@@ -55,46 +56,61 @@ public:
 		count_stripped_status_(0),
 		count_no_match_(0),
 		perstreet_stats_(perstreet_stats),
+		count_names_(count_names),
 		spelldistance_(spelldistance) {
 	}
 
 	void ProcessName(const std::string& name) {
 		++count_all_;
 
-		if (perstreet_stats_) {
+		if (count_names_)
+			++counts_all_[name];
+
+		if (perstreet_stats_ || count_names_) {
 			all_.insert(name);
 		} else if (!all_.insert(name).second) {
-			/* if we don't need perstreet statistics,
-			 * we may skip processing of already processed
-			 * streets */
+			/* if we don't need perstreet statistics or name counts,
+			 * we may skip processing of already processed streets */
 			return;
 		}
 
-		std::vector<std::string> suggestions;
-
+		/* exact match */
 		if (database_.CheckExactMatch(name)) {
 			++count_exact_match_;
 			exact_match_.insert(name);
-		} else if (database_.CheckCanonicalForm(name, suggestions)) {
+			return;
+		}
+
+		/* miscellaneous types of mismatch */
+		std::vector<std::string> suggestions;
+
+		if (database_.CheckCanonicalForm(name, suggestions)) {
 			++count_canonical_form_;
 			canonical_form_.insert(std::make_pair(name, suggestions.front()));
-			suggestions.clear();
-		} else if (spelldistance_ > 0 && database_.CheckSpelling(name, suggestions, spelldistance_)) {
+			return;
+		}
+
+		if (spelldistance_ > 0 && database_.CheckSpelling(name, suggestions, spelldistance_)) {
 			++count_spelling_fixed_;
 			std::pair<MultiSuggestionMap::iterator, bool> insresult =
 				spelling_fixed_.insert(std::make_pair(name, std::vector<std::string>()));
-			if (insresult.second)
+			if (insresult.second) /* false possible in -s mode */
 				suggestions.swap(insresult.first->second);
-			else /* possible in -s mode */
-				suggestions.clear();
-		} else if (database_.CheckStrippedStatus(name, suggestions)) {
+
+			return;
+		}
+
+		if (database_.CheckStrippedStatus(name, suggestions)) {
 			++count_stripped_status_;
 			stripped_status_.insert(name);
-			suggestions.clear();
-		} else {
-			++count_no_match_;
-			no_match_.insert(name);
+			return;
 		}
+
+		if (count_names_)
+			++counts_unmatched_[name];
+
+		++count_no_match_;
+		no_match_.insert(name);
 	}
 
 	void DumpStats() {
@@ -169,12 +185,26 @@ public:
 		for (NameSet::const_iterator i = no_match_.begin(); i != no_match_.end(); ++i)
 			dump << StreetMangler::Name(*i, database_.GetLocale()).Join(StreetMangler::Name::EXPAND_STATUS) << std::endl;
 		dump.close();
+
+		if (count_names_) {
+			dump.open("dump.counts.all.txt");
+			for (NameCountMap::const_iterator i = counts_all_.begin(); i != counts_all_.end(); ++i)
+				dump << std::setw(6) << i->second << " " << i->first << std::endl;
+			dump.close();
+
+			dump.open("dump.counts.unmatched.txt");
+			for (NameCountMap::const_iterator i = counts_unmatched_.begin(); i != counts_unmatched_.end(); ++i)
+				dump << std::setw(6) << i->second << " " << i->first << std::endl;
+			dump.close();
+		}
 	}
 
 private:
 	typedef std::set<std::string> NameSet;
 	typedef std::map<std::string, std::string> SuggestionMap;
 	typedef std::map<std::string, std::vector<std::string> > MultiSuggestionMap;
+
+	typedef std::map<std::string, int> NameCountMap;
 
 private:
 	StreetMangler::Database& database_;
@@ -187,6 +217,7 @@ private:
 	int count_no_match_;
 
 	bool perstreet_stats_;
+	bool count_names_;
 
 	int spelldistance_;
 
@@ -196,6 +227,9 @@ private:
 	MultiSuggestionMap spelling_fixed_;
 	NameSet stripped_status_;
 	NameSet no_match_;
+
+	NameCountMap counts_all_;
+	NameCountMap counts_unmatched_;
 };
 
 class OsmNameExtractor : public NameExtractor {
@@ -220,6 +254,7 @@ int usage(const char* progname, int code) {
 	fprintf(stderr, "  -l  set locale (default \""DEFAULT_LOCALE"\")\n");
 	fprintf(stderr, "  -n  specify name tags (default \"name\")\n");
 	fprintf(stderr, "  -a  ignore addr:street tags\n");
+	fprintf(stderr, "  -c  include dumps with street name counts\n");
 	fprintf(stderr, "  -f  specify pats to street names database (default "DEFAULT_DATAFILE")\n");
 	fprintf(stderr, "      (may be specified more than once)\n");
 	return code;
@@ -231,6 +266,7 @@ int main(int argc, char** argv) {
 	bool dumpflag = false;
 	bool statsflag = false;
 	bool parseaddrs = true;
+	bool countsflag = false;
 	int spelldistance = 1;
 
 	std::vector<const char*> datafiles;
@@ -238,7 +274,7 @@ int main(int argc, char** argv) {
 
 	/* process options */
 	int c;
-    while ((c = getopt(argc, argv, "sdhf:l:p:n:a")) != -1) {
+    while ((c = getopt(argc, argv, "sdhf:l:p:n:ac")) != -1) {
 		switch (c) {
 			case 's': statsflag = true; break;
 			case 'd': dumpflag = true; break;
@@ -247,6 +283,7 @@ int main(int argc, char** argv) {
 			case 'l': localename = optarg; break;
 			case 'p': spelldistance = (int)strtoul(optarg, 0, 10); break;
 			case 'a': parseaddrs = false; break;
+			case 'c': countsflag = true; break;
 			case 'h': return usage(progname, 0);
 			default:
 				return usage(progname, 1);
@@ -276,7 +313,7 @@ int main(int argc, char** argv) {
 	}
 
 	/* create tag aggregator */
-	NameAggregator aggregator(database, statsflag, spelldistance);
+	NameAggregator aggregator(database, statsflag, countsflag, spelldistance);
 
 	OsmNameExtractor extractor(aggregator);
 
