@@ -49,10 +49,10 @@ private:
 		return locale_;
 	}
 
-	void NameToHashes(const Name& name, std::string* plainhash, UnicodeString* uhash, UnicodeString* uhashordered) const {
+	void NameToHashes(const Name& name, std::string* plainhash, UnicodeString* uhash, UnicodeString* uhashordered, int extraflags = 0) const {
 		static const int flags = Name::STATUS_TO_LEFT | Name::EXPAND_STATUS | Name::NORMALIZE_WHITESPACE | Name::NORMALIZE_PUNCT;
 		/* base for a hash - lowercase name with status part at left */
-		UnicodeString base_hash = UnicodeString::fromUTF8(name.Join(flags)).toLower();
+		UnicodeString base_hash = UnicodeString::fromUTF8(name.Join(flags | extraflags)).toLower();
 
 		if (uhash)
 			*uhash = base_hash;
@@ -74,7 +74,8 @@ private:
 				words.push_back(UnicodeString(base_hash, start));
 
 			/* sort all words except for the status part */
-			std::sort(name.HasStatusPart() ? ++words.begin() : words.begin(), words.end());
+			bool sortall = (extraflags & Name::REMOVE_ALL_STATUSES) || !name.HasStatusPart();
+			std::sort(sortall ? words.begin() : ++words.begin(), words.end());
 
 			*uhashordered = UnicodeString();
 			for (std::vector<UnicodeString>::iterator i = words.begin(); i != words.end(); ++i) {
@@ -88,12 +89,13 @@ private:
 private:
     typedef std::set<std::string> NamesSet;
     typedef std::multimap<std::string, std::string> NamesMap;
+    typedef std::multimap<UnicodeString, std::string> UnicodeNamesMap;
 
 private:
     const Locale& locale_;
     NamesSet names_;
     NamesMap canonical_map_;
-    NamesMap stripped_map_;
+    UnicodeNamesMap stripped_map_;
 
     TSpell::UnicodeTrie spell_trie_;
 };
@@ -180,9 +182,10 @@ void Database::Add(const std::string& name) {
 		private_->spell_trie_.Insert(uhashordered);
 
 	/* for stripped status  */
-	std::string stripped = tokenized.Join(Name::REMOVE_ALL_STATUSES);
-	if (stripped != name)
-		private_->stripped_map_.insert(std::make_pair(stripped, canonical));
+	UnicodeString stripped_uhashordered;
+	private_->NameToHashes(tokenized, NULL, NULL, &stripped_uhashordered, Name::REMOVE_ALL_STATUSES);
+	if (stripped_uhashordered != uhashordered)
+		private_->stripped_map_.insert(std::make_pair(stripped_uhashordered, canonical));
 }
 
 /*
@@ -230,11 +233,14 @@ int Database::CheckSpelling(const Name& name, std::vector<std::string>& suggesti
 }
 
 int Database::CheckStrippedStatus(const Name& name, std::vector<std::string>& matches) const {
-	int count = 0;
-	std::pair<Private::NamesMap::const_iterator, Private::NamesMap::const_iterator> range =
-		private_->stripped_map_.equal_range(name.Join(Name::NORMALIZE_WHITESPACE));
+	UnicodeString uhashordered;
+	private_->NameToHashes(name, NULL, NULL, &uhashordered);
 
-	for (Private::NamesMap::const_iterator i = range.first; i != range.second; ++i, ++count)
+	int count = 0;
+	std::pair<Private::UnicodeNamesMap::const_iterator, Private::UnicodeNamesMap::const_iterator> range =
+		private_->stripped_map_.equal_range(uhashordered);
+
+	for (Private::UnicodeNamesMap::const_iterator i = range.first; i != range.second; ++i, ++count)
 		matches.push_back(i->second);
 
 	return count;
