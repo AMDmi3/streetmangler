@@ -83,14 +83,15 @@ public:
 
 		/* miscellaneous types of mismatch */
 		std::vector<std::string> suggestions;
+		StreetMangler::Name tokenized(name, database_.GetLocale());
 
-		if (database_.CheckCanonicalForm(name, suggestions)) {
+		if (database_.CheckCanonicalForm(tokenized, suggestions)) {
 			++count_canonical_form_;
 			canonical_form_.insert(std::make_pair(name, suggestions.front()));
 			return;
 		}
 
-		if (spelldistance_ > 0 && database_.CheckSpelling(name, suggestions, spelldistance_)) {
+		if (spelldistance_ > 0 && database_.CheckSpelling(tokenized, suggestions, spelldistance_)) {
 			++count_spelling_fixed_;
 			std::pair<MultiSuggestionMap::iterator, bool> insresult =
 				spelling_fixed_.insert(std::make_pair(name, std::vector<std::string>()));
@@ -100,40 +101,52 @@ public:
 			return;
 		}
 
-		if (database_.CheckStrippedStatus(name, suggestions)) {
+		if (database_.CheckStrippedStatus(tokenized, suggestions)) {
 			++count_stripped_status_;
 			stripped_status_.insert(name);
 			return;
 		}
 
-		if (count_names_)
-			++counts_unmatched_[name];
+		if (tokenized.HasStatusPart()) {
+			++count_no_match_;
+			no_match_.insert(name);
 
-		++count_no_match_;
-		no_match_.insert(name);
+			if (count_names_)
+				++counts_unmatched_[name];
+
+			return;
+		}
+
+		++count_non_name_;
+		non_name_.insert(name);
+
+		if (count_names_)
+			++counts_non_name_[name];
 	}
 
 	void DumpStats() {
-		fprintf(stderr, "           Total       Exact match     Canonical form     Spelling fixed    Stripped status           No match\n");
-		/*                Total: 00000000 00000000 ( 00.00%) 00000000 ( 00.00%) 00000000 ( 00.00%) 00000000 ( 00.00%) 00000000 ( 00.00%)*/
+		fprintf(stderr, "           Total       Exact match     Canonical form     Spelling fixed    Stripped status           No match        Non-streets\n");
+		/*                Total: 00000000 00000000 ( 00.00%) 00000000 ( 00.00%) 00000000 ( 00.00%) 00000000 ( 00.00%) 00000000 ( 00.00%) 00000000 ( 00.00%)*/
 		if (perstreet_stats_) {
 			float total = count_all_ > 0 ? count_all_ : 1.0f;
-			fprintf(stderr, " Total: %8d %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%)\n",
+			fprintf(stderr, " Total: %8d %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%)\n",
 				count_all_,
 				count_exact_match_, (float)count_exact_match_/total*100.0f,
 				count_canonical_form_, (float)count_canonical_form_/total*100.0f,
 				count_spelling_fixed_, (float)count_spelling_fixed_/total*100.0f,
 				count_stripped_status_, (float)count_stripped_status_/total*100.0f,
-				count_no_match_, (float)count_no_match_/total*100.0f);
+				count_no_match_, (float)count_no_match_/total*100.0f,
+				count_non_name_, (float)count_non_name_/total*100.0f);
 		}
 		float total = all_.size() > 0 ? all_.size() : 1.0f;
-		fprintf(stderr, "Unique: %8d %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%)\n",
+		fprintf(stderr, "Unique: %8d %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%)\n",
 			(int)all_.size(),
 			(int)exact_match_.size(), (float)exact_match_.size()/total*100.0f,
 			(int)canonical_form_.size(), (float)canonical_form_.size()/total*100.0f,
 			(int)spelling_fixed_.size(), (float)spelling_fixed_.size()/total*100.0f,
 			(int)stripped_status_.size(), (float)stripped_status_.size()/total*100.0f,
-			(int)no_match_.size(), (float)no_match_.size()/total*100.0f);
+			(int)no_match_.size(), (float)no_match_.size()/total*100.0f,
+			(int)non_name_.size(), (float)non_name_.size()/total*100.0f);
 	}
 
 	void DumpData() {
@@ -186,6 +199,11 @@ public:
 			dump << StreetMangler::Name(*i, database_.GetLocale()).Join(StreetMangler::Name::EXPAND_STATUS) << std::endl;
 		dump.close();
 
+		dump.open("dump.non_name.full.txt");
+		for (NameSet::const_iterator i = non_name_.begin(); i != non_name_.end(); ++i)
+			dump << *i << std::endl;
+		dump.close();
+
 		if (count_names_) {
 			dump.open("dump.counts.all.txt");
 			for (NameCountMap::const_iterator i = counts_all_.begin(); i != counts_all_.end(); ++i)
@@ -194,6 +212,11 @@ public:
 
 			dump.open("dump.counts.unmatched.txt");
 			for (NameCountMap::const_iterator i = counts_unmatched_.begin(); i != counts_unmatched_.end(); ++i)
+				dump << std::setw(6) << i->second << " " << i->first << std::endl;
+			dump.close();
+
+			dump.open("dump.counts.non_name.txt");
+			for (NameCountMap::const_iterator i = counts_non_name_.begin(); i != counts_non_name_.end(); ++i)
 				dump << std::setw(6) << i->second << " " << i->first << std::endl;
 			dump.close();
 		}
@@ -215,6 +238,7 @@ private:
 	int count_spelling_fixed_;
 	int count_stripped_status_;
 	int count_no_match_;
+	int count_non_name_;
 
 	bool perstreet_stats_;
 	bool count_names_;
@@ -227,9 +251,11 @@ private:
 	MultiSuggestionMap spelling_fixed_;
 	NameSet stripped_status_;
 	NameSet no_match_;
+	NameSet non_name_;
 
 	NameCountMap counts_all_;
 	NameCountMap counts_unmatched_;
+	NameCountMap counts_non_name_;
 };
 
 class OsmNameExtractor : public NameExtractor {
