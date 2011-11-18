@@ -125,7 +125,7 @@ public:
 	}
 
 	void DumpStats() {
-		fprintf(stderr, "           Total       Exact match     Canonical form     Spelling fixed    Stripped status           No match        Non-streets\n");
+		fprintf(stderr, "           Total       Exact match     Canonical form     Spelling fixed    Stripped status           No match         Non-names\n");
 		/*                Total: 00000000 00000000 ( 00.00%) 00000000 ( 00.00%) 00000000 ( 00.00%) 00000000 ( 00.00%) 00000000 ( 00.00%) 00000000 ( 00.00%)*/
 		if (perstreet_stats_) {
 			float total = count_all_ > 0 ? count_all_ : 1.0f;
