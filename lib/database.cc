@@ -50,9 +50,13 @@ private:
 	}
 
 	void NameToHashes(const Name& name, std::string* plainhash, UnicodeString* uhash, UnicodeString* uhashordered, int extraflags = 0) const {
+		//static const UnicodeString yo = UnicodeString::fromUTF8("ё");
+		//static const UnicodeString ye = UnicodeString::fromUTF8("е");
+
 		static const int flags = Name::STATUS_TO_LEFT | Name::EXPAND_STATUS | Name::NORMALIZE_WHITESPACE | Name::NORMALIZE_PUNCT;
 		/* base for a hash - lowercase name with status part at left */
 		UnicodeString base_hash = UnicodeString::fromUTF8(name.Join(flags | extraflags)).toLower();
+		//base_hash.findAndReplace(yo, ye);
 
 		if (uhash)
 			*uhash = base_hash;
