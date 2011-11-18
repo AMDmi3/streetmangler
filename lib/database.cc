@@ -37,6 +37,11 @@
 #include <streetmangler/locale.hh>
 #include <streetmangler/name.hh>
 
+namespace {
+	static const UnicodeString g_yo = UnicodeString::fromUTF8("ё");
+	static const UnicodeString g_ye = UnicodeString::fromUTF8("е");
+};
+
 namespace StreetMangler {
 
 class Database::Private {
@@ -50,13 +55,9 @@ private:
 	}
 
 	void NameToHashes(const Name& name, std::string* plainhash, UnicodeString* uhash, UnicodeString* uhashordered, int extraflags = 0) const {
-		//static const UnicodeString yo = UnicodeString::fromUTF8("ё");
-		//static const UnicodeString ye = UnicodeString::fromUTF8("е");
-
 		static const int flags = Name::STATUS_TO_LEFT | Name::EXPAND_STATUS | Name::NORMALIZE_WHITESPACE | Name::NORMALIZE_PUNCT;
 		/* base for a hash - lowercase name with status part at left */
 		UnicodeString base_hash = UnicodeString::fromUTF8(name.Join(flags | extraflags)).toLower();
-		//base_hash.findAndReplace(yo, ye);
 
 		if (uhash)
 			*uhash = base_hash;
@@ -188,6 +189,7 @@ void Database::Add(const std::string& name) {
 	/* for stripped status  */
 	UnicodeString stripped_uhashordered;
 	private_->NameToHashes(tokenized, NULL, NULL, &stripped_uhashordered, Name::REMOVE_ALL_STATUSES);
+	stripped_uhashordered.findAndReplace(g_yo, g_ye);
 	if (stripped_uhashordered != uhashordered)
 		private_->stripped_map_.insert(std::make_pair(stripped_uhashordered, canonical));
 }
@@ -239,6 +241,7 @@ int Database::CheckSpelling(const Name& name, std::vector<std::string>& suggesti
 int Database::CheckStrippedStatus(const Name& name, std::vector<std::string>& matches) const {
 	UnicodeString uhashordered;
 	private_->NameToHashes(name, NULL, NULL, &uhashordered);
+	uhashordered.findAndReplace(g_yo, g_ye);
 
 	int count = 0;
 	std::pair<Private::UnicodeNamesMap::const_iterator, Private::UnicodeNamesMap::const_iterator> range =
