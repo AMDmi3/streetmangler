@@ -55,6 +55,7 @@ public:
 		count_spelling_fixed_(0),
 		count_stripped_status_(0),
 		count_no_match_(0),
+		count_non_name_(0),
 		perstreet_stats_(perstreet_stats),
 		count_names_(count_names),
 		spelldistance_(spelldistance) {
@@ -125,7 +126,7 @@ public:
 	}
 
 	void DumpStats() {
-		fprintf(stderr, "           Total       Exact match     Canonical form     Spelling fixed    Stripped status           No match         Non-names\n");
+		fprintf(stderr, "           Total       Exact match     Canonical form     Spelling fixed    Stripped status           No match          Non-names\n");
 		/*                Total: 00000000 00000000 ( 00.00%) 00000000 ( 00.00%) 00000000 ( 00.00%) 00000000 ( 00.00%) 00000000 ( 00.00%) 00000000 ( 00.00%)*/
 		if (perstreet_stats_) {
 			float total = count_all_ > 0 ? count_all_ : 1.0f;
