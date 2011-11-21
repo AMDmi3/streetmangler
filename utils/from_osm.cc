@@ -99,6 +99,9 @@ public:
 			if (insresult.second) /* false possible in -s mode */
 				suggestions.swap(insresult.first->second);
 
+			if (count_names_)
+				++counts_spelling_fixed_[name];
+
 			return;
 		}
 
@@ -113,7 +116,7 @@ public:
 			no_match_.insert(name);
 
 			if (count_names_)
-				++counts_unmatched_[name];
+				++counts_no_match_[name];
 
 			return;
 		}
@@ -211,8 +214,13 @@ public:
 				dump << std::setw(6) << i->second << " " << i->first << std::endl;
 			dump.close();
 
-			dump.open("dump.counts.unmatched.txt");
-			for (NameCountMap::const_iterator i = counts_unmatched_.begin(); i != counts_unmatched_.end(); ++i)
+			dump.open("dump.counts.spelling_fixed.txt");
+			for (NameCountMap::const_iterator i = counts_spelling_fixed_.begin(); i != counts_spelling_fixed_.end(); ++i)
+				dump << std::setw(6) << i->second << " " << i->first << std::endl;
+			dump.close();
+
+			dump.open("dump.counts.no_match.txt");
+			for (NameCountMap::const_iterator i = counts_no_match_.begin(); i != counts_no_match_.end(); ++i)
 				dump << std::setw(6) << i->second << " " << i->first << std::endl;
 			dump.close();
 
@@ -255,7 +263,8 @@ private:
 	NameSet non_name_;
 
 	NameCountMap counts_all_;
-	NameCountMap counts_unmatched_;
+	NameCountMap counts_no_match_;
+	NameCountMap counts_spelling_fixed_;
 	NameCountMap counts_non_name_;
 };
 
