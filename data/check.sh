@@ -8,7 +8,7 @@ fi
 
 for f in $files; do
 	echo "===> $f"
-	sed -e 's| *#.*$||' < $f | grep -Eiv '[XIV]+.*съезда' | grep '[acekmopuxyABCEHKMOPTXY]' | grep -v '' && echo "\--------- Non-cyrillic letters found"
+	sed -e 's| *#.*$||' < $f | grep -Eiv '[XIV]+.*съезда' | grep '[acekmopuxyABCEHKMOPTXY]' | grep '.' && echo "\--------- Non-cyrillic letters found"
 	sed -e 's| *#.*$||' < $f | uniq -d | grep '.' && echo "\--------- Duplicates found"
 	grep -E '.#.*(XXX|FIXME)' $f && echo "\--------- XXX/FIXME items found"
 done
