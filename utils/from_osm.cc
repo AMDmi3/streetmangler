@@ -92,7 +92,7 @@ public:
 			return;
 		}
 
-		if (spelldistance_ > 0 && database_.CheckSpelling(tokenized, suggestions, spelldistance_)) {
+		if (database_.CheckSpelling(tokenized, suggestions, spelldistance_)) {
 			++count_spelling_fixed_;
 			std::pair<MultiSuggestionMap::iterator, bool> insresult =
 				spelling_fixed_.insert(std::make_pair(name, std::vector<std::string>()));
