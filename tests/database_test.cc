@@ -36,6 +36,7 @@ BEGIN_TEST()
 	db.Add("улица Льва Толстого");
 	db.Add("улица Лебедева-Кумача");
 	db.Add("улица Верхний переулок");
+	db.Add("Учительская улица");
 
 	/* simple matches */
 	CHECK_EXACT_MATCH(db, "улица Ленина");
@@ -68,6 +69,8 @@ BEGIN_TEST()
 
 	CHECK_SPELLING(db, "улиа Ленина", "улица Ленина");   /* error in status part */
 	CHECK_SPELLING(db, "уилца Ленина", "улица Ленина");  /* error in status part */
+
+	CHECK_SPELLING(db, "Учительская улицца", "Учительская улица"); /* error in status part, reorder issue */
 
 	CHECK_NO_SPELLING(db, "улица Феника");   /* >1 errors */
 	CHECK_NO_SPELLING(db, "улица Ленинааа"); /* >1 errors */
