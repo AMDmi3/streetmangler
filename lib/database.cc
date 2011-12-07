@@ -229,16 +229,21 @@ int Database::CheckSpelling(const Name& name, std::vector<std::string>& suggesti
 		private_->spell_trie_.FindApprox(hashordered, i, matches);
 	}
 
-	int count = 0;
+	std::set<std::string> suggestions_unique;
 	for (std::set<UnicodeString>::const_iterator i = matches.begin(); i != matches.end(); ++i) {
 		std::pair<Private::UnicodeNamesMap::const_iterator, Private::UnicodeNamesMap::const_iterator> range =
 			private_->spelling_map_.equal_range(*i);
 
-		for (Private::UnicodeNamesMap::const_iterator i = range.first; i != range.second; ++i, ++count)
-			suggestions.push_back(i->second);
+		for (Private::UnicodeNamesMap::const_iterator i = range.first; i != range.second; ++i)
+			suggestions_unique.insert(i->second);
 	}
 
-	return count;
+	suggestions.reserve(suggestions.size() + suggestions_unique.size());
+
+	for (std::set<std::string>::const_iterator i = suggestions_unique.begin(); i != suggestions_unique.end(); ++i)
+		suggestions.push_back(*i);
+
+	return suggestions_unique.size();
 }
 
 int Database::CheckStrippedStatus(const Name& name, std::vector<std::string>& matches) const {
