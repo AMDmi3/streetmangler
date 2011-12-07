@@ -37,14 +37,20 @@ BEGIN_TEST()
 	db.Add("улица Лебедева-Кумача");
 	db.Add("улица Верхний переулок");
 	db.Add("Учительская улица");
+	db.Add("улица Петра Безымянного");
+	db.Add("улица Петро Безымянного");
 
-	/* simple matches */
+	/*
+	 * simple matches
+	 */
 	CHECK_EXACT_MATCH(db, "улица Ленина");
 	CHECK_EXACT_MATCH(db, "Зелёная улица");
 	CHECK_NO_EXACT_MATCH(db, "улица Сталина");
 	CHECK_NO_EXACT_MATCH(db, "переулок Ленина");
 
-	/* canonical forms (see also tokenizer_test.cc) */
+	/*
+	 * canonical forms (see also tokenizer_test.cc)
+	 */
 	CHECK_CANONICAL_FORM(db, "ул.Ленина", "улица Ленина");
 	CHECK_CANONICAL_FORM(db, "ул. Ленина", "улица Ленина");
 	CHECK_CANONICAL_FORM(db, "Ленина улица", "улица Ленина");
@@ -61,28 +67,42 @@ BEGIN_TEST()
 	CHECK_CANONICAL_FORM(db, "   улица  ленина    ", "улица Ленина");
 	CHECK_CANONICAL_FORM(db, "\tулица\tленина\t", "улица Ленина");
 
-	/* spelling */
-	CHECK_SPELLING(db, "улица Ленена", "улица Ленина");  /* letter changed */
-	CHECK_SPELLING(db, "улица Ленна", "улица Ленина");   /* letter removed */
-	CHECK_SPELLING(db, "улица Ленинаа", "улица Ленина"); /* letter added */
-	CHECK_SPELLING(db, "улица Леинна", "улица Ленина");  /* letters changed places */
+	/*
+	 * spelling
+	 */
+	CHECK_SPELLING(db, "улица Ленена", "улица Ленина", 1);  /* letter changed */
+	CHECK_SPELLING(db, "улица Ленна", "улица Ленина", 1);   /* letter removed */
+	CHECK_SPELLING(db, "улица Ленинаа", "улица Ленина", 1); /* letter added */
+	CHECK_SPELLING(db, "улица Леинна", "улица Ленина", 1);  /* letters changed places */
 
-	CHECK_SPELLING(db, "улиа Ленина", "улица Ленина");   /* error in status part */
-	CHECK_SPELLING(db, "уилца Ленина", "улица Ленина");  /* error in status part */
+	CHECK_SPELLING(db, "улиа Ленина", "улица Ленина", 1);   /* error in status part */
+	CHECK_SPELLING(db, "уилца Ленина", "улица Ленина", 1);  /* error in status part */
 
-	CHECK_SPELLING(db, "Учительская улицца", "Учительская улица"); /* error in status part, reorder issue */
+	CHECK_SPELLING(db, "Учительская улицца", "Учительская улица", 1); /* error in status part, reorder issue */
 
-	CHECK_NO_SPELLING(db, "улица Феника");   /* >1 errors */
-	CHECK_NO_SPELLING(db, "улица Ленинааа"); /* >1 errors */
-	CHECK_NO_SPELLING(db, "ууулица Ленина"); /* >1 errors */
-	CHECK_NO_SPELLING(db, "улица Линена");   /* >1 errors */
+	/* error prioriyy */
+	CHECK_SPELLING(db, "улица Безымянного Петра", "улица Петра Безымянного", 0);
+	CHECK_SPELLING(db, "улица Безымянного Петра", "улица Петра Безымянного", 1);
 
-	/* spelling: extra cases */
-	CHECK_SPELLING(db, "Толстого Льва улица", "улица Льва Толстого");     /* word order */
-	CHECK_SPELLING(db, "улица Лебедева Кумача", "улица Лебедева-Кумача"); /* word order should not break such typos */
-	CHECK_SPELLING(db, "улица Переулок Верхний", "улица Верхний переулок"); /* -//- */
+	/* > 1 errors */
+	CHECK_NO_SPELLING(db, "улица Феника", 1);
+	CHECK_NO_SPELLING(db, "улица Ленинааа", 1);
+	CHECK_NO_SPELLING(db, "ууулица Ленина", 1);
+	CHECK_NO_SPELLING(db, "улица Линена", 1);
 
-	/* missing status part */
+	CHECK_SPELLING(db, "улица Феника", "улица Ленина", 2);
+	CHECK_SPELLING(db, "улица Ленинааа", "улица Ленина", 2);
+	CHECK_SPELLING(db, "ууулица Ленина", "улица Ленина", 2);
+	CHECK_SPELLING(db, "улица Линена", "улица Ленина", 2);
+
+	/* extra cases */
+	CHECK_SPELLING(db, "Толстого Льва улица", "улица Льва Толстого", 1);     /* word order */
+	CHECK_SPELLING(db, "улица Лебедева Кумача", "улица Лебедева-Кумача", 1); /* word order should not break such typos */
+	CHECK_SPELLING(db, "улица Переулок Верхний", "улица Верхний переулок", 1); /* -//- */
+
+	/*
+	 * missing status part
+	 */
 	CHECK_STRIPPED_STATUS(db, "Ленина");
 	CHECK_STRIPPED_STATUS(db, "Зелёная");
 

@@ -31,15 +31,15 @@
 		if (!suggestions.empty()) EXPECT_STRING(suggestions.front(), expected); \
 	}
 
-#define CHECK_SPELLING(database, sample, expected) { \
+#define CHECK_SPELLING(database, sample, expected, depth) { \
 		std::vector<std::string> suggestions; \
-		EXPECT_TRUE(database.CheckSpelling(sample, suggestions) == 1); \
+		EXPECT_TRUE(database.CheckSpelling(sample, suggestions, depth) == 1); \
 		if (!suggestions.empty()) EXPECT_STRING(suggestions.front(), expected); \
 	}
 
-#define CHECK_NO_SPELLING(database, sample) { \
+#define CHECK_NO_SPELLING(database, sample, depth) { \
 		std::vector<std::string> suggestions; \
-		EXPECT_TRUE(database.CheckSpelling(sample, suggestions) == 0); \
+		EXPECT_TRUE(database.CheckSpelling(sample, suggestions, depth) == 0); \
 	}
 
 #define CHECK_STRIPPED_STATUS(database, sample) { \
