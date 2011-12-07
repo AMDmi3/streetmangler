@@ -203,7 +203,7 @@ public:
 			dump << StreetMangler::Name(*i, database_.GetLocale()).Join(StreetMangler::Name::EXPAND_STATUS) << std::endl;
 		dump.close();
 
-		dump.open("dump.non_name.full.txt");
+		dump.open("dump.non_name.txt");
 		for (NameSet::const_iterator i = non_name_.begin(); i != non_name_.end(); ++i)
 			dump << *i << std::endl;
 		dump.close();
