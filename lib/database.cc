@@ -54,7 +54,7 @@ private:
 		return locale_;
 	}
 
-	void NameToHashes(const Name& name, std::string* plainhash, UnicodeString* uhash, UnicodeString* uhashordered, int extraflags = 0) const {
+	void NameToHashes(const Name& name, std::string* plainhash, UnicodeString* uhash, UnicodeString* uhashordered, UnicodeString* uhashunordered, int extraflags = 0) const {
 		static const int flags = Name::STATUS_TO_LEFT | Name::EXPAND_STATUS | Name::NORMALIZE_WHITESPACE | Name::NORMALIZE_PUNCT;
 		/* base for a hash - lowercase name with status part at left */
 		UnicodeString base_hash = UnicodeString::fromUTF8(name.Join(flags | extraflags)).toLower();
@@ -89,6 +89,9 @@ private:
 				*uhashordered += *i;
 			}
 		}
+
+		if (uhashunordered)
+			*uhashunordered = UnicodeString::fromUTF8(name.Join((flags & ~Name::STATUS_TO_LEFT) | extraflags)).toLower();
 	}
 
 private:
@@ -169,8 +172,9 @@ void Database::Add(const std::string& name) {
 	std::string hash;
 	UnicodeString uhash;
 	UnicodeString uhashordered;
+	UnicodeString uhashunordered;
 
-	private_->NameToHashes(tokenized, &hash, &uhash, &uhashordered);
+	private_->NameToHashes(tokenized, &hash, &uhash, &uhashordered, &uhashunordered);
 
 	/* for the locales in which canonical form != full form,
 	 * we need to use canonical form as a reference */
@@ -189,10 +193,14 @@ void Database::Add(const std::string& name) {
 		private_->spell_trie_.Insert(uhashordered);
 		private_->spelling_map_.insert(std::make_pair(uhashordered, canonical));
 	}
+	if (uhashunordered != uhash && uhashunordered != uhashordered) {
+		private_->spell_trie_.Insert(uhashunordered);
+		private_->spelling_map_.insert(std::make_pair(uhashunordered, canonical));
+	}
 
 	/* for stripped status  */
 	UnicodeString stripped_uhashordered;
-	private_->NameToHashes(tokenized, NULL, NULL, &stripped_uhashordered, Name::REMOVE_ALL_STATUSES);
+	private_->NameToHashes(tokenized, NULL, NULL, &stripped_uhashordered, NULL, Name::REMOVE_ALL_STATUSES);
 	stripped_uhashordered.findAndReplace(g_yo, g_ye);
 	if (stripped_uhashordered != uhashordered)
 		private_->stripped_map_.insert(std::make_pair(stripped_uhashordered, canonical));
@@ -207,7 +215,7 @@ int Database::CheckExactMatch(const Name& name) const {
 
 int Database::CheckCanonicalForm(const Name& name, std::vector<std::string>& suggestions) const {
 	std::string hash;
-	private_->NameToHashes(name, &hash, NULL, NULL);
+	private_->NameToHashes(name, &hash, NULL, NULL, NULL);
 
 	int count = 0;
 	std::pair<Private::NamesMap::const_iterator, Private::NamesMap::const_iterator> range =
@@ -220,13 +228,14 @@ int Database::CheckCanonicalForm(const Name& name, std::vector<std::string>& sug
 }
 
 int Database::CheckSpelling(const Name& name, std::vector<std::string>& suggestions, int depth) const {
-	UnicodeString hash, hashordered;
-	private_->NameToHashes(name, NULL, &hash, &hashordered);
+	UnicodeString hash, hashordered, hashunordered;
+	private_->NameToHashes(name, NULL, &hash, &hashordered, &hashunordered);
 
 	std::set<UnicodeString> matches;
 	for (int i = 0; matches.empty() && i <= depth; ++i) {
 		private_->spell_trie_.FindApprox(hash, i, matches);
 		private_->spell_trie_.FindApprox(hashordered, i, matches);
+		private_->spell_trie_.FindApprox(hashunordered, i, matches);
 	}
 
 	std::set<std::string> suggestions_unique;
@@ -248,7 +257,7 @@ int Database::CheckSpelling(const Name& name, std::vector<std::string>& suggesti
 
 int Database::CheckStrippedStatus(const Name& name, std::vector<std::string>& matches) const {
 	UnicodeString uhashordered;
-	private_->NameToHashes(name, NULL, NULL, &uhashordered);
+	private_->NameToHashes(name, NULL, NULL, &uhashordered, NULL);
 	uhashordered.findAndReplace(g_yo, g_ye);
 
 	int count = 0;
