@@ -100,6 +100,7 @@ private:
     const Locale& locale_;
     NamesSet names_;
     NamesMap canonical_map_;
+    UnicodeNamesMap spelling_map_;
     UnicodeNamesMap stripped_map_;
 
     TSpell::UnicodeTrie spell_trie_;
@@ -183,8 +184,11 @@ void Database::Add(const std::string& name) {
 
 	/* for spelling */
 	private_->spell_trie_.Insert(uhash);
-	if (uhash != uhashordered)
+	private_->spelling_map_.insert(std::make_pair(uhash, canonical));
+	if (uhash != uhashordered) {
 		private_->spell_trie_.Insert(uhashordered);
+		private_->spelling_map_.insert(std::make_pair(uhashordered, canonical));
+	}
 
 	/* for stripped status  */
 	UnicodeString stripped_uhashordered;
@@ -220,23 +224,17 @@ int Database::CheckSpelling(const Name& name, std::vector<std::string>& suggesti
 	private_->NameToHashes(name, NULL, &hash, &hashordered);
 
 	std::set<UnicodeString> matches;
-
-	if (depth == 0) {
-		matches.insert(hashordered);
-	} else {
-		private_->spell_trie_.FindApprox(hash, depth, matches);
-		private_->spell_trie_.FindApprox(hashordered, depth-1, matches);
+	for (int i = 0; matches.empty() && i <= depth; ++i) {
+		private_->spell_trie_.FindApprox(hash, i, matches);
+		private_->spell_trie_.FindApprox(hashordered, i, matches);
 	}
 
 	int count = 0;
-	std::string temp;
 	for (std::set<UnicodeString>::const_iterator i = matches.begin(); i != matches.end(); ++i) {
-		temp.clear();
-		i->toUTF8String(temp);
-		std::pair<Private::NamesMap::const_iterator, Private::NamesMap::const_iterator> range =
-			private_->canonical_map_.equal_range(temp);
+		std::pair<Private::UnicodeNamesMap::const_iterator, Private::UnicodeNamesMap::const_iterator> range =
+			private_->spelling_map_.equal_range(*i);
 
-		for (Private::NamesMap::const_iterator i = range.first; i != range.second; ++i, ++count)
+		for (Private::UnicodeNamesMap::const_iterator i = range.first; i != range.second; ++i, ++count)
 			suggestions.push_back(i->second);
 	}
 
