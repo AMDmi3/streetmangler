@@ -99,6 +99,8 @@ BEGIN_TEST()
 	CHECK_SPELLING(db, "Толстого Льва улица", "улица Льва Толстого", 1);     /* word order */
 	CHECK_SPELLING(db, "улица Лебедева Кумача", "улица Лебедева-Кумача", 1); /* word order should not break such typos */
 	CHECK_SPELLING(db, "улица Переулок Верхний", "улица Верхний переулок", 1); /* -//- */
+	CHECK_SPELLING(db, "улицаленина", "улица Ленина", 1);
+	CHECK_SPELLING(db, "зелёнаяулица", "Зелёная улица", 1);
 
 	/*
 	 * missing status part
