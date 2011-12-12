@@ -47,7 +47,13 @@
 
 class NameAggregator {
 public:
-	NameAggregator(StreetMangler::Database& db, bool perstreet_stats, bool count_names, int spelldistance) :
+	enum Flags {
+		PERSTREET_STATS = 0x01,
+		COUNT_NAMES = 0x02,
+	};
+
+public:
+	NameAggregator(StreetMangler::Database& db, int flags, int spelldistance) :
 		database_(db),
 		count_all_(0),
 		count_exact_match_(0),
@@ -56,18 +62,17 @@ public:
 		count_stripped_status_(0),
 		count_no_match_(0),
 		count_non_name_(0),
-		perstreet_stats_(perstreet_stats),
-		count_names_(count_names),
+		flags_(flags),
 		spelldistance_(spelldistance) {
 	}
 
 	void ProcessName(const std::string& name) {
 		++count_all_;
 
-		if (count_names_)
+		if (flags_ & COUNT_NAMES)
 			++counts_all_[name];
 
-		if (perstreet_stats_ || count_names_) {
+		if (flags_ & (PERSTREET_STATS | COUNT_NAMES)) {
 			all_.insert(name);
 		} else if (!all_.insert(name).second) {
 			/* if we don't need perstreet statistics or name counts,
@@ -99,7 +104,7 @@ public:
 			if (insresult.second) /* false possible in -s mode */
 				suggestions.swap(insresult.first->second);
 
-			if (count_names_)
+			if (flags_ & COUNT_NAMES)
 				++counts_spelling_fixed_[name];
 
 			return;
@@ -115,7 +120,7 @@ public:
 			++count_no_match_;
 			no_match_.insert(name);
 
-			if (count_names_)
+			if (flags_ & COUNT_NAMES)
 				++counts_no_match_[name];
 
 			return;
@@ -124,14 +129,14 @@ public:
 		++count_non_name_;
 		non_name_.insert(name);
 
-		if (count_names_)
+		if (flags_ & COUNT_NAMES)
 			++counts_non_name_[name];
 	}
 
 	void DumpStats() {
 		fprintf(stderr, "           Total       Exact match     Canonical form     Spelling fixed    Stripped status           No match          Non-names\n");
 		/*                Total: 00000000 00000000 ( 00.00%) 00000000 ( 00.00%) 00000000 ( 00.00%) 00000000 ( 00.00%) 00000000 ( 00.00%) 00000000 ( 00.00%)*/
-		if (perstreet_stats_) {
+		if (flags_ & PERSTREET_STATS) {
 			float total = count_all_ > 0 ? count_all_ : 1.0f;
 			fprintf(stderr, " Total: %8d %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%)\n",
 				count_all_,
@@ -208,7 +213,7 @@ public:
 			dump << *i << std::endl;
 		dump.close();
 
-		if (count_names_) {
+		if (flags_ & COUNT_NAMES) {
 			dump.open("dump.counts.all.txt");
 			for (NameCountMap::const_iterator i = counts_all_.begin(); i != counts_all_.end(); ++i)
 				dump << std::setw(6) << i->second << " " << i->first << std::endl;
@@ -249,8 +254,7 @@ private:
 	int count_no_match_;
 	int count_non_name_;
 
-	bool perstreet_stats_;
-	bool count_names_;
+	int flags_;
 
 	int spelldistance_;
 
@@ -300,9 +304,8 @@ int main(int argc, char** argv) {
 	const char* progname = argv[0];
 	const char* localename = DEFAULT_LOCALE;
 	bool dumpflag = false;
-	bool statsflag = false;
 	bool parseaddrs = true;
-	bool countsflag = false;
+	int flags = 0;
 	int spelldistance = 1;
 
 	std::vector<const char*> datafiles;
@@ -312,14 +315,14 @@ int main(int argc, char** argv) {
 	int c;
     while ((c = getopt(argc, argv, "sdhf:l:p:n:ac")) != -1) {
 		switch (c) {
-			case 's': statsflag = true; break;
+			case 's': flags |= NameAggregator::PERSTREET_STATS; break;
 			case 'd': dumpflag = true; break;
 			case 'f': datafiles.push_back(optarg); break;
 			case 'n': name_tags.push_back(optarg); break;
 			case 'l': localename = optarg; break;
 			case 'p': spelldistance = (int)strtoul(optarg, 0, 10); break;
 			case 'a': parseaddrs = false; break;
-			case 'c': countsflag = true; break;
+			case 'c': flags |= NameAggregator::COUNT_NAMES; break;
 			case 'h': return usage(progname, 0);
 			default:
 				return usage(progname, 1);
@@ -349,7 +352,7 @@ int main(int argc, char** argv) {
 	}
 
 	/* create tag aggregator */
-	NameAggregator aggregator(database, statsflag, countsflag, spelldistance);
+	NameAggregator aggregator(database, flags, spelldistance);
 
 	OsmNameExtractor extractor(aggregator);
 
