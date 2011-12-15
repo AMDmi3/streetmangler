@@ -134,6 +134,7 @@ public:
 	}
 
 	void DumpStats() {
+		fprintf(stderr, "Classification statistics:\n");
 		fprintf(stderr, "           Total       Exact match     Canonical form     Spelling fixed    Stripped status           No match          Non-names\n");
 		/*                Total: 00000000 00000000 ( 00.00%) 00000000 ( 00.00%) 00000000 ( 00.00%) 00000000 ( 00.00%) 00000000 ( 00.00%) 00000000 ( 00.00%)*/
 		if (flags_ & PERSTREET_STATS) {
@@ -147,15 +148,45 @@ public:
 				count_no_match_, (float)count_no_match_/total*100.0f,
 				count_non_name_, (float)count_non_name_/total*100.0f);
 		}
-		float total = all_.size() > 0 ? all_.size() : 1.0f;
-		fprintf(stderr, "Unique: %8d %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%)\n",
-			(int)all_.size(),
-			(int)exact_match_.size(), (float)exact_match_.size()/total*100.0f,
-			(int)canonical_form_.size(), (float)canonical_form_.size()/total*100.0f,
-			(int)spelling_fixed_.size(), (float)spelling_fixed_.size()/total*100.0f,
-			(int)stripped_status_.size(), (float)stripped_status_.size()/total*100.0f,
-			(int)no_match_.size(), (float)no_match_.size()/total*100.0f,
-			(int)non_name_.size(), (float)non_name_.size()/total*100.0f);
+		{
+			float total = all_.size() > 0 ? all_.size() : 1.0f;
+			fprintf(stderr, "Unique: %8d %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%)\n",
+				(int)all_.size(),
+				(int)exact_match_.size(), (float)exact_match_.size()/total*100.0f,
+				(int)canonical_form_.size(), (float)canonical_form_.size()/total*100.0f,
+				(int)spelling_fixed_.size(), (float)spelling_fixed_.size()/total*100.0f,
+				(int)stripped_status_.size(), (float)stripped_status_.size()/total*100.0f,
+				(int)no_match_.size(), (float)no_match_.size()/total*100.0f,
+				(int)non_name_.size(), (float)non_name_.size()/total*100.0f);
+		}
+
+		fprintf(stderr, "Generalized database statistics:\n");
+		fprintf(stderr, "           Total             Match            Fixable           No match\n");
+		/*                Total: 00000000 00000000 ( 00.00%) 00000000 ( 00.00%) 00000000 ( 00.00%)*/
+		if (flags_ & PERSTREET_STATS) {
+			int streets = count_all_ - count_stripped_status_ - count_non_name_;
+			float total = streets > 0 ? streets : 1.0f;
+
+			int fixable = count_canonical_form_ + count_spelling_fixed_;
+
+			fprintf(stderr, " Total: %8d %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%)\n",
+					streets,
+					count_exact_match_, (float)count_exact_match_/total*100.0f,
+					fixable, (float)fixable/total*100.0f,
+					count_no_match_, (float)count_no_match_/total*100.0f);
+		}
+		{
+			int streets = all_.size() - stripped_status_.size() - non_name_.size();
+			float total = streets > 0 ? streets : 1.0f;
+
+			int fixable = canonical_form_.size() + spelling_fixed_.size();
+
+			fprintf(stderr, "Unique: %8d %8d (%6.2f%%) %8d (%6.2f%%) %8d (%6.2f%%)\n",
+					streets,
+					(int)exact_match_.size(), (float)exact_match_.size()/total*100.0f,
+					fixable, (float)fixable/total*100.0f,
+					(int)no_match_.size(), (float)no_match_.size()/total*100.0f);
+		}
 	}
 
 	void DumpData() {
