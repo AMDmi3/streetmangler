@@ -101,6 +101,7 @@ public:
         }
 };
 
+#ifdef SWIGPYTHON
 %pythoncode %{
 def _unicode_args(f):
     def _f(self, s, *a, **kw):
@@ -143,3 +144,65 @@ class Name(_Name):
     def __unicode__(self):
         return self.Join()
 %}
+#endif
+
+#ifdef SWIGPERL
+%perlcode %{
+use Encode;
+
+package StreetMangler::Database;
+
+sub new {
+	my $pkg = shift;
+	my ($locale) = @_;
+	my $self = { _locale => $locale, _database => StreetMangler::_Database->new($locale) };
+	bless $self, $pkg if defined($self);
+}
+
+sub Add {
+	my ($self, $string) = @_;
+	return $self->{_database}->Add(Encode::encode('utf-8', $string))
+}
+
+sub CheckExactMatch {
+	my ($self, $string) = @_;
+	return $self->{_database}->CheckExactMatch(Encode::encode('utf-8', $string))
+}
+
+sub CheckCanonicalForm {
+	my ($self, $string) = @_;
+	return [ map { Encode::decode('utf-8', $_) } @{ $self->{_database}->CheckCanonicalForm(Encode::encode('utf-8', $string)) } ];
+}
+
+sub CheckSpelling {
+	my ($self, $string) = @_;
+	return [ map { Encode::decode('utf-8', $_) } @{ $self->{_database}->CheckSpelling(Encode::encode('utf-8', $string)) } ];
+}
+
+sub CheckStrippedStatus {
+	my ($self, $string) = @_;
+	return [ map { Encode::decode('utf-8', $_) } @{ $self->{_database}->CheckStrippedStatus(Encode::encode('utf-8', $string)) } ];
+}
+
+package StreetMangler::Name;
+
+use vars qw(@ISA);
+@ISA = qw( StreetMangler::_Name );
+
+use overload '""' => \&Join;
+
+sub new {
+	my $pkg = shift;
+	my ($name, $locale) = @_;
+	my $self = StreetMangler::_Name->new(Encode::encode('utf-8', $name), $locale);
+	bless $self, $pkg if defined($self);
+}
+
+sub Join {
+	my ($self, $flags) = @_;
+	$flags = 0 unless defined $flags;
+	return Encode::decode('utf-8', StreetMangler::_Name::Join($self, $flags));
+}
+
+%}
+#endif
