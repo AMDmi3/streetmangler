@@ -22,6 +22,7 @@
 
 #include <string>
 #include <vector>
+#include <set>
 
 /**
  * OSM XML parser which extracts street names from street objects and addresses
@@ -38,9 +39,10 @@ public:
 	void ParseStdin();
 
 	/** Add tag to be counted as name (e.g. name, name:ru) */
-	void AddNameTag(const std::string& tag);
+	void AddAddrTag(const std::string& tag);
 
-	void SetParseAddresses(bool parse);
+	/** Add tag to be counted as name (e.g. name, name:ru) */
+	void AddNameTag(const std::string& tag);
 
 protected:
 	/** Street name handler
@@ -54,13 +56,12 @@ private:
 	static void EndElement(void* userData, const char* name);
 
 private:
-	bool parse_addresses_;
-
 	std::vector<std::string> names_;
+	std::vector<std::string> addrs_;
 	std::string highway_;
-	std::string addr_street_;
 
-	std::vector<std::string> name_tags_;
+	std::set<std::string> addr_tags_;
+	std::set<std::string> name_tags_;
 };
 
 #endif

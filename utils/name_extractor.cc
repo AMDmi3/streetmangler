@@ -27,18 +27,18 @@
 
 #include "name_extractor.hh"
 
-NameExtractor::NameExtractor() : parse_addresses_(true) {
+NameExtractor::NameExtractor() {
 }
 
 NameExtractor::~NameExtractor() {
 }
 
-void NameExtractor::AddNameTag(const std::string& tag) {
-	name_tags_.push_back(tag);
+void NameExtractor::AddAddrTag(const std::string& tag) {
+	addr_tags_.insert(tag);
 }
 
-void NameExtractor::SetParseAddresses(bool parse) {
-	parse_addresses_ = parse;
+void NameExtractor::AddNameTag(const std::string& tag) {
+	name_tags_.insert(tag);
 }
 
 void NameExtractor::ParseFile(const char* filename) {
@@ -96,7 +96,7 @@ void NameExtractor::StartElement(void* userData, const char* name, const char** 
 	NameExtractor* parser = static_cast<NameExtractor*>(userData);
 
 	if (strcmp(name, "node") == 0 || strcmp(name, "way") == 0) {
-		parser->addr_street_.clear();
+		parser->addrs_.clear();
 		parser->names_.clear();
 		parser->highway_.clear();
 	}
@@ -114,14 +114,11 @@ void NameExtractor::StartElement(void* userData, const char* name, const char** 
 	/* save relevant tags which will be processed in EndElement */
 	if (k == "highway") {
 		parser->highway_ = v;
-	} else if (k == "addr:street") {
-		parser->addr_street_ = v;
-	} else {
-		for (std::vector<std::string>::const_iterator i = parser->name_tags_.begin(); i != parser->name_tags_.end(); ++i)
-			if (k == *i && !v.empty())
-				parser->names_.push_back(v);
+	} else if (parser->addr_tags_.find(k) != parser->addr_tags_.end() && !v.empty()) {
+		parser->addrs_.push_back(v);
+	} else if (parser->name_tags_.find(k) != parser->name_tags_.end() && !v.empty()) {
+		parser->names_.push_back(v);
 	}
-
 }
 
 void NameExtractor::EndElement(void* userData, const char* name) {
@@ -136,8 +133,8 @@ void NameExtractor::EndElement(void* userData, const char* name) {
 	else
 		return;
 
-	if (parser->parse_addresses_ && !parser->addr_street_.empty())
-		parser->ProcessName(parser->addr_street_);
+	for (std::vector<std::string>::const_iterator i = parser->addrs_.begin(); i != parser->addrs_.end(); ++i)
+		parser->ProcessName(*i);
 
 	if (tag == WAY && !parser->highway_.empty() && !parser->names_.empty() &&
 				parser->highway_ != "footway" &&

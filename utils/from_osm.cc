@@ -41,9 +41,18 @@
 #	define DEFAULT_LOCALE "ru_RU"
 #endif
 
-#ifndef DEFAULT_NAME_TAG
-#	define DEFAULT_NAME_TAG "name"
-#endif
+static const char* default_addr_tags[] = {
+	"addr:street",
+	"addr:street1",
+	"addr:street2",
+	"addr:street3",
+	"addr2:street",
+	"addr3:street",
+};
+
+static const char* default_name_tags[] = {
+	"name",
+};
 
 class NameAggregator {
 public:
@@ -317,14 +326,16 @@ public:
 };
 
 int usage(const char* progname, int code) {
-	fprintf(stderr, "Usage: %s [-dhsa] [-pN] [-l locale] [-n tag] [-f database] file.osm ...\n", progname);
+	fprintf(stderr, "Usage: %s [-dhs] [-pN] [-l locale] [-a tag] [-n tag] [-f database] file.osm ...\n", progname);
 	fprintf(stderr, "  -s  display per-street statistics (takes extra time)\n");
 	fprintf(stderr, "  -d  dump street lists into dump.*\n");
 	fprintf(stderr, "  -p  spelling check distance (default 1)\n");
 	fprintf(stderr, "  -h  display this help\n");
 	fprintf(stderr, "  -l  set locale (default \""DEFAULT_LOCALE"\")\n");
-	fprintf(stderr, "  -n  specify name tags (default \"name\")\n");
-	fprintf(stderr, "  -a  ignore addr:street tags\n");
+	fprintf(stderr, "  -a  specify addr tag(s) instead of default set (\"addrN:streetN\" variants)\n");
+	fprintf(stderr, "  -n  specify name tag(s) instead of default set (\"name\")\n");
+	fprintf(stderr, "  -A  don't use default addr tags set\n");
+	fprintf(stderr, "  -N  don't use default name tags set\n");
 	fprintf(stderr, "  -c  include dumps with street name counts\n");
 	fprintf(stderr, "  -f  specify pats to street names database (default "DEFAULT_DATAFILE")\n");
 	fprintf(stderr, "      (may be specified more than once)\n");
@@ -335,16 +346,18 @@ int main(int argc, char** argv) {
 	const char* progname = argv[0];
 	const char* localename = DEFAULT_LOCALE;
 	bool dumpflag = false;
-	bool parseaddrs = true;
 	int flags = 0;
 	int spelldistance = 1;
+	bool use_default_addr_tags = true;
+	bool use_default_name_tags = true;
 
 	std::vector<const char*> datafiles;
 	std::vector<const char*> name_tags;
+	std::vector<const char*> addr_tags;
 
 	/* process options */
 	int c;
-    while ((c = getopt(argc, argv, "sdhf:l:p:n:ac")) != -1) {
+    while ((c = getopt(argc, argv, "sdhf:l:p:n:a:cNA")) != -1) {
 		switch (c) {
 			case 's': flags |= NameAggregator::PERSTREET_STATS; break;
 			case 'd': dumpflag = true; break;
@@ -352,8 +365,10 @@ int main(int argc, char** argv) {
 			case 'n': name_tags.push_back(optarg); break;
 			case 'l': localename = optarg; break;
 			case 'p': spelldistance = (int)strtoul(optarg, 0, 10); break;
-			case 'a': parseaddrs = false; break;
+			case 'a': addr_tags.push_back(optarg); break;
 			case 'c': flags |= NameAggregator::COUNT_NAMES; break;
+			case 'A': use_default_addr_tags = false; break;
+			case 'N': use_default_name_tags = false; break;
 			case 'h': return usage(progname, 0);
 			default:
 				return usage(progname, 1);
@@ -363,8 +378,14 @@ int main(int argc, char** argv) {
 	/* if no databases were specified, use the default one */
 	if (datafiles.empty())
 		datafiles.push_back(DEFAULT_DATAFILE);
-	if (name_tags.empty())
-		name_tags.push_back(DEFAULT_NAME_TAG);
+
+	if (addr_tags.empty() && use_default_addr_tags)
+		for (const char** tag = default_addr_tags; tag < default_addr_tags + sizeof(default_addr_tags)/sizeof(default_addr_tags[0]); ++tag)
+			addr_tags.push_back(*tag);
+
+	if (name_tags.empty() && use_default_name_tags)
+		for (const char** tag = default_name_tags; tag < default_name_tags + sizeof(default_name_tags)/sizeof(default_name_tags[0]); ++tag)
+			name_tags.push_back(*tag);
 
 	argc -= optind;
 	argv += optind;
@@ -387,7 +408,8 @@ int main(int argc, char** argv) {
 
 	OsmNameExtractor extractor(aggregator);
 
-	extractor.SetParseAddresses(parseaddrs);
+	for (std::vector<const char*>::const_iterator i = addr_tags.begin(); i != addr_tags.end(); ++i)
+		extractor.AddAddrTag(*i);
 	for (std::vector<const char*>::const_iterator i = name_tags.begin(); i != name_tags.end(); ++i)
 		extractor.AddNameTag(*i);
 
