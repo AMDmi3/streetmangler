@@ -12,6 +12,6 @@ for f in $files; do
 	sed -e 's| *#.*$||' < $f | uniq -d | grep '.' && echo "\--------- Duplicates found"
 	grep -E '.#.*(XXX|FIXME)' $f && echo "\--------- XXX/FIXME items found"
 	for x in улица переулок проезд проспект аллея площадь; do
-		grep -E "^[^#]*$x[^#]*$x" $f && echo "\--------- likely, newline missing"
+		grep -E "^[^#]*$x[^#]*$x" $f | grep -v 'Автопроезд' | grep '.' && echo "\--------- likely, newline missing"
 	done
 done
