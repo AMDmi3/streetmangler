@@ -326,19 +326,23 @@ public:
 };
 
 int usage(const char* progname, int code) {
-	fprintf(stderr, "Usage: %s [-dhs] [-pN] [-l locale] [-a tag] [-n tag] [-f database] file.osm ...\n", progname);
+	fprintf(stderr, "Usage: %s [-cdhsAN] [-p N] [-l locale] [-a tag] [-n tag] [-f database] file.osm ...\n", progname);
 	fprintf(stderr, "  -s  display per-street statistics (takes extra time)\n");
 	fprintf(stderr, "  -d  dump street lists into dump.*\n");
-	fprintf(stderr, "  -p  spelling check distance (default 1)\n");
-	fprintf(stderr, "  -h  display this help\n");
+	fprintf(stderr, "  -c  include dumps with street name counts\n");
+
 	fprintf(stderr, "  -l  set locale (default \""DEFAULT_LOCALE"\")\n");
+	fprintf(stderr, "  -p  spelling check distance (default 1)\n");
+
+	fprintf(stderr, "  -f  specify pats to street names database (default "DEFAULT_DATAFILE")\n");
+	fprintf(stderr, "      (may be specified more than once)\n");
+
 	fprintf(stderr, "  -a  specify addr tag(s) instead of default set (\"addrN:streetN\" variants)\n");
 	fprintf(stderr, "  -n  specify name tag(s) instead of default set (\"name\")\n");
 	fprintf(stderr, "  -A  don't use default addr tags set\n");
 	fprintf(stderr, "  -N  don't use default name tags set\n");
-	fprintf(stderr, "  -c  include dumps with street name counts\n");
-	fprintf(stderr, "  -f  specify pats to street names database (default "DEFAULT_DATAFILE")\n");
-	fprintf(stderr, "      (may be specified more than once)\n");
+
+	fprintf(stderr, "  -h  display this help\n");
 	return code;
 }
 
