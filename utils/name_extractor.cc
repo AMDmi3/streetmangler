@@ -137,10 +137,10 @@ void NameExtractor::EndElement(void* userData, const char* name) {
 		parser->ProcessName(*i);
 
 	if (tag == WAY && !parser->highway_.empty() && !parser->names_.empty() &&
-				parser->highway_ != "footway" &&
-				parser->highway_ != "cycleway" &&
-				parser->highway_ != "path" &&
-				parser->highway_ != "track" &&
+//				parser->highway_ != "footway" &&
+//				parser->highway_ != "cycleway" &&
+//				parser->highway_ != "path" &&
+//				parser->highway_ != "track" &&
 				parser->highway_ != "bus_stop" &&
 				parser->highway_ != "emergency_access_point") {
 		for (std::vector<std::string>::const_iterator i = parser->names_.begin(); i != parser->names_.end(); ++i)
