@@ -30,6 +30,7 @@
 #include <string.h>
 
 #include <unicode/unistr.h>
+#include <unicode/uchar.h>
 
 #include <tspell/unitrie.hh>
 
@@ -40,13 +41,17 @@
 namespace {
 	static const UnicodeString g_yo = UnicodeString::fromUTF8("ё");
 	static const UnicodeString g_ye = UnicodeString::fromUTF8("е");
+
+	int PickDist(int olddist, int newdist) {
+		return (olddist < 0 || (newdist >= 0 && newdist < olddist)) ? newdist : olddist;
+	}
 };
 
 namespace StreetMangler {
 
 class Database::Private {
 	friend class Database;
-private:
+protected:
 	Private(const Locale& locale) : locale_(locale) {
 	}
 
@@ -94,12 +99,70 @@ private:
 			*uhashunordered = UnicodeString::fromUTF8(name.Join((flags & ~Name::STATUS_TO_LEFT) | extraflags)).toLower();
 	}
 
-private:
+	static int GetRealApproxDistance(const UnicodeString& sample, const UnicodeString& match, int realdepth) {
+		/* exact match */
+		if (realdepth == 0)
+			return 0;
+
+		const UnicodeString& shorter = sample.length() < match.length() ? sample : match;
+		const UnicodeString& longer = sample.length() < match.length() ? match : sample;
+
+		int left, right;
+
+		/* get common prefix and suffix */
+		for (left = 0; left < shorter.length() && shorter[left] == longer[left]; ++left) {
+			/* empty */
+		}
+
+		for (right = 0; right < shorter.length() - left && shorter[shorter.length() - 1 - right] == longer[longer.length() - 1 - right]; ++right) {
+			/* empty */
+		}
+
+		UnicodeString shorterdiff = shorter.tempSubString(left, shorter.length() - left - right);
+		UnicodeString longerdiff = longer.tempSubString(left, longer.length() - left - right);
+
+		/* check if there're any non-numeric character in the diff */
+		bool shorterdiff_numeric = false;
+		for (int i = 0; i < shorterdiff.length(); ++i) {
+			if (u_isdigit(shorterdiff.char32At(i))) {
+				shorterdiff_numeric = true;
+				break;
+			}
+		}
+
+		bool longerdiff_numeric = false;
+		for (int i = 0; i < longerdiff.length(); ++i) {
+			if (u_isdigit(longerdiff.char32At(i))) {
+				longerdiff_numeric = true;
+				break;
+			}
+		}
+
+		if (shorterdiff_numeric || longerdiff_numeric) {
+			bool touches_number = false;
+			if (left > 0 && u_isdigit(shorter.charAt(left - 1)))
+				touches_number = true;
+			if (right > 0 && u_isdigit(shorter.charAt(shorter.length() - right)))
+				touches_number = true;
+
+			/* numeric-only match */
+			if ((shorterdiff_numeric && longerdiff_numeric) || touches_number)
+				return -1;
+		}
+
+		/* count swapped adjacent letters as a single typo */
+		if (realdepth == 2 && shorterdiff.length() == 2 && longerdiff.length() == 2 && shorterdiff[0] == longerdiff[1] && shorterdiff[1] == longerdiff[0])
+			return 1;
+
+		return realdepth;
+	}
+
+protected:
     typedef std::set<std::string> NamesSet;
     typedef std::multimap<std::string, std::string> NamesMap;
     typedef std::multimap<UnicodeString, std::string> UnicodeNamesMap;
 
-private:
+protected:
     const Locale& locale_;
     NamesSet names_;
     NamesMap canonical_map_;
@@ -231,15 +294,26 @@ int Database::CheckSpelling(const Name& name, std::vector<std::string>& suggesti
 	UnicodeString hash, hashordered, hashunordered;
 	private_->NameToHashes(name, NULL, &hash, &hashordered, &hashunordered);
 
+	int realdepth = 0;
 	std::set<UnicodeString> matches;
-	for (int i = 0; matches.empty() && i <= depth; ++i) {
+	for (int i = 0; matches.empty() && i <= depth + 1; ++i) {
 		private_->spell_trie_.FindApprox(hash, i, matches);
 		private_->spell_trie_.FindApprox(hashordered, i, matches);
 		private_->spell_trie_.FindApprox(hashunordered, i, matches);
+		realdepth = i;
 	}
 
 	std::set<std::string> suggestions_unique;
 	for (std::set<UnicodeString>::const_iterator i = matches.begin(); i != matches.end(); ++i) {
+		/* skip matches that differ only in numeric parts */
+		int dist = -1;
+		dist = PickDist(dist, private_->GetRealApproxDistance(hash, *i, realdepth));
+		dist = PickDist(dist, private_->GetRealApproxDistance(hashordered, *i, realdepth));
+		dist = PickDist(dist, private_->GetRealApproxDistance(hashunordered, *i, realdepth));
+
+		if (dist < 0 || dist > depth)
+			continue;
+
 		std::pair<Private::UnicodeNamesMap::const_iterator, Private::UnicodeNamesMap::const_iterator> range =
 			private_->spelling_map_.equal_range(*i);
 

@@ -39,6 +39,8 @@ BEGIN_TEST()
 	db.Add("Учительская улица");
 	db.Add("улица Петра Безымянного");
 	db.Add("улица Петро Безымянного");
+	db.Add("1-я улица Строителей");
+	db.Add("улица 3-го Интернационала");
 
 	/*
 	 * simple matches
@@ -73,10 +75,10 @@ BEGIN_TEST()
 	CHECK_SPELLING(db, "улица Ленена", "улица Ленина", 1);  /* letter changed */
 	CHECK_SPELLING(db, "улица Ленна", "улица Ленина", 1);   /* letter removed */
 	CHECK_SPELLING(db, "улица Ленинаа", "улица Ленина", 1); /* letter added */
-	//CHECK_SPELLING(db, "улица Леинна", "улица Ленина", 1);  /* letters changed places */
+	CHECK_SPELLING(db, "улица Леинна", "улица Ленина", 1);  /* letters swapped (should count as 1 error) */
 
 	CHECK_SPELLING(db, "улиа Ленина", "улица Ленина", 1);   /* error in status part */
-	//CHECK_SPELLING(db, "уилца Ленина", "улица Ленина", 1);  /* error in status part */
+	CHECK_SPELLING(db, "уилца Ленина", "улица Ленина", 1);  /* letters swapped in status part (should count as 1 error) */
 
 	CHECK_SPELLING(db, "Учительская улицца", "Учительская улица", 1); /* error in status part, reorder issue */
 
@@ -101,6 +103,13 @@ BEGIN_TEST()
 	CHECK_SPELLING(db, "улица Переулок Верхний", "улица Верхний переулок", 1); /* -//- */
 	CHECK_SPELLING(db, "улицаленина", "улица Ленина", 1);
 	CHECK_SPELLING(db, "зелёнаяулица", "Зелёная улица", 1);
+
+	/* numeric issues */
+	CHECK_SPELLING(db, "1-й улица Строителей", "1-я улица Строителей", 1);
+	CHECK_NO_SPELLING(db, "2-я улица Строителей", 1);
+	CHECK_NO_SPELLING(db, "2-я улица Строителей", 2);
+
+	CHECK_SPELLING(db, "улица -го Интернационала", "улица 3-го Интернационала", 1);
 
 	/*
 	 * missing status part
