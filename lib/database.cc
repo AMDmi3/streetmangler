@@ -250,13 +250,9 @@ void Database::Add(const std::string& name) {
 	private_->canonical_map_.insert(std::make_pair(hash, canonical));
 
 	/* for spelling */
-	private_->spell_trie_.Insert(uhash);
-	private_->spelling_map_.insert(std::make_pair(uhash, canonical));
-	if (uhash != uhashordered) {
-		private_->spell_trie_.Insert(uhashordered);
-		private_->spelling_map_.insert(std::make_pair(uhashordered, canonical));
-	}
-	if (uhashunordered != uhash && uhashunordered != uhashordered) {
+	private_->spell_trie_.Insert(uhashordered);
+	private_->spelling_map_.insert(std::make_pair(uhashordered, canonical));
+	if (uhashunordered != uhashordered) {
 		private_->spell_trie_.Insert(uhashunordered);
 		private_->spelling_map_.insert(std::make_pair(uhashunordered, canonical));
 	}
@@ -291,13 +287,12 @@ int Database::CheckCanonicalForm(const Name& name, std::vector<std::string>& sug
 }
 
 int Database::CheckSpelling(const Name& name, std::vector<std::string>& suggestions, int depth) const {
-	UnicodeString hash, hashordered, hashunordered;
-	private_->NameToHashes(name, NULL, &hash, &hashordered, &hashunordered);
+	UnicodeString hashordered, hashunordered;
+	private_->NameToHashes(name, NULL, NULL, &hashordered, &hashunordered);
 
 	int realdepth = 0;
 	std::set<UnicodeString> matches;
 	for (int i = 0; matches.empty() && i <= depth + 1; ++i) {
-		private_->spell_trie_.FindApprox(hash, i, matches);
 		private_->spell_trie_.FindApprox(hashordered, i, matches);
 		private_->spell_trie_.FindApprox(hashunordered, i, matches);
 		realdepth = i;
@@ -307,7 +302,6 @@ int Database::CheckSpelling(const Name& name, std::vector<std::string>& suggesti
 	for (std::set<UnicodeString>::const_iterator i = matches.begin(); i != matches.end(); ++i) {
 		/* skip matches that differ only in numeric parts */
 		int dist = -1;
-		dist = PickDist(dist, private_->GetRealApproxDistance(hash, *i, realdepth));
 		dist = PickDist(dist, private_->GetRealApproxDistance(hashordered, *i, realdepth));
 		dist = PickDist(dist, private_->GetRealApproxDistance(hashunordered, *i, realdepth));
 
