@@ -45,8 +45,8 @@ ENDIF(WITH_PYTHON OR WITH_PERL)
 
 # utilities
 INCLUDE_DIRECTORIES(${EXPAT_INCLUDE_DIRS})
-ADD_EXECUTABLE(from_osm utils/from_osm.cc utils/name_extractor.cc)
-TARGET_LINK_LIBRARIES(from_osm streetmangler ${EXPAT_LIBRARY})
+ADD_EXECUTABLE(process_names utils/process_names.cc utils/name_extractor.cc)
+TARGET_LINK_LIBRARIES(process_names streetmangler ${EXPAT_LIBRARY})
 
 # tests
 ADD_EXECUTABLE(locale_test tests/locale_test.cc)
