@@ -37,6 +37,7 @@
 #include <streetmangler/database.hh>
 #include <streetmangler/locale.hh>
 #include <streetmangler/name.hh>
+#include <streetmangler/stringlistparser.hh>
 
 namespace {
 	static const UnicodeString g_yo = UnicodeString::fromUTF8("ё");
@@ -45,6 +46,19 @@ namespace {
 	int PickDist(int olddist, int newdist) {
 		return (olddist < 0 || (newdist >= 0 && newdist < olddist)) ? newdist : olddist;
 	}
+
+	class DatabaseLoader : public StreetMangler::StringListParser {
+	private:
+		StreetMangler::Database& database_;
+
+	public:
+		DatabaseLoader(StreetMangler::Database& database) : database_(database) {
+		}
+
+		void ProcessString(const std::string& string) {
+			database_.Add(string);
+		}
+	};
 };
 
 namespace StreetMangler {
@@ -178,55 +192,13 @@ Database::Database(const Locale& locale) : private_(new Database::Private(locale
 Database::~Database() {
 }
 
-void Database::Load(const char* filename) {
-	int f;
-	if ((f = open(filename, O_RDONLY)) == -1)
-		throw std::runtime_error(std::string("Cannot open database: ") + strerror(errno));
-
-	char buffer[1024];
-	ssize_t nread;
-
-	std::string name;
-	int line = 1;
-	bool space = false;
-	bool comment = false;
-	while ((nread = read(f, buffer, sizeof(buffer))) > 0) {
-		for (char* cur = buffer; cur != buffer + nread; ++cur) {
-			if (*cur == '\n') {
-				if (!name.empty()) {
-					Add(name);
-					name.clear();
-				}
-				line++;
-				comment = false;
-				space = false;
-			} else if (comment) {
-				/* skip until eol */
-			} else if (*cur == '#') {
-				comment = true;
-			} else if (*cur == ' ' || *cur == '\t') {
-				space = true;
-			} else {
-				if (space && !name.empty()) {
-					name += ' ';
-					space = false;
-				}
-				name += *cur;
-			}
-		}
-	}
-
-	if (!name.empty())
-		Add(name);
-
-	if (nread == -1)
-		throw std::runtime_error(std::string("Read error: ") + strerror(errno));
-
-	close(f);
-}
-
 const StreetMangler::Locale& StreetMangler::Database::GetLocale() const {
 	return private_->locale_;
+}
+
+void Database::Load(const std::string& filename) {
+	DatabaseLoader loader(*this);
+	loader.ParseFile(filename.c_str());
 }
 
 void Database::Add(const std::string& name) {

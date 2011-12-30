@@ -33,7 +33,8 @@ class Database {
 public:
 	Database(const Locale& locale);
 	virtual ~Database();
-	void Load(const char* filename);
+
+	void Load(const std::string& filename);
 	void Add(const std::string& name);
 
 	const Locale& GetLocale() const;

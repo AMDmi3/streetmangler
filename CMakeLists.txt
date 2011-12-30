@@ -24,6 +24,7 @@ SET(LIBRARY_SRCS
 	lib/database.cc
 	lib/locale.cc
 	lib/name.cc
+	lib/stringlistparser.cc
 )
 
 # definitions
