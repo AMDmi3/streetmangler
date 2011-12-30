@@ -31,6 +31,7 @@
 #include <streetmangler/database.hh>
 #include <streetmangler/locale.hh>
 #include <streetmangler/name.hh>
+#include <streetmangler/stringlistparser.hh>
 #include "name_extractor.hh"
 
 #ifndef DEFAULT_DATAFILE
@@ -325,6 +326,20 @@ public:
 	}
 };
 
+class TextfileNameExtractor : public StreetMangler::StringListParser {
+private:
+	NameAggregator& aggregator_;
+
+public:
+	TextfileNameExtractor(NameAggregator& aggregator) : aggregator_(aggregator) {
+	}
+
+protected:
+	virtual void ProcessString(const std::string& string) {
+		aggregator_.ProcessName(string);
+	}
+};
+
 int usage(const char* progname, int code) {
 	fprintf(stderr, "Usage: %s [-cdhsAN] [-p N] [-l locale] [-a tag] [-n tag] [-f database] file.osm ...\n", progname);
 	fprintf(stderr, "  -s  display per-street statistics (takes extra time)\n");
@@ -410,24 +425,27 @@ int main(int argc, char** argv) {
 	/* create tag aggregator */
 	NameAggregator aggregator(database, flags, spelldistance);
 
-	OsmNameExtractor extractor(aggregator);
+	OsmNameExtractor osm_extractor(aggregator);
 
 	for (std::vector<const char*>::const_iterator i = addr_tags.begin(); i != addr_tags.end(); ++i)
-		extractor.AddAddrTag(*i);
+		osm_extractor.AddAddrTag(*i);
 	for (std::vector<const char*>::const_iterator i = name_tags.begin(); i != name_tags.end(); ++i)
-		extractor.AddNameTag(*i);
+		osm_extractor.AddNameTag(*i);
+
+	TextfileNameExtractor text_extractor(aggregator);
 
 	/* process all input files */
 	for (int i = 0; i < argc; ++i) {
 		std::string file(argv[i]);
 		if (file == "-") {
 			fprintf(stderr, "Processing stdin as OSM data...\n");
-			extractor.ParseStdin();
+			osm_extractor.ParseStdin();
 		} else if (file.rfind(".osm") == file.length() - 4 || file == "-") {
 			fprintf(stderr, "Processing file \"%s\" as OSM data...\n", file.c_str());
-			extractor.ParseFile(file.c_str());
-//		} else if (file.rfind(".txt") == file.length() - 4) {
-//			fprintf(stderr, "Processing file \"%s\" as strings list...\n", file.c_str());
+			osm_extractor.ParseFile(file.c_str());
+		} else if (file.rfind(".txt") == file.length() - 4) {
+			fprintf(stderr, "Processing file \"%s\" as strings list...\n", file.c_str());
+			text_extractor.ParseFile(file.c_str());
 		} else {
 			errx(1, "%s: unknown format (we only support .osm and .txt)\n", file.c_str());
 		}
