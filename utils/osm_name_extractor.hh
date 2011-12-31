@@ -17,8 +17,8 @@
  * along with streetmangler.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NAME_EXTRACTOR_HH
-#define NAME_EXTRACTOR_HH
+#ifndef OSM_NAME_EXTRACTOR_HH
+#define OSM_NAME_EXTRACTOR_HH
 
 #include <string>
 #include <vector>
