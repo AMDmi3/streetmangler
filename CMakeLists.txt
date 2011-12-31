@@ -27,6 +27,12 @@ SET(LIBRARY_SRCS
 	lib/stringlistparser.cc
 )
 
+SET(PROCESS_NAMES_SRCS
+	utils/process_names.cc 
+	utils/osm_name_extractor.cc
+	utils/name_aggregator.cc
+)
+
 # definitions
 INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/lib ${PROJECT_SOURCE_DIR}/contrib/tspell)
 ADD_DEFINITIONS(-DDEFAULT_DATAFILE="${PROJECT_SOURCE_DIR}/data/ru.txt")
@@ -45,7 +51,7 @@ ENDIF(WITH_PYTHON OR WITH_PERL)
 
 # utilities
 INCLUDE_DIRECTORIES(${EXPAT_INCLUDE_DIRS})
-ADD_EXECUTABLE(process_names utils/process_names.cc utils/name_extractor.cc)
+ADD_EXECUTABLE(process_names ${PROCESS_NAMES_SRCS})
 TARGET_LINK_LIBRARIES(process_names streetmangler ${EXPAT_LIBRARY})
 
 # tests

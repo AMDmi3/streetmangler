@@ -27,10 +27,10 @@
 /**
  * OSM XML parser which extracts street names from street objects and addresses
  */
-class NameExtractor {
+class OsmNameExtractor {
 public:
-	NameExtractor();
-	virtual ~NameExtractor();
+	OsmNameExtractor();
+	virtual ~OsmNameExtractor();
 
 	/** Parse a file */
 	void ParseFile(const char* filename);

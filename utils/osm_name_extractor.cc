@@ -25,23 +25,23 @@
 #include <errno.h>
 #include <string.h>
 
-#include "name_extractor.hh"
+#include "osm_name_extractor.hh"
 
-NameExtractor::NameExtractor() {
+OsmNameExtractor::OsmNameExtractor() {
 }
 
-NameExtractor::~NameExtractor() {
+OsmNameExtractor::~OsmNameExtractor() {
 }
 
-void NameExtractor::AddAddrTag(const std::string& tag) {
+void OsmNameExtractor::AddAddrTag(const std::string& tag) {
 	addr_tags_.insert(tag);
 }
 
-void NameExtractor::AddNameTag(const std::string& tag) {
+void OsmNameExtractor::AddNameTag(const std::string& tag) {
 	name_tags_.insert(tag);
 }
 
-void NameExtractor::ParseFile(const char* filename) {
+void OsmNameExtractor::ParseFile(const char* filename) {
 	int f;
 	if ((f = open(filename, O_RDONLY)) == -1)
 		throw std::runtime_error(std::string("Cannot open OSM file: ") + strerror(errno));
@@ -56,11 +56,11 @@ void NameExtractor::ParseFile(const char* filename) {
 	close(f);
 }
 
-void NameExtractor::ParseStdin() {
+void OsmNameExtractor::ParseStdin() {
 	return Parse(0);
 }
 
-void NameExtractor::Parse(int fd) {
+void OsmNameExtractor::Parse(int fd) {
 	XML_Parser parser = NULL;
 
 	if ((parser = XML_ParserCreate(NULL)) == NULL)
@@ -92,8 +92,8 @@ void NameExtractor::Parse(int fd) {
 	XML_ParserFree(parser);
 }
 
-void NameExtractor::StartElement(void* userData, const char* name, const char** atts) {
-	NameExtractor* parser = static_cast<NameExtractor*>(userData);
+void OsmNameExtractor::StartElement(void* userData, const char* name, const char** atts) {
+	OsmNameExtractor* parser = static_cast<OsmNameExtractor*>(userData);
 
 	if (strcmp(name, "node") == 0 || strcmp(name, "way") == 0) {
 		parser->addrs_.clear();
@@ -121,8 +121,8 @@ void NameExtractor::StartElement(void* userData, const char* name, const char** 
 	}
 }
 
-void NameExtractor::EndElement(void* userData, const char* name) {
-	NameExtractor* parser = static_cast<NameExtractor*>(userData);
+void OsmNameExtractor::EndElement(void* userData, const char* name) {
+	OsmNameExtractor* parser = static_cast<OsmNameExtractor*>(userData);
 
 	enum { NODE, WAY, OTHER } tag = OTHER;
 
