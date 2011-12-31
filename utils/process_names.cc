@@ -78,7 +78,7 @@ protected:
 };
 
 int usage(const char* progname, int code) {
-	fprintf(stderr, "Usage: %s [-cdhsAN] [-p N] [-l locale] [-a tag] [-n tag] [-f database] file.osm ...\n", progname);
+	fprintf(stderr, "Usage: %s [-h] [-cdsAN] [-l locale] [-p depth] [[-a tag] ...] [[-n tag] ...] [[-f database] ...] file.osm|file.txt|- ...\n", progname);
 	fprintf(stderr, "  -s  display per-street statistics (takes extra time)\n");
 	fprintf(stderr, "  -d  dump street lists into dump.*\n");
 	fprintf(stderr, "  -c  include dumps with street name counts\n\n");
