@@ -18,8 +18,8 @@
  */
 
 #include <vector>
-
-#include <stdlib.h>
+#include <cstdlib>
+#include <cstdio>
 
 #include <streetmangler/locale.hh>
 #include <streetmangler/database.hh>
