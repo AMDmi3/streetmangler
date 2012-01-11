@@ -164,6 +164,10 @@ protected:
 				return -1;
 		}
 
+		/* count е->ё as zero depth (for equal length, shorter = match, longer = source) */
+		if (realdepth == 1 && shorterdiff.length() == 1 && longerdiff.length() == 1 && shorterdiff[0] == g_yo[0] && longerdiff[0] == g_ye[0])
+			return 0;
+
 		/* count swapped adjacent letters as a single typo */
 		if (realdepth == 2 && shorterdiff.length() == 2 && longerdiff.length() == 2 && shorterdiff[0] == longerdiff[1] && shorterdiff[1] == longerdiff[0])
 			return 1;
