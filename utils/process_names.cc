@@ -29,8 +29,8 @@
 
 #include "name_aggregator.hh"
 
-#ifndef DEFAULT_DATAFILE
-#	define DEFAULT_DATAFILE "streets.txt"
+#ifndef DATADIR
+#	define DATADIR "."
 #endif
 
 #ifndef DEFAULT_LOCALE
@@ -68,7 +68,7 @@ private:
 	NameAggregator& aggregator_;
 
 public:
-	TextfileNameProcessor(NameAggregator& aggregator) : aggregator_(aggregator) {
+	TextfileNameProcessor(const std::string& filename, NameAggregator& aggregator) : StreetMangler::StringListParser(filename), aggregator_(aggregator) {
 	}
 
 protected:
@@ -86,7 +86,7 @@ int usage(const char* progname, int code) {
 	std::cerr << "  -l  set locale (default \""DEFAULT_LOCALE"\")" << std::endl;
 	std::cerr << "  -p  spelling check distance (default 1)" << std::endl << std::endl;
 
-	std::cerr << "  -f  specify pats to street names database (default "DEFAULT_DATAFILE")" << std::endl;
+	std::cerr << "  -f  specify pats to street names database (default "DATADIR"/<locale>.txt)" << std::endl;
 	std::cerr << "      (may be specified more than once)" << std::endl << std::endl;
 
 	std::cerr << "  -a  specify addr tag(s) instead of default set (\"addrN:streetN\" variants)" << std::endl;
@@ -108,7 +108,7 @@ int main(int argc, char** argv) {
 	bool use_default_addr_tags = true;
 	bool use_default_name_tags = true;
 
-	std::vector<const char*> datafiles;
+	std::vector<std::string> datafiles;
 	std::vector<const char*> name_tags;
 	std::vector<const char*> addr_tags;
 
@@ -133,8 +133,12 @@ int main(int argc, char** argv) {
 	}
 
 	/* if no databases were specified, use the default one */
-	if (datafiles.empty())
-		datafiles.push_back(DEFAULT_DATAFILE);
+	if (datafiles.empty()) {
+		std::string default_database = DATADIR "/";
+		default_database += localename;
+		default_database += ".txt";
+		datafiles.push_back(default_database);
+	}
 
 	if (addr_tags.empty() && use_default_addr_tags)
 		for (const char** tag = default_addr_tags; tag < default_addr_tags + sizeof(default_addr_tags)/sizeof(default_addr_tags[0]); ++tag)
@@ -155,7 +159,7 @@ int main(int argc, char** argv) {
 	StreetMangler::Locale locale(localename);
 	StreetMangler::Database database(locale);
 
-	for (std::vector<const char*>::const_iterator i = datafiles.begin(); i != datafiles.end(); ++i) {
+	for (std::vector<std::string>::const_iterator i = datafiles.begin(); i != datafiles.end(); ++i) {
 		std::cerr << "Loading database \"" << *i << "\"..." << std::endl;
 		database.Load(*i);
 	}
@@ -170,8 +174,6 @@ int main(int argc, char** argv) {
 	for (std::vector<const char*>::const_iterator i = name_tags.begin(); i != name_tags.end(); ++i)
 		osm_processor.AddNameTag(*i);
 
-	TextfileNameProcessor text_processor(aggregator);
-
 	/* process all input files */
 	for (int i = 0; i < argc; ++i) {
 		std::string file(argv[i]);
@@ -183,7 +185,8 @@ int main(int argc, char** argv) {
 			osm_processor.ParseFile(file.c_str());
 		} else if (file.rfind(".txt") == file.length() - 4) {
 			std::cerr << "Processing file \"" << file << "\" as strings list..." << std::endl;
-			text_processor.ParseFile(file.c_str());
+			TextfileNameProcessor processor(file, aggregator);
+			processor.Parse();
 		} else {
 			std::cerr << file << ": unknown format (we only support .osm and .txt)" << std::endl;
 			return 1;

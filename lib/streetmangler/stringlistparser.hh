@@ -26,13 +26,16 @@ namespace StreetMangler {
 
 class StringListParser {
 public:
-	StringListParser();
+	StringListParser(const std::string& filename);
 	virtual ~StringListParser();
 
-	void ParseFile(const char* filename);
+	void Parse();
 
 protected:
 	virtual void ProcessString(const std::string& string) = 0;
+
+protected:
+	std::string filename_;
 };
 
 }

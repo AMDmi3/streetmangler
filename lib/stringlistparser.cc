@@ -28,16 +28,16 @@
 
 namespace StreetMangler {
 
-StringListParser::StringListParser() {
+StringListParser::StringListParser(const std::string& filename) : filename_(filename) {
 }
 
 StringListParser::~StringListParser() {
 }
 
-void StringListParser::ParseFile(const char* filename) {
+void StringListParser::Parse() {
 	int f;
-	if ((f = open(filename, O_RDONLY)) == -1)
-		throw std::runtime_error(std::string("Cannot open ") + filename + ": " + strerror(errno));
+	if ((f = open(filename_.c_str(), O_RDONLY)) == -1)
+		throw std::runtime_error(std::string("Cannot open ") + filename_ + ": " + strerror(errno));
 
 	char buffer[1024];
 	ssize_t nread;
@@ -76,7 +76,7 @@ void StringListParser::ParseFile(const char* filename) {
 		ProcessString(name);
 
 	if (nread == -1)
-		throw std::runtime_error(std::string("Read error on ") + filename + ": " + strerror(errno));
+		throw std::runtime_error(std::string("Read error on ") + filename_ + ": " + strerror(errno));
 
 	close(f);
 }

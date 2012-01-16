@@ -40,6 +40,8 @@
 #include <streetmangler/stringlistparser.hh>
 
 namespace {
+	static const std::string g_include_command = ".include";
+
 	static const UnicodeString g_yo = UnicodeString::fromUTF8("ё");
 	static const UnicodeString g_ye = UnicodeString::fromUTF8("е");
 
@@ -52,11 +54,32 @@ namespace {
 		StreetMangler::Database& database_;
 
 	public:
-		DatabaseLoader(StreetMangler::Database& database) : database_(database) {
+		DatabaseLoader(const std::string& filename, StreetMangler::Database& database) : StreetMangler::StringListParser(filename), database_(database) {
 		}
 
 		void ProcessString(const std::string& string) {
-			database_.Add(string);
+			if (string.find(g_include_command) == 0) {
+				/* process include directive */
+				size_t filepos = g_include_command.length();
+				while (filepos < string.length() && (string[filepos] == ' ' || string[filepos] == '\t'))
+					++filepos;
+
+				size_t slashpos = filename_.rfind("/");
+
+				std::string newname;
+				if (slashpos == std::string::npos) {
+					newname = string.substr(filepos);
+				} else {
+					newname = filename_.substr(0, slashpos + 1);
+					newname += string.substr(filepos);
+				}
+
+				DatabaseLoader recursive_loader(newname, database_);
+				recursive_loader.Parse();
+			} else {
+				/* process name */
+				database_.Add(string);
+			}
 		}
 	};
 };
@@ -201,8 +224,8 @@ const StreetMangler::Locale& StreetMangler::Database::GetLocale() const {
 }
 
 void Database::Load(const std::string& filename) {
-	DatabaseLoader loader(*this);
-	loader.ParseFile(filename.c_str());
+	DatabaseLoader loader(filename, *this);
+	loader.Parse();
 }
 
 void Database::Add(const std::string& name) {
