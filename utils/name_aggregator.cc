@@ -82,6 +82,10 @@ void NameAggregator::ProcessName(const std::string& name) {
 	if (database_.CheckStrippedStatus(tokenized, suggestions)) {
 		++count_stripped_status_;
 		stripped_status_.insert(name);
+
+		if (flags_ & COUNT_NAMES)
+			++counts_stripped_status_[name];
+
 		return;
 	}
 
@@ -221,6 +225,11 @@ void NameAggregator::DumpData() {
 
 		dump.open("dump.counts.spelling_fixed.txt");
 		for (NameCountMap::const_iterator i = counts_spelling_fixed_.begin(); i != counts_spelling_fixed_.end(); ++i)
+			dump << std::setw(6) << i->second << " " << i->first << std::endl;
+		dump.close();
+
+		dump.open("dump.counts.stripped_status.txt");
+		for (NameCountMap::const_iterator i = counts_stripped_status_.begin(); i != counts_stripped_status_.end(); ++i)
 			dump << std::setw(6) << i->second << " " << i->first << std::endl;
 		dump.close();
 
