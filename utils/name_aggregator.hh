@@ -73,6 +73,7 @@ private:
 	NameCountMap counts_all_;
 	NameCountMap counts_no_match_;
 	NameCountMap counts_spelling_fixed_;
+	NameCountMap counts_stripped_status_;
 	NameCountMap counts_non_name_;
 };
 
