@@ -1,1 +1,2 @@
 .include main.txt
+.include areas.txt
