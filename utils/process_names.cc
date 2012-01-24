@@ -19,7 +19,7 @@
 
 #include <vector>
 #include <cstdlib>
-#include <cstdio>
+#include <iostream>
 
 #include <streetmangler/locale.hh>
 #include <streetmangler/database.hh>
@@ -78,23 +78,24 @@ protected:
 };
 
 int usage(const char* progname, int code) {
-	fprintf(stderr, "Usage: %s [-h] [-cdsAN] [-l locale] [-p depth] [[-a tag] ...] [[-n tag] ...] [[-f database] ...] file.osm|file.txt|- ...\n", progname);
-	fprintf(stderr, "  -s  display per-street statistics (takes extra time)\n");
-	fprintf(stderr, "  -d  dump street lists into dump.*\n");
-	fprintf(stderr, "  -c  include dumps with street name counts\n\n");
+	std::cerr << "Usage: " << progname << " [-h] [-cdsAN] [-l locale] [-p depth] [[-a tag] ...] [[-n tag] ...] [[-f database] ...] file.osm|file.txt|- ..." << std::endl;
+	std::cerr << "  -s  display per-street statistics (takes extra time)" << std::endl;
+	std::cerr << "  -d  dump street lists into dump.*" << std::endl;
+	std::cerr << "  -c  include dumps with street name counts" << std::endl << std::endl;
 
-	fprintf(stderr, "  -l  set locale (default \""DEFAULT_LOCALE"\")\n");
-	fprintf(stderr, "  -p  spelling check distance (default 1)\n\n");
+	std::cerr << "  -l  set locale (default \""DEFAULT_LOCALE"\")" << std::endl;
+	std::cerr << "  -p  spelling check distance (default 1)" << std::endl << std::endl;
 
-	fprintf(stderr, "  -f  specify pats to street names database (default "DEFAULT_DATAFILE")\n");
-	fprintf(stderr, "      (may be specified more than once)\n\n");
+	std::cerr << "  -f  specify pats to street names database (default "DEFAULT_DATAFILE")" << std::endl;
+	std::cerr << "      (may be specified more than once)" << std::endl << std::endl;
 
-	fprintf(stderr, "  -a  specify addr tag(s) instead of default set (\"addrN:streetN\" variants)\n");
-	fprintf(stderr, "  -n  specify name tag(s) instead of default set (\"name\")\n");
-	fprintf(stderr, "  -A  don't use default addr tags set\n");
-	fprintf(stderr, "  -N  don't use default name tags set\n\n");
+	std::cerr << "  -a  specify addr tag(s) instead of default set (\"addrN:streetN\" variants)" << std::endl;
+	std::cerr << "  -n  specify name tag(s) instead of default set (\"name\")" << std::endl;
+	std::cerr << "  -A  don't use default addr tags set" << std::endl;
+	std::cerr << "  -N  don't use default name tags set" << std::endl << std::endl;
 
-	fprintf(stderr, "  -h  display this help\n");
+	std::cerr << "  -h  display this help" << std::endl;
+
 	return code;
 }
 
@@ -155,7 +156,7 @@ int main(int argc, char** argv) {
 	StreetMangler::Database database(locale);
 
 	for (std::vector<const char*>::const_iterator i = datafiles.begin(); i != datafiles.end(); ++i) {
-		fprintf(stderr, "Loading database \"%s\"...\n", *i);
+		std::cerr << "Loading database \"" << *i << "\"..." << std::endl;
 		database.Load(*i);
 	}
 
@@ -175,23 +176,23 @@ int main(int argc, char** argv) {
 	for (int i = 0; i < argc; ++i) {
 		std::string file(argv[i]);
 		if (file == "-") {
-			fprintf(stderr, "Processing stdin as OSM data...\n");
+			std::cerr << "Processing stdin as OSM data..." << std::endl;
 			osm_processor.ParseStdin();
 		} else if (file.rfind(".osm") == file.length() - 4 || file == "-") {
-			fprintf(stderr, "Processing file \"%s\" as OSM data...\n", file.c_str());
+			std::cerr << "Processing file \"" << file << "\" as OSM data..." << std::endl;
 			osm_processor.ParseFile(file.c_str());
 		} else if (file.rfind(".txt") == file.length() - 4) {
-			fprintf(stderr, "Processing file \"%s\" as strings list...\n", file.c_str());
+			std::cerr << "Processing file \"" << file << "\" as strings list..." << std::endl;
 			text_processor.ParseFile(file.c_str());
 		} else {
-			fprintf(stderr, "%s: unknown format (we only support .osm and .txt)\n", file.c_str());
+			std::cerr << file << ": unknown format (we only support .osm and .txt)" << std::endl;
 			return 1;
 		}
 	}
 
 	/* produce aggregated dump and statistics */
 	if (dumpflag) {
-		fprintf(stderr, "Dumping data...\n");
+		std::cerr << "Dumping data..." << std::endl;
 		aggregator.DumpData();
 	}
 
