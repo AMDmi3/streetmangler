@@ -1,2 +1,4 @@
 .include main.txt
 .include areas.txt
+.include ambiguities.txt
+.include exceptions.txt
