@@ -341,7 +341,6 @@ int Database::CheckStrippedStatus(const Name& name, std::vector<std::string>& ma
  * std::string shortcuts to Checks
  */
 int Database::CheckExactMatch(const std::string& name) const {
-	/* this one a shortcut, actually really */
 	return private_->names_.find(name) != private_->names_.end();
 }
 
