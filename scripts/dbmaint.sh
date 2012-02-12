@@ -1,14 +1,6 @@
 #!/bin/sh -u
 
-datadir="`dirname $0`/../data"
-
-all_files="
-	$datadir/ru/areas.txt
-	$datadir/ru/exceptions.txt
-	$datadir/ru/main.txt
-	$datadir/ru_BY.txt
-	$datadir/ru_RU.txt
-	"
+. "`dirname $0`/common.sh"
 
 sort_file() {
 	local file="$1"
@@ -62,7 +54,7 @@ check_files() {
 	rm -f $tmpall $tmpfixme $tmpnoncyr $tmpdup $tmpdupstat
 }
 
-for f in $all_files; do
+for f in $automaint_files; do
 	sort_file "$f"
 done
 
