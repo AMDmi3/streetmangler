@@ -240,28 +240,36 @@ void Database::Add(const std::string& name) {
 
 	/* for the locales in which canonical form != full form,
 	 * we need to use canonical form as a reference */
-	std::string canonical = tokenized.Join(Name::CANONICALIZE_STATUS);
+	std::set<std::string> canonical_part_variants;
+	canonical_part_variants.insert(tokenized.Join(Name::CANONICALIZE_STATUS));
 
-	/* for exact match */
-	private_->names_.insert(canonical);
-
-	/* for canonical form  */
-	private_->canonical_map_.insert(std::make_pair(hash, canonical));
-
-	/* for spelling */
-	private_->spell_trie_.Insert(uhashordered);
-	private_->spelling_map_.insert(std::make_pair(uhashordered, canonical));
-	if (uhashunordered != uhashordered) {
-		private_->spell_trie_.Insert(uhashunordered);
-		private_->spelling_map_.insert(std::make_pair(uhashunordered, canonical));
+	if (!tokenized.IsStrictStatusPartOrder()) {
+		canonical_part_variants.insert(tokenized.Join(Name::CANONICALIZE_STATUS|Name::STATUS_TO_LEFT));
+		canonical_part_variants.insert(tokenized.Join(Name::CANONICALIZE_STATUS|Name::STATUS_TO_RIGHT));
 	}
 
-	/* for stripped status  */
-	UnicodeString stripped_uhashordered;
-	private_->NameToHashes(tokenized, NULL, NULL, &stripped_uhashordered, NULL, Name::REMOVE_ALL_STATUSES);
-	stripped_uhashordered.findAndReplace(g_yo, g_ye);
-	if (stripped_uhashordered != uhashordered)
-		private_->stripped_map_.insert(std::make_pair(stripped_uhashordered, canonical));
+	for (std::set<std::string>::iterator canonical = canonical_part_variants.begin(); canonical != canonical_part_variants.end(); ++canonical) {
+		/* for exact match */
+		private_->names_.insert(*canonical);
+
+		/* for canonical form  */
+		private_->canonical_map_.insert(std::make_pair(hash, *canonical));
+
+		/* for spelling */
+		private_->spell_trie_.Insert(uhashordered);
+		private_->spelling_map_.insert(std::make_pair(uhashordered, *canonical));
+		if (uhashunordered != uhashordered) {
+			private_->spell_trie_.Insert(uhashunordered);
+			private_->spelling_map_.insert(std::make_pair(uhashunordered, *canonical));
+		}
+
+		/* for stripped status  */
+		UnicodeString stripped_uhashordered;
+		private_->NameToHashes(tokenized, NULL, NULL, &stripped_uhashordered, NULL, Name::REMOVE_ALL_STATUSES);
+		stripped_uhashordered.findAndReplace(g_yo, g_ye);
+		if (stripped_uhashordered != uhashordered)
+			private_->stripped_map_.insert(std::make_pair(stripped_uhashordered, *canonical));
+	}
 }
 
 /*
