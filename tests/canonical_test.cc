@@ -27,9 +27,9 @@ namespace {
 
 	/* locale with custom (in this case, abbreviated) canonical form */
 	StatusPartData status_parts[] = {
-		{ "улица", "ул.", "ул.", { "улица", "ул", NULL } },
-		{ "проспект", "просп.", "пр.", { "проспект", "просп", "пр", NULL } },
-		{ NULL, NULL, NULL, { NULL } },
+		{ "улица", "ул.", "ул.", { "улица", "ул", NULL }, true },
+		{ "проспект", "просп.", "пр.", { "проспект", "просп", "пр", NULL }, true },
+		{ NULL, NULL, NULL, { NULL }, true },
 	};
 
 	Locale::Registrar registrars[] = {
