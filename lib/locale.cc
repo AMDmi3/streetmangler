@@ -58,7 +58,7 @@ Locale::Locale(const std::string& name) {
 		assert(in->full);
 		std::string canonical = in->canonical ? in->canonical : in->full;
 		std::string abbrev = in->abbrev ? in->abbrev : canonical;
-		status_parts_.push_back(StatusPart(priority, in->full, canonical, abbrev, in->strict_order));
+		status_parts_.push_back(StatusPart(priority, in->full, canonical, abbrev, in->flags));
 	}
 
 	/* now vector won't change so it's safe to use pointers */

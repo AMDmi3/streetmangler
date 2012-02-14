@@ -243,7 +243,7 @@ void Database::Add(const std::string& name) {
 	std::set<std::string> canonical_part_variants;
 	canonical_part_variants.insert(tokenized.Join(Name::CANONICALIZE_STATUS));
 
-	if (!tokenized.IsStrictStatusPartOrder()) {
+	if (tokenized.GetStatusFlags() && RANDOM_ORDER) {
 		canonical_part_variants.insert(tokenized.Join(Name::CANONICALIZE_STATUS|Name::STATUS_TO_LEFT));
 		canonical_part_variants.insert(tokenized.Join(Name::CANONICALIZE_STATUS|Name::STATUS_TO_RIGHT));
 	}

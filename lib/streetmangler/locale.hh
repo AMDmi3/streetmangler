@@ -27,12 +27,16 @@
 
 namespace StreetMangler {
 
+enum StatusFlags {
+	RANDOM_ORDER = 0x01,
+};
+
 struct StatusPartData {
 	const char* full;
 	const char* canonical;
 	const char* abbrev;
 	const char* variants[10];
-	bool strict_order;
+	int flags;
 };
 
 /**
@@ -63,21 +67,21 @@ public:
 		std::string full_;
 		std::string canonical_;
 		std::string abbrev_;
-		bool strict_order_;
+		int flags_;
 
 	public:
-		StatusPart(int priority, const std::string& full, const std::string& canonical, const std::string& abbrev, bool strict_order)
+		StatusPart(int priority, const std::string& full, const std::string& canonical, const std::string& abbrev, int flags)
 			  : priority_(priority),
 			    full_(full),
 			    canonical_(canonical),
 			    abbrev_(abbrev),
-			    strict_order_(strict_order) {
+			    flags_(flags) {
 		}
 
 		const std::string& GetFull() const { return full_; }
 		const std::string& GetCanonical() const { return canonical_; }
 		const std::string& GetAbbrev() const { return abbrev_; }
-		bool IsStrictOrder() const { return strict_order_; }
+		int GetFlags() const { return flags_; }
 
 		bool IsPrior(const StatusPart* other) const { return other == NULL || priority_ < other->priority_; }
 	};
