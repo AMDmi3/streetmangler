@@ -32,6 +32,7 @@ struct StatusPartData {
 	const char* canonical;
 	const char* abbrev;
 	const char* variants[10];
+	bool strict_order;
 };
 
 /**
@@ -62,18 +63,21 @@ public:
 		std::string full_;
 		std::string canonical_;
 		std::string abbrev_;
+		bool strict_order_;
 
 	public:
-		StatusPart(int priority, const std::string& full, const std::string& canonical, const std::string& abbrev)
+		StatusPart(int priority, const std::string& full, const std::string& canonical, const std::string& abbrev, bool strict_order)
 			  : priority_(priority),
 			    full_(full),
 			    canonical_(canonical),
-			    abbrev_(abbrev) {
+			    abbrev_(abbrev),
+			    strict_order_(strict_order) {
 		}
 
 		const std::string& GetFull() const { return full_; }
 		const std::string& GetCanonical() const { return canonical_; }
 		const std::string& GetAbbrev() const { return abbrev_; }
+		bool IsStrictOrder() const { return strict_order_; }
 
 		bool IsPrior(const StatusPart* other) const { return other == NULL || priority_ < other->priority_; }
 	};

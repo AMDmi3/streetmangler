@@ -81,6 +81,7 @@ public:
 	std::string Join(int flags = 0) const;
 
 	bool HasStatusPart() const { return status_pos_ != -1; }
+	bool IsStrictStatusPartOrder() const { return status_pos_ != -1 && tokens_[status_pos_].status_part->IsStrictOrder(); }
 
 	operator std::string() const { return Join(); }
 };
