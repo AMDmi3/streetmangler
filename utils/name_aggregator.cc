@@ -62,15 +62,26 @@ void NameAggregator::ProcessName(const std::string& name) {
 
 	if (database_.CheckCanonicalForm(tokenized, suggestions)) {
 		++count_canonical_form_;
-		canonical_form_.insert(std::make_pair(name, suggestions.front()));
+
+		std::pair<MultiSuggestionMap::iterator, bool> insresult =
+			canonical_form_.insert(std::make_pair(name, std::vector<std::string>()));
+
+		/* in -s mode it's possible that the map already contains suggestions for
+		 * this street; just ignore it then, as suggestions vertor will be the same */
+		if (insresult.second)
+			suggestions.swap(insresult.first->second);
+
 		return;
 	}
 
 	if (database_.CheckSpelling(tokenized, suggestions, spelldistance_)) {
 		++count_spelling_fixed_;
+
 		std::pair<MultiSuggestionMap::iterator, bool> insresult =
 			spelling_fixed_.insert(std::make_pair(name, std::vector<std::string>()));
-		if (insresult.second) /* false possible in -s mode */
+		/* in -s mode it's possible that the map already contains suggestions for
+		 * this street; just ignore it then, as suggestions vertor will be the same */
+		if (insresult.second)
 			suggestions.swap(insresult.first->second);
 
 		if (flags_ & COUNT_NAMES)
@@ -176,8 +187,20 @@ void NameAggregator::DumpData() {
 	dump.close();
 
 	dump.open("dump.canonical_form.txt");
-	for (SuggestionMap::const_iterator i = canonical_form_.begin(); i != canonical_form_.end(); ++i)
-		dump << i->first << "|" << i->second << std::endl;
+	for (MultiSuggestionMap::const_iterator i = canonical_form_.begin(); i != canonical_form_.end(); ++i) {
+		dump << i->first;
+		if (i->second.size() == 1) {
+			dump << "|" << i->second.front() << std::endl;
+		} else {
+			dump << " # (";
+			for (std::vector<std::string>::const_iterator s = i->second.begin(); s != i->second.end(); ++s) {
+				if (s != i->second.begin())
+					dump << ", ";
+				dump << *s;
+			}
+			dump << ")" << std::endl;
+		}
+	}
 	dump.close();
 
 	dump.open("dump.spelling_fixed.txt");

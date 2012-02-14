@@ -64,7 +64,7 @@ private:
 
 	NameSet all_;
 	NameSet exact_match_;
-	SuggestionMap canonical_form_;
+	MultiSuggestionMap canonical_form_;
 	MultiSuggestionMap spelling_fixed_;
 	NameSet stripped_status_;
 	NameSet no_match_;
