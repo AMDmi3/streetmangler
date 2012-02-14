@@ -81,6 +81,8 @@ public:
 	std::string Join(int flags = 0) const;
 
 	bool HasStatusPart() const { return status_pos_ != -1; }
+	bool IsStatusPartAtLeft() const { return status_pos_ == 0; }
+	bool IsStatusPartAtRight() const { return status_pos_ == (int)tokens_.size() - 1; }
 	int GetStatusFlags() const { return (status_pos_ == -1) ? 0 : tokens_[status_pos_].status_part->GetFlags(); }
 
 	operator std::string() const { return Join(); }

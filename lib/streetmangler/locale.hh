@@ -34,7 +34,9 @@ namespace StreetMangler {
 class Locale {
 public:
 	enum StatusFlags {
-		RANDOM_ORDER = 0x01,
+		ORDER_RANDOM_IF_LEFT = 0x01,
+		ORDER_RANDOM_IF_RIGHT = 0x02,
+		ORDER_RANDOM_IF_SIDE = ORDER_RANDOM_IF_LEFT | ORDER_RANDOM_IF_RIGHT,
 	};
 
 	struct StatusPartData {

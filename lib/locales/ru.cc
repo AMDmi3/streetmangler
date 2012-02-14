@@ -67,11 +67,11 @@ Locale::StatusPartData status_parts[] = {
 	{ "разъезд",    NULL, NULL,    { "разъезд",                            NULL }, 0 },
 	{ "слобода",    NULL, NULL,    { "слобода",                            NULL }, 0 },
 
-	{ "район",      NULL, NULL,    { "район", "р-н",                       NULL }, Locale::RANDOM_ORDER },
-	{ "микрорайон", NULL, NULL,    { "микрорайон", "мкр-н", "мк-н", "мкр", "мкрн", NULL }, Locale::RANDOM_ORDER },
-	{ "посёлок",    NULL, NULL,    { "посёлок", "поселок", "пос",          NULL }, Locale::RANDOM_ORDER },
-	{ "деревня",    NULL, NULL,    { "деревня", "дер", "д",                NULL }, Locale::RANDOM_ORDER },
-	{ "квартал",    NULL, NULL,    { "квартал", "кв-л",                    NULL }, Locale::RANDOM_ORDER },
+	{ "район",      NULL, NULL,    { "район", "р-н",                       NULL }, Locale::ORDER_RANDOM_IF_RIGHT },
+	{ "микрорайон", NULL, NULL,    { "микрорайон", "мкр-н", "мк-н", "мкр", "мкрн", NULL }, Locale::ORDER_RANDOM_IF_RIGHT },
+	{ "посёлок",    NULL, NULL,    { "посёлок", "поселок", "пос",          NULL }, Locale::ORDER_RANDOM_IF_RIGHT },
+	{ "деревня",    NULL, NULL,    { "деревня", "дер", "д",                NULL }, Locale::ORDER_RANDOM_IF_RIGHT },
+	{ "квартал",    NULL, NULL,    { "квартал", "кв-л",                    NULL }, Locale::ORDER_RANDOM_IF_RIGHT },
 
 	{ NULL,         NULL, NULL,    {                                       NULL }, 0 },
 };

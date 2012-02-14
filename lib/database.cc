@@ -243,10 +243,11 @@ void Database::Add(const std::string& name) {
 	std::set<std::string> canonical_part_variants;
 	canonical_part_variants.insert(tokenized.Join(Name::CANONICALIZE_STATUS));
 
-	if (tokenized.GetStatusFlags() && Locale::RANDOM_ORDER) {
-		canonical_part_variants.insert(tokenized.Join(Name::CANONICALIZE_STATUS|Name::STATUS_TO_LEFT));
+	if (tokenized.IsStatusPartAtLeft() && (tokenized.GetStatusFlags() & Locale::ORDER_RANDOM_IF_LEFT))
 		canonical_part_variants.insert(tokenized.Join(Name::CANONICALIZE_STATUS|Name::STATUS_TO_RIGHT));
-	}
+
+	if (tokenized.IsStatusPartAtRight() && (tokenized.GetStatusFlags() & Locale::ORDER_RANDOM_IF_RIGHT))
+		canonical_part_variants.insert(tokenized.Join(Name::CANONICALIZE_STATUS|Name::STATUS_TO_LEFT));
 
 	for (std::set<std::string>::iterator canonical = canonical_part_variants.begin(); canonical != canonical_part_variants.end(); ++canonical) {
 		/* for exact match */
