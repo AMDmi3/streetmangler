@@ -31,6 +31,12 @@
 		if (!suggestions.empty()) EXPECT_STRING(suggestions.front(), expected); \
 	}
 
+#define CHECK_CANONICAL_FORM_HAS(database, sample, expected) { \
+		std::vector<std::string> suggestions; \
+		EXPECT_TRUE(database.CheckCanonicalForm(sample, suggestions) >= 1); \
+		if (!suggestions.empty()) EXPECT_TRUE(std::find(suggestions.begin(), suggestions.end(), expected) != suggestions.end()); \
+	}
+
 #define CHECK_SPELLING(database, sample, expected, depth) { \
 		std::vector<std::string> suggestions; \
 		EXPECT_TRUE(database.CheckSpelling(sample, suggestions, depth) == 1); \

@@ -41,6 +41,8 @@ BEGIN_TEST()
 	db.Add("улица Петро Безымянного");
 	db.Add("1-я улица Строителей");
 	db.Add("улица 3-го Интернационала");
+	db.Add("Измайловский район");
+	db.Add("район Измайловка");
 
 	/*
 	 * simple matches
@@ -120,5 +122,16 @@ BEGIN_TEST()
 	/* names with no status part originally should not be counted
 	 * as stripped of status part */
 	CHECK_NO_STRIPPED_STATUS(db, "МКАД");
+
+	/*
+	 * non-strict status order
+	 */
+	CHECK_CANONICAL_FORM(db, "р-н Измайловка", "район Измайловка");
+	CHECK_CANONICAL_FORM(db, "Измайловка р-н", "район Измайловка");
+	/* strictly, following should be CHECK_CANONICAL_FORM, and that should not fail
+	 * (e.g. canonical form returning same status part order as in the query. But
+	 * that is not implemented yet */
+	CHECK_CANONICAL_FORM_HAS(db, "р-н Измайловский", "район Измайловский");
+	CHECK_CANONICAL_FORM_HAS(db, "Измайловский р-н", "Измайловский район");
 
 END_TEST()
