@@ -27,26 +27,22 @@
 
 namespace StreetMangler {
 
-enum StatusFlags {
-	RANDOM_ORDER = 0x01,
-};
-
-struct StatusPartData {
-	const char* full;
-	const char* canonical;
-	const char* abbrev;
-	const char* variants[10];
-	int flags;
-};
-
 /**
  * @todo Make locales persistent via static map
  * @todo Too much string copying - optimize
  */
 class Locale {
 public:
-	class UnknownLocale : public std::exception {
-		/* TODO: what() */
+	enum StatusFlags {
+		RANDOM_ORDER = 0x01,
+	};
+
+	struct StatusPartData {
+		const char* full;
+		const char* canonical;
+		const char* abbrev;
+		const char* variants[10];
+		int flags;
 	};
 
 	struct Registrar {
@@ -55,6 +51,10 @@ public:
 		Registrar* next_;
 
 		Registrar(const std::string& name, StatusPartData* status_parts);
+	};
+
+	class UnknownLocale : public std::exception {
+		/* TODO: what() */
 	};
 
 private:

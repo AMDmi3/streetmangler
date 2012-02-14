@@ -22,9 +22,9 @@
 /* anonymous namespace */
 namespace {
 
-using namespace StreetMangler;
+using StreetMangler::Locale;
 
-StatusPartData status_parts[] = {
+Locale::StatusPartData status_parts[] = {
 	/* 1 - full form
 	 * 2 - canonical form (if NULL, comes from full form)
 	 * 3 - short form (if NULL, comes from canonical form
@@ -67,11 +67,11 @@ StatusPartData status_parts[] = {
 	{ "разъезд",    NULL, NULL,    { "разъезд",                            NULL }, 0 },
 	{ "слобода",    NULL, NULL,    { "слобода",                            NULL }, 0 },
 
-	{ "район",      NULL, NULL,    { "район", "р-н",                       NULL }, RANDOM_ORDER },
-	{ "микрорайон", NULL, NULL,    { "микрорайон", "мкр-н", "мк-н", "мкр", "мкрн", NULL }, RANDOM_ORDER },
-	{ "посёлок",    NULL, NULL,    { "посёлок", "поселок", "пос",          NULL }, RANDOM_ORDER },
-	{ "деревня",    NULL, NULL,    { "деревня", "дер", "д",                NULL }, RANDOM_ORDER },
-	{ "квартал",    NULL, NULL,    { "квартал", "кв-л",                    NULL }, RANDOM_ORDER },
+	{ "район",      NULL, NULL,    { "район", "р-н",                       NULL }, Locale::RANDOM_ORDER },
+	{ "микрорайон", NULL, NULL,    { "микрорайон", "мкр-н", "мк-н", "мкр", "мкрн", NULL }, Locale::RANDOM_ORDER },
+	{ "посёлок",    NULL, NULL,    { "посёлок", "поселок", "пос",          NULL }, Locale::RANDOM_ORDER },
+	{ "деревня",    NULL, NULL,    { "деревня", "дер", "д",                NULL }, Locale::RANDOM_ORDER },
+	{ "квартал",    NULL, NULL,    { "квартал", "кв-л",                    NULL }, Locale::RANDOM_ORDER },
 
 	{ NULL,         NULL, NULL,    {                                       NULL }, 0 },
 };
