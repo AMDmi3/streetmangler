@@ -19,13 +19,23 @@ check_files() {
 	local tmpnoncyr="_dbmaint_tmp_noncyr"
 	local tmpdup="_dbmaint_tmp_dup"
 	local tmpdupstat="_dbmaint_tmp_dupstat"
+	local tmparea="_dbmaint_tmp_area"
+	local tmpnonarea="_dbmaint_tmp_nonarea"
 
 	cat "$@" | sort | grep -v ^.include > $tmpall
 	cat $tmpall | grep -E '.#.*(XXX|FIXME)' > $tmpfixme
 	cat $tmpall | sed -e 's| *#.*$||' | grep -Eiv '[XIV]+.*съезда' | grep '[acekmopuxyABCEHKMOPTXY]' > $tmpnoncyr
 	cat $tmpall | sed -e 's| *#.*$||' | uniq -d | grep -v '^$' > $tmpdup
-	rm -f $tmpdupstat
 
+	area_statuses='посёлок|район|микрорайон|квартал|деревня'
+	nonarea_statuses='улица|переулок|проспект|проезд|аллея|площадь'
+
+	cat `echo $@ | xargs -n1 echo | grep area` | grep -E "^($nonarea_statuses) " > $tmparea
+	cat `echo $@ | xargs -n1 echo | grep area` | grep -E " ($nonarea_statuses)$" >> $tmparea
+	cat `echo $@ | xargs -n1 echo | grep -v area` | grep -E "^($area_statuses) " > $tmpnonarea
+	cat `echo $@ | xargs -n1 echo | grep -v area` | grep -E " ($area_statuses)$" >> $tmpnonarea
+
+	rm -f $tmpdupstat
 	for x in улица переулок проезд проспект аллея площадь; do
 		cat $tmpall | grep -E "^[^#]*$x[^#]*$x" | grep -v 'Автопроезд' >> $tmpdupstat
 	done
@@ -50,8 +60,19 @@ check_files() {
 		cat "$tmpdupstat"
 		echo "---[ End of duplicate status ]---"
 	fi
+	if [ -s "$tmparea" ]; then
+		echo "---[ Nonarea status in areas file ]---"
+		cat "$tmparea"
+		echo "---[ End of nonarea status in areas file ]---"
+	fi
+	if [ -s "$tmpnonarea" ]; then
+		echo "---[ Area status in nonareas file ]---"
+		cat "$tmpnonarea"
+		echo "---[ End of area status in nonareas file ]---"
+	fi
 
 	rm -f $tmpall $tmpfixme $tmpnoncyr $tmpdup $tmpdupstat
+   #	$tmparea $tmpnonarea
 }
 
 for f in $automaint_files; do
