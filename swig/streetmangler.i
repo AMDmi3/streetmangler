@@ -5,10 +5,11 @@
 
 class StatusPart {
 public:
-        StatusPart(int priority, const std::string& full, const std::string& canonical, const std::string& abbrev);
+        StatusPart(int priority, const std::string& full, const std::string& canonical, const std::string& abbrev, int flags);
         const std::string& GetFull() const;
         const std::string& GetCanonical() const;
         const std::string& GetAbbrev() const;
+        int GetFlags() const;
 
         bool IsPrior(const StatusPart* other) const;
 };
@@ -41,9 +42,12 @@ class Name {
 public:
         Name(const std::string& name, const Locale& locale);
 
-        bool HasStatusPart();
+        bool HasStatusPart() const;
+        bool IsStatusPartAtLeft() const;
+        bool IsStatusPartAtRight() const;
+        int GetStatusFlags() const;
 
-        std::string Join(int flags = 0);
+        std::string Join(int flags = 0) const;
 };
 
 namespace std {
