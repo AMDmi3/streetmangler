@@ -28,7 +28,7 @@ SET(LIBRARY_SRCS
 )
 
 SET(PROCESS_NAMES_SRCS
-	utils/process_names.cc 
+	utils/process_names.cc
 	utils/osm_name_extractor.cc
 	utils/name_aggregator.cc
 )
