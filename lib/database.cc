@@ -241,7 +241,7 @@ void Database::Add(const std::string& name) {
 	/* for the locales in which canonical form != full form,
 	 * we need to use canonical form as a reference
 	 *
-	 * XXX: this has a side affect of ignoring special writing
+	 * XXX: this has a side effect of ignoring special writing
 	 * of status part from the database (e.g. "Русская Слобода" is
 	 * converted to "Русская слобода"). May handle canonical form ==
 	 * full form case specially just using variant from the database */
