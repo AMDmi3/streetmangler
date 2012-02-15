@@ -71,8 +71,7 @@ check_files() {
 		echo "---[ End of area status in nonareas file ]---"
 	fi
 
-	rm -f $tmpall $tmpfixme $tmpnoncyr $tmpdup $tmpdupstat
-   #	$tmparea $tmpnonarea
+	rm -f $tmpall $tmpfixme $tmpnoncyr $tmpdup $tmpdupstat $tmparea $tmpnonarea
 }
 
 for f in $automaint_files; do
