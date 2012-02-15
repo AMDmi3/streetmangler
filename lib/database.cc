@@ -239,16 +239,30 @@ void Database::Add(const std::string& name) {
 	private_->NameToHashes(tokenized, &hash, &uhash, &uhashordered, &uhashunordered);
 
 	/* for the locales in which canonical form != full form,
-	 * we need to use canonical form as a reference */
+	 * we need to use canonical form as a reference
+	 *
+	 * XXX: this has a side affect of ignoring special writing
+	 * of status part from the database (e.g. "Русская Слобода" is
+	 * converted to "Русская слобода"). May handle canonical form ==
+	 * full form case specially just using variant from the database */
 	std::set<std::string> canonical_part_variants;
-	canonical_part_variants.insert(tokenized.Join(Name::CANONICALIZE_STATUS));
 
+	/* default canonical variant */
+	if (tokenized.GetStatusFlags() & Locale::STATUS_AT_LEFT)
+		canonical_part_variants.insert(tokenized.Join(Name::CANONICALIZE_STATUS|Name::STATUS_TO_LEFT));
+	else if (tokenized.GetStatusFlags() & Locale::STATUS_AT_RIGHT)
+		canonical_part_variants.insert(tokenized.Join(Name::CANONICALIZE_STATUS|Name::STATUS_TO_RIGHT));
+	else
+		canonical_part_variants.insert(tokenized.Join(Name::CANONICALIZE_STATUS));
+
+	/* additional canonical variants, which may be enabled depending on flags */
 	if (tokenized.IsStatusPartAtLeft() && (tokenized.GetStatusFlags() & Locale::ORDER_RANDOM_IF_LEFT))
 		canonical_part_variants.insert(tokenized.Join(Name::CANONICALIZE_STATUS|Name::STATUS_TO_RIGHT));
 
 	if (tokenized.IsStatusPartAtRight() && (tokenized.GetStatusFlags() & Locale::ORDER_RANDOM_IF_RIGHT))
 		canonical_part_variants.insert(tokenized.Join(Name::CANONICALIZE_STATUS|Name::STATUS_TO_LEFT));
 
+	/* for each canonical form, fill structures required to link other forms to it */
 	for (std::set<std::string>::iterator canonical = canonical_part_variants.begin(); canonical != canonical_part_variants.end(); ++canonical) {
 		/* for exact match */
 		private_->names_.insert(*canonical);
