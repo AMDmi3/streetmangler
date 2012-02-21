@@ -17,6 +17,8 @@
  * along with streetmangler.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <algorithm>
+
 #include "testing.hh"
 
 #define CHECK_EXACT_MATCH(database, sample) \
