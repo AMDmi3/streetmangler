@@ -2,3 +2,4 @@
 .include areas.txt
 .include ambiguities.txt
 .include exceptions.txt
+.include multistatus.txt
