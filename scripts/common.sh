@@ -6,6 +6,7 @@ automaint_files="
 	$datadir/ru/areas.txt
 	$datadir/ru/exceptions.txt
 	$datadir/ru/main.txt
+	$datadir/ru/multistatus.txt
 	$datadir/ru_BY.txt
 	$datadir/ru_RU.txt
 	"
@@ -14,3 +15,6 @@ all_files="
 	$automaint_files
 	$datadir/ru/ambiguities.txt
 	"
+
+area_statuses="посёлок|район|микрорайон|квартал|деревня"
+nonarea_statuses="аллея|переулок|площадь|проезд|проспект|прощадь|тракт|улица|шоссе|линия"
