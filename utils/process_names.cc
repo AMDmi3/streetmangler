@@ -21,6 +21,8 @@
 #include <cstdlib>
 #include <iostream>
 
+#include <getopt.h>
+
 #include <streetmangler/locale.hh>
 #include <streetmangler/database.hh>
 #include <streetmangler/stringlistparser.hh>
