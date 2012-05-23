@@ -37,7 +37,10 @@ public:
         const StatusPart* FindStatus(const std::string& name) const;
 };
 
+#ifndef SWIGJAVA
 %rename(_Name) Name;
+#endif//SWIGJAVA
+
 class Name {
 public:
         Name(const std::string& name, const Locale& locale);
@@ -51,10 +54,37 @@ public:
 };
 
 namespace std {
+        //%typemap(javabase) SWIGTYPE "AbstractList<String>"
+        %typemap(javainterfaces) SWIGTYPE "Iterable<String>"
+        %typemap(javaimports) SWIGTYPE "import java.util.Iterator;
+import java.lang.Iterable;"
+        %typemap(javacode) SWIGTYPE "
+  public class SVIterator implements Iterator<String> {
+    StringVector v;
+    int idx;
+    public SVIterator(StringVector _v) { v = _v; idx = 0; }
+    public boolean hasNext() { return (idx < v.size()); }
+    public String next() { return v.get(idx++); }
+    public void remove() { }
+  };
+  public Iterator<String> iterator() { return new SVIterator(this); }
+"
         %template(StringVector) vector<string>;
+        %typemap(javacode) SWIGTYPE ""
+        %typemap(javabase) SWIGTYPE ""
+        %typemap(javainterfaces) SWIGTYPE ""
+        %typemap(javaimports) SWIGTYPE ""
 };
 
+#ifndef SWIGJAVA
 %rename(_Database) Database;
+#endif//SWIGJAVA
+
+#ifdef SWIGPERL
+#define _bool int
+#else
+#define _bool bool
+#endif
 
 class Database {
 public:
@@ -63,8 +93,8 @@ public:
         void Load(const char* filename);
         void Add(const std::string& name);
 
-        int CheckExactMatch(const std::string& name) const;
-        int CheckExactMatch(Name& name) const;
+        _bool CheckExactMatch(const std::string& name) const;
+        _bool CheckExactMatch(Name& name) const;
 };
 
 %extend Database {
