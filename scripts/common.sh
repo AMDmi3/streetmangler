@@ -8,6 +8,7 @@ automaint_files="
 	$datadir/ru/fixme.txt
 	$datadir/ru/main.txt
 	$datadir/ru/multistatus.txt
+	$datadir/ru/unofficial.txt
 	$datadir/ru_BY.txt
 	$datadir/ru_RU.txt
 	"

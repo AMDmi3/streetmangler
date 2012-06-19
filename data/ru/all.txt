@@ -4,4 +4,6 @@
 .include exceptions.txt
 .include multistatus.txt
 
+.include unofficial.txt
+
 .include fixme.txt
