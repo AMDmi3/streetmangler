@@ -30,12 +30,12 @@ Locale::StatusPartData status_parts[] = {
 	 * 3 - short form (if NULL, comes from canonical form
 	 * 4 - variants (used for detection, so no duplicates are allowed)
 	 * 5 - flags */
-	/* 1             2     3           4                                            5 */
+	/* 1             2     3          4                                            5 */
 	{ "улица",      NULL, "ул.",   { "улица", "ул",                        NULL }, 0 },
 
 	{ "площадь",    NULL, "пл.",   { "площадь", "пл",                      NULL }, 0 },
 	{ "переулок",   NULL, "пер.",  { "переулок", "пер", "пер-к",           NULL }, 0 },
-	/* после переулка, т.е. "переулок Одесский проезд" */
+	/* после переулка, т.к. "переулок Одесский проезд" */
 	{ "проезд",     NULL, "пр-д.", { "проезд", "пр-д",                     NULL }, 0 },
 	{ "шоссе",      NULL, "ш.",    { "шоссе", "ш",                         NULL }, 0 },
 
