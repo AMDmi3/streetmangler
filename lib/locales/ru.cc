@@ -68,7 +68,7 @@ Locale::StatusPartData status_parts[] = {
 	{ "слобода",    NULL, NULL,    { "слобода",                            NULL }, 0 },
 
 	{ "район",      NULL, NULL,    { "район", "р-н",                       NULL }, Locale::ORDER_RANDOM_IF_RIGHT },
-	{ "микрорайон", NULL, NULL,    { "микрорайон", "мкр-н", "мк-н", "мкр", "мкрн", NULL }, Locale::ORDER_RANDOM_IF_RIGHT },
+	{ "микрорайон", NULL, NULL,    { "микрорайон", "мкр-н", "мк-н", "мкр-он", "мкр", "мкрн", NULL }, Locale::ORDER_RANDOM_IF_RIGHT },
 	{ "посёлок",    NULL, NULL,    { "посёлок", "поселок", "пос",          NULL }, Locale::ORDER_RANDOM_IF_RIGHT },
 	{ "деревня",    NULL, NULL,    { "деревня", "дер", "д",                NULL }, Locale::ORDER_RANDOM_IF_RIGHT },
 	{ "квартал",    NULL, NULL,    { "квартал", "кв-л", "кв",              NULL }, Locale::ORDER_RANDOM_IF_RIGHT },
