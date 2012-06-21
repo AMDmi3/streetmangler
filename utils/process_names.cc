@@ -20,6 +20,7 @@
 #include <vector>
 #include <cstdlib>
 #include <iostream>
+#include <exception>
 
 #include <getopt.h>
 
@@ -162,8 +163,12 @@ int main(int argc, char** argv) {
 	StreetMangler::Database database(locale);
 
 	for (std::vector<std::string>::const_iterator i = datafiles.begin(); i != datafiles.end(); ++i) {
-		std::cerr << "Loading database \"" << *i << "\"..." << std::endl;
-		database.Load(*i);
+		std::cerr << "Loading dictionary \"" << *i << "\"..." << std::endl;
+		try {
+			database.Load(*i);
+		} catch (std::exception &e) {
+			std::cerr << "Cannot load dictionary \"" << *i << "\": " << e.what() << ", ignoring" << std::endl;
+		}
 	}
 
 	/* create tag aggregator */

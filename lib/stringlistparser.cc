@@ -38,7 +38,7 @@ StringListParser::~StringListParser() {
 void StringListParser::Parse() {
 	int f;
 	if ((f = open(filename_.c_str(), O_RDONLY)) == -1)
-		throw std::runtime_error(std::string("Cannot open ") + filename_ + ": " + strerror(errno));
+		throw std::runtime_error(std::string("Cannot open: ") + strerror(errno));
 
 	char buffer[1024];
 	ssize_t nread;
@@ -73,11 +73,11 @@ void StringListParser::Parse() {
 		}
 	}
 
+	if (nread == -1)
+		throw std::runtime_error(std::string("Read error: ") + strerror(errno));
+
 	if (!name.empty())
 		ProcessString(name);
-
-	if (nread == -1)
-		throw std::runtime_error(std::string("Read error on ") + filename_ + ": " + strerror(errno));
 
 	close(f);
 }
