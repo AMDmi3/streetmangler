@@ -17,6 +17,7 @@ FIND_PACKAGE(ICU REQUIRED)
 # common sources
 SET(LOCALE_SRCS
 	lib/locales/ru.cc
+	lib/locales/en.cc
 )
 
 SET(LIBRARY_SRCS
