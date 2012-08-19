@@ -41,6 +41,7 @@ public:
 
 		NORMALIZE_PUNCT      = 0x0100,
 		NORMALIZE_WHITESPACE = 0x0200,
+		ADD_PUNCT            = 0x0400,
 	};
 
 private:

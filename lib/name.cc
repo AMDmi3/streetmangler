@@ -186,8 +186,12 @@ std::string Name::Join(int flags) const {
 					outtokens.push_front(Token(SPACE, " "));
 				outtokens.push_front(saved_status);
 			} else if (flags & STATUS_TO_RIGHT) {
-				if (!outtokens.empty())
+				if (!outtokens.empty()) {
+					/* add punctuation if status was moved to the right */
+					if (!atright && (flags & ADD_PUNCT))
+						outtokens.push_back(Token(PUNCT, ","));
 					outtokens.push_back(Token(SPACE, " "));
+				}
 				outtokens.push_back(saved_status);
 			}
 		}
