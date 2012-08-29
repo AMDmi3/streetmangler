@@ -80,7 +80,7 @@ protected:
 	}
 };
 
-int usage(const char* progname, int code) {
+int usage(const char* progname, int exitcode) {
 	std::cerr << "Usage: " << progname << " [-h] [-cdsAN] [-l locale] [-p depth] [[-a tag] ...] [[-n tag] ...] [[-f database] ...] file.osm|file.txt|- ..." << std::endl;
 	std::cerr << "  -s  display per-street statistics (takes extra time)" << std::endl;
 	std::cerr << "  -d  dump street lists into dump.*" << std::endl;
@@ -99,7 +99,7 @@ int usage(const char* progname, int code) {
 
 	std::cerr << "  -h  display this help" << std::endl;
 
-	return code;
+	exit(exitcode);
 }
 
 int main(int argc, char** argv) {
@@ -129,9 +129,8 @@ int main(int argc, char** argv) {
 			case 'c': flags |= NameAggregator::COUNT_NAMES; break;
 			case 'A': use_default_addr_tags = false; break;
 			case 'N': use_default_name_tags = false; break;
-			case 'h': return usage(progname, 0);
-			default:
-				return usage(progname, 1);
+			case 'h': usage(progname, 0);
+			default:  usage(progname, 1);
 		}
 	}
 
@@ -156,7 +155,7 @@ int main(int argc, char** argv) {
 
 	/* there should be some input */
 	if (argc < 1)
-		return usage(progname, 1);
+		usage(progname, 1);
 
 	/* setup and load the database */
 	StreetMangler::Locale locale(localename);
