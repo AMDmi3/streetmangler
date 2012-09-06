@@ -1,6 +1,7 @@
 .include main.txt
 .include areas.txt
 .include ambiguities.txt
+.include ambig_nouns.txt
 .include exceptions.txt
 .include multistatus.txt
 
