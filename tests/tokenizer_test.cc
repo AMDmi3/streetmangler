@@ -98,6 +98,13 @@ BEGIN_TEST()
 	EXPECT_STRING(Name("Зелёная,  ул.", locale).Join(Name::NORMALIZE_WHITESPACE), "Зелёная, ул.");
 	EXPECT_STRING(Name("Зелёная,  ул.", locale).Join(Name::NORMALIZE_PUNCT|Name::NORMALIZE_WHITESPACE), "Зелёная ул.");
 
+	/* adding punctuation */
+	EXPECT_STRING(Name("Зелёная улица", locale).Join(Name::STATUS_TO_LEFT|Name::ADD_PUNCT), "улица Зелёная");
+	EXPECT_STRING(Name("улица Ленина", locale).Join(Name::STATUS_TO_LEFT|Name::ADD_PUNCT), "улица Ленина");
+	EXPECT_STRING(Name("Зелёная улица", locale).Join(Name::STATUS_TO_RIGHT|Name::ADD_PUNCT), "Зелёная улица");
+	EXPECT_STRING(Name("улица Ленина", locale).Join(Name::STATUS_TO_RIGHT|Name::ADD_PUNCT), "Ленина, улица");
+	EXPECT_STRING(Name("Малая улица Ленина", locale).Join(Name::STATUS_TO_RIGHT|Name::ADD_PUNCT), "Малая Ленина, улица");
+
 	/* does it work with no status part? */
 	EXPECT_STRING(Name("Зелёная Штуковина", locale).Join(Name::EXPAND_STATUS), "Зелёная Штуковина");
 	EXPECT_STRING(Name("Зелёная Штуковина", locale).Join(Name::SHRINK_STATUS), "Зелёная Штуковина");
