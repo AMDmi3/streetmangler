@@ -44,6 +44,9 @@ public:
 	/** Add tag to be counted as name (e.g. name, name:ru) */
 	void AddNameTag(const std::string& tag);
 
+	/** Add relation type for processing */
+	void AddRelationType(const std::string& reltype);
+
 protected:
 	/** Street name handler
 	 *
@@ -56,12 +59,16 @@ private:
 	static void EndElement(void* userData, const char* name);
 
 private:
+	// Parser context
 	std::vector<std::string> names_;
 	std::vector<std::string> addrs_;
 	std::string highway_;
+	std::string type_; // for relations
 
+	// Results
 	std::set<std::string> addr_tags_;
 	std::set<std::string> name_tags_;
+	std::set<std::string> relations_;
 };
 
 #endif

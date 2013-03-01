@@ -42,6 +42,10 @@ void OsmNameExtractor::AddNameTag(const std::string& tag) {
 	name_tags_.insert(tag);
 }
 
+void OsmNameExtractor::AddRelationType(const std::string& reltype) {
+	relations_.insert(reltype);
+}
+
 void OsmNameExtractor::ParseFile(const char* filename) {
 	int f;
 	if ((f = open(filename, O_RDONLY)) == -1)
@@ -96,11 +100,13 @@ void OsmNameExtractor::Parse(int fd) {
 void OsmNameExtractor::StartElement(void* userData, const char* name, const char** atts) {
 	OsmNameExtractor* parser = static_cast<OsmNameExtractor*>(userData);
 
-	if (strcmp(name, "node") == 0 || strcmp(name, "way") == 0) {
+	if (strcmp(name, "node") == 0 || strcmp(name, "way") == 0 || strcmp(name, "relation") == 0) {
 		parser->addrs_.clear();
 		parser->names_.clear();
 		parser->highway_.clear();
+		parser->type_.clear();
 	}
+
 	if (strcmp(name, "tag") != 0)
 		return;
 
@@ -116,6 +122,8 @@ void OsmNameExtractor::StartElement(void* userData, const char* name, const char
 	if (k == "highway") {
 		if (v != "bus_stop" && v != "emergency_access_point")
 			parser->highway_ = v;
+	} else if (k == "type") {
+		parser->type_ = v;
 	} else if (parser->addr_tags_.find(k) != parser->addr_tags_.end() && !v.empty()) {
 		parser->addrs_.push_back(v);
 	} else if (parser->name_tags_.find(k) != parser->name_tags_.end() && !v.empty()) {
@@ -126,12 +134,14 @@ void OsmNameExtractor::StartElement(void* userData, const char* name, const char
 void OsmNameExtractor::EndElement(void* userData, const char* name) {
 	OsmNameExtractor* parser = static_cast<OsmNameExtractor*>(userData);
 
-	enum { NODE, WAY, OTHER } type = OTHER;
+	enum { NODE, WAY, RELATION, OTHER } type = OTHER;
 
 	if (strcmp(name, "node") == 0)
 		type = NODE;
 	else if (strcmp(name, "way") == 0)
 		type = WAY;
+	else if (strcmp(name, "relation") == 0)
+		type = RELATION;
 	else
 		return;
 
@@ -140,7 +150,8 @@ void OsmNameExtractor::EndElement(void* userData, const char* name) {
 		parser->ProcessName(*i);
 
 	// Process names for highways
-	if (type == WAY && !parser->highway_.empty()) {
+	if ( (type == WAY && !parser->highway_.empty()) ||
+			(type == RELATION && !parser->type_.empty() && parser->relations_.find(parser->type_) != parser->relations_.end()) ) {
 		for (std::vector<std::string>::const_iterator i = parser->names_.begin(); i != parser->names_.end(); ++i)
 			parser->ProcessName(*i);
 	}

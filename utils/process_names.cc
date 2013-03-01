@@ -81,7 +81,7 @@ protected:
 };
 
 int usage(const char* progname, int exitcode) {
-	std::cerr << "Usage: " << progname << " [-h] [-cdsAN] [-l locale] [-p depth] [[-a tag] ...] [[-n tag] ...] [[-f database] ...] file.osm|file.txt|- ..." << std::endl;
+	std::cerr << "Usage: " << progname << " [-h] [-cdsAN] [-l locale] [-p depth] [[-a tag] ...] [[-r type] ...] [[-n tag] ...] [[-f database] ...] file.osm|file.txt|- ..." << std::endl;
 	std::cerr << "  -s  display per-street statistics (takes extra time)" << std::endl;
 	std::cerr << "  -d  dump street lists into dump.*" << std::endl;
 	std::cerr << "  -c  include dumps with street name counts" << std::endl << std::endl;
@@ -94,6 +94,7 @@ int usage(const char* progname, int exitcode) {
 
 	std::cerr << "  -a  specify addr tag(s) instead of default set (\"addrN:streetN\" variants)" << std::endl;
 	std::cerr << "  -n  specify name tag(s) instead of default set (\"name\")" << std::endl;
+	std::cerr << "  -r  specify relation type(s) (as in type= tag) to use name tags from" << std::endl << std::endl;
 	std::cerr << "  -A  don't use default addr tags set" << std::endl;
 	std::cerr << "  -N  don't use default name tags set" << std::endl << std::endl;
 
@@ -114,10 +115,11 @@ int main(int argc, char** argv) {
 	std::vector<std::string> datafiles;
 	std::vector<const char*> name_tags;
 	std::vector<const char*> addr_tags;
+	std::vector<const char*> relation_types;
 
 	/* process options */
 	int c;
-    while ((c = getopt(argc, argv, "sdhf:l:p:n:a:cNA")) != -1) {
+    while ((c = getopt(argc, argv, "sdhf:l:p:n:a:r:cNA")) != -1) {
 		switch (c) {
 			case 's': flags |= NameAggregator::PERSTREET_STATS; break;
 			case 'd': dumpflag = true; break;
@@ -126,6 +128,7 @@ int main(int argc, char** argv) {
 			case 'l': localename = optarg; break;
 			case 'p': spelldistance = (int)strtoul(optarg, 0, 10); break;
 			case 'a': addr_tags.push_back(optarg); break;
+			case 'r': relation_types.push_back(optarg); break;
 			case 'c': flags |= NameAggregator::COUNT_NAMES; break;
 			case 'A': use_default_addr_tags = false; break;
 			case 'N': use_default_name_tags = false; break;
@@ -179,6 +182,8 @@ int main(int argc, char** argv) {
 		osm_processor.AddAddrTag(*i);
 	for (std::vector<const char*>::const_iterator i = name_tags.begin(); i != name_tags.end(); ++i)
 		osm_processor.AddNameTag(*i);
+	for (std::vector<const char*>::const_iterator i = relation_types.begin(); i != relation_types.end(); ++i)
+		osm_processor.AddRelationType(*i);
 
 	/* process all input files */
 	for (int i = 0; i < argc; ++i) {
