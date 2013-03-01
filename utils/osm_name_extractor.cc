@@ -114,7 +114,8 @@ void OsmNameExtractor::StartElement(void* userData, const char* name, const char
 
 	/* save relevant tags which will be processed in EndElement */
 	if (k == "highway") {
-		parser->highway_ = v;
+		if (v != "bus_stop" && v != "emergency_access_point")
+			parser->highway_ = v;
 	} else if (parser->addr_tags_.find(k) != parser->addr_tags_.end() && !v.empty()) {
 		parser->addrs_.push_back(v);
 	} else if (parser->name_tags_.find(k) != parser->name_tags_.end() && !v.empty()) {
@@ -125,25 +126,21 @@ void OsmNameExtractor::StartElement(void* userData, const char* name, const char
 void OsmNameExtractor::EndElement(void* userData, const char* name) {
 	OsmNameExtractor* parser = static_cast<OsmNameExtractor*>(userData);
 
-	enum { NODE, WAY, OTHER } tag = OTHER;
+	enum { NODE, WAY, OTHER } type = OTHER;
 
 	if (strcmp(name, "node") == 0)
-		tag = NODE;
+		type = NODE;
 	else if (strcmp(name, "way") == 0)
-		tag = WAY;
+		type = WAY;
 	else
 		return;
 
+	// Process addr tags for all objects
 	for (std::vector<std::string>::const_iterator i = parser->addrs_.begin(); i != parser->addrs_.end(); ++i)
 		parser->ProcessName(*i);
 
-	if (tag == WAY && !parser->highway_.empty() && !parser->names_.empty() &&
-//				parser->highway_ != "footway" &&
-//				parser->highway_ != "cycleway" &&
-//				parser->highway_ != "path" &&
-//				parser->highway_ != "track" &&
-				parser->highway_ != "bus_stop" &&
-				parser->highway_ != "emergency_access_point") {
+	// Process names for highways
+	if (type == WAY && !parser->highway_.empty()) {
 		for (std::vector<std::string>::const_iterator i = parser->names_.begin(); i != parser->names_.end(); ++i)
 			parser->ProcessName(*i);
 	}
