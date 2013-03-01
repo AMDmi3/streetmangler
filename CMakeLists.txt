@@ -18,6 +18,7 @@ FIND_PACKAGE(ICU REQUIRED)
 SET(LOCALE_SRCS
 	lib/locales/ru.cc
 	lib/locales/en.cc
+	lib/locales/uk.cc
 )
 
 SET(LIBRARY_SRCS
