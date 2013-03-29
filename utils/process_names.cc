@@ -119,7 +119,7 @@ int main(int argc, char** argv) {
 
 	/* process options */
 	int c;
-    while ((c = getopt(argc, argv, "sdhf:l:p:n:a:r:cNA")) != -1) {
+	while ((c = getopt(argc, argv, "sdhf:l:p:n:a:r:cNA")) != -1) {
 		switch (c) {
 			case 's': flags |= NameAggregator::PERSTREET_STATS; break;
 			case 'd': dumpflag = true; break;

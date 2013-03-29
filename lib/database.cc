@@ -199,18 +199,18 @@ protected:
 	}
 
 protected:
-    typedef std::set<std::string> NamesSet;
-    typedef std::multimap<std::string, std::string> NamesMap;
-    typedef std::multimap<UnicodeString, std::string> UnicodeNamesMap;
+	typedef std::set<std::string> NamesSet;
+	typedef std::multimap<std::string, std::string> NamesMap;
+	typedef std::multimap<UnicodeString, std::string> UnicodeNamesMap;
 
 protected:
-    const Locale& locale_;
-    NamesSet names_;
-    NamesMap canonical_map_;
-    UnicodeNamesMap spelling_map_;
-    UnicodeNamesMap stripped_map_;
+	const Locale& locale_;
+	NamesSet names_;
+	NamesMap canonical_map_;
+	UnicodeNamesMap spelling_map_;
+	UnicodeNamesMap stripped_map_;
 
-    TSpell::UnicodeTrie spell_trie_;
+	TSpell::UnicodeTrie spell_trie_;
 };
 
 Database::Database(const Locale& locale) : private_(new Database::Private(locale)) {
@@ -267,7 +267,7 @@ void Database::Add(const std::string& name) {
 		/* for exact match */
 		private_->names_.insert(*canonical);
 
-		/* for canonical form  */
+		/* for canonical form */
 		private_->canonical_map_.insert(std::make_pair(hash, *canonical));
 
 		/* for spelling */
@@ -278,7 +278,7 @@ void Database::Add(const std::string& name) {
 			private_->spelling_map_.insert(std::make_pair(uhashunordered, *canonical));
 		}
 
-		/* for stripped status  */
+		/* for stripped status */
 		UnicodeString stripped_uhashordered;
 		private_->NameToHashes(tokenized, NULL, NULL, &stripped_uhashordered, NULL, Name::REMOVE_ALL_STATUSES);
 		stripped_uhashordered.findAndReplace(g_yo, g_ye);
