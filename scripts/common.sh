@@ -4,6 +4,7 @@ datadir="`dirname $0`/../data"
 
 automaint_files="
 	$datadir/ru/areas.txt
+	$datadir/ru/bridges.txt
 	$datadir/ru/exceptions.txt
 	$datadir/ru/fixme.txt
 	$datadir/ru/main.txt
