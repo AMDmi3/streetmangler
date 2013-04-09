@@ -11,9 +11,7 @@ my $locale = StreetMangler::Locale->new('ru_RU');
 my $street = 'улица Ленина';
 my $street_list = ('улица Ленина', 'Ленина улица', 'ул. Ленина');
 
-binmode (STDOUT, ":utf-8");
-print StreetMangler::Name->new("ул. Ленина", $locale);
-print "\n";
+ok(StreetMangler::Name->new("ул. Ленина", $locale).'' eq 'ул. Ленина');
 
 sub test_exact {
 	my $db = StreetMangler::Database->new($locale);
