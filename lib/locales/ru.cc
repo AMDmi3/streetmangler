@@ -61,7 +61,7 @@ Locale::StatusPartData status_parts[] = {
 
 	{ "спуск",      NULL, NULL,    { "спуск",                              NULL }, 0 },
 	{ "подход",     NULL, NULL,    { "подход",                             NULL }, 0 },
-	{ "подъезд",    NULL, NULL,    { "подъезд",                            NULL }, 0 },
+	/*{ "подъезд",    NULL, NULL,    { "подъезд",                            NULL }, 0 },*/
 	{ "съезд",      NULL, NULL,    { "съезд",                              NULL }, 0 },
 	{ "заезд",      NULL, NULL,    { "заезд",                              NULL }, 0 },
 	{ "разъезд",    NULL, NULL,    { "разъезд",                            NULL }, 0 },
