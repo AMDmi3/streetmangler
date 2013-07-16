@@ -6,6 +6,7 @@
 .include bridges.txt
 .include exceptions.txt
 .include multistatus.txt
+.include nested.txt
 
 .include unofficial.txt
 
