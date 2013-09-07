@@ -82,4 +82,4 @@ Locale::Registrar registrars[] = {
 	Locale::Registrar("ru_RU", status_parts),
 };
 
-};
+}

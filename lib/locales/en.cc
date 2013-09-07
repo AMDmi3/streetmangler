@@ -55,4 +55,4 @@ Locale::Registrar registrars[] = {
 	Locale::Registrar("en_GB", status_parts),
 };
 
-};
+}

@@ -82,7 +82,7 @@ namespace {
 			}
 		}
 	};
-};
+}
 
 namespace StreetMangler {
 
