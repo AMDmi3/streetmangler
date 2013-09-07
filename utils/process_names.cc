@@ -86,10 +86,10 @@ int usage(const char* progname, int exitcode) {
 	std::cerr << "  -d  dump street lists into dump.*" << std::endl;
 	std::cerr << "  -c  include dumps with street name counts" << std::endl << std::endl;
 
-	std::cerr << "  -l  set locale (default \""DEFAULT_LOCALE"\")" << std::endl;
+	std::cerr << "  -l  set locale (default \"" DEFAULT_LOCALE "\")" << std::endl;
 	std::cerr << "  -p  spelling check distance (default 1)" << std::endl << std::endl;
 
-	std::cerr << "  -f  specify path to street names database (default "DATADIR"/<locale>.txt)" << std::endl;
+	std::cerr << "  -f  specify path to street names database (default " DATADIR "/<locale>.txt)" << std::endl;
 	std::cerr << "      (may be specified more than once)" << std::endl << std::endl;
 
 	std::cerr << "  -a  specify addr tag(s) instead of default set (\"addrN:streetN\" variants)" << std::endl;
