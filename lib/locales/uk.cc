@@ -41,4 +41,4 @@ Locale::Registrar registrars[] = {
 	Locale::Registrar("uk_UA", status_parts),
 };
 
-};
+}

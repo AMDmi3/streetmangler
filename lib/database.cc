@@ -19,6 +19,10 @@
 
 #include <set>
 #include <map>
+#if defined WITH_CPLUSPLUS11
+#  include <unordered_set>
+#  include <unordered_map>
+#endif
 #include <string>
 #include <stdexcept>
 #include <vector>
@@ -82,7 +86,7 @@ namespace {
 			}
 		}
 	};
-};
+}
 
 namespace StreetMangler {
 
@@ -199,9 +203,15 @@ protected:
 	}
 
 protected:
+#if defined WITH_CPLUSPLUS11
+	typedef std::unordered_set<std::string> NamesSet;
+	typedef std::unordered_multimap<std::string, std::string> NamesMap;
+	typedef std::multimap<UnicodeString, std::string> UnicodeNamesMap; // XXX: no hasher fn for UnicodeString
+#else
 	typedef std::set<std::string> NamesSet;
 	typedef std::multimap<std::string, std::string> NamesMap;
 	typedef std::multimap<UnicodeString, std::string> UnicodeNamesMap;
+#endif
 
 protected:
 	const Locale& locale_;
