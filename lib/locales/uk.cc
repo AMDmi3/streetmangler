@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2013 Dmitry Marakasov
+ * Copyright (C) 2013-2013 Dmitry Marakasov
  *
  * This file is part of streetmangler.
  *
