@@ -7,8 +7,8 @@ SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 ENABLE_TESTING()
 
 # options
-OPTION(WITH_PYTHON "Enable python bindings" ON)
-OPTION(WITH_PERL "Enable perl bindings" ON)
+OPTION(WITH_PYTHON "Enable python bindings" OFF)
+OPTION(WITH_PERL "Enable perl bindings" OFF)
 
 # depends
 FIND_PACKAGE(EXPAT REQUIRED)
