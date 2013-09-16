@@ -25,14 +25,13 @@ namespace {
 	using StreetMangler::Locale;
 
 	/* locale with custom (in this case, abbreviated) canonical form */
-	Locale::StatusPartData status_parts[] = {
-		{ "улица", "ул.", "ул.", { "улица", "ул", NULL }, 0 },
-		{ "проспект", "просп.", "пр.", { "проспект", "просп", "пр", NULL }, 0 },
-		{ NULL, NULL, NULL, { NULL }, 0 },
+	Locale::StatusPartDataList status_parts = {
+		{ "улица", "ул.", "ул.", { "улица", "ул" }, 0 },
+		{ "проспект", "просп.", "пр.", { "проспект", "просп", "пр" }, 0 },
 	};
 
 	Locale::Registrar registrars[] = {
-		Locale::Registrar("test", status_parts),
+		Locale::Registrar("test", &status_parts),
 	};
 }
 

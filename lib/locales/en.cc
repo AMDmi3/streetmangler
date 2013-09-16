@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2012 Dmitry Marakasov
+ * Copyright (C) 2011-2013 Dmitry Marakasov
  *
  * This file is part of streetmangler.
  *
@@ -24,35 +24,33 @@ namespace {
 
 using StreetMangler::Locale;
 
-Locale::StatusPartData status_parts[] = {
+Locale::StatusPartDataList status_parts = {
 	/* 1 - full form
-	 * 2 - canonical form (if NULL, comes from full form)
-	 * 3 - short form (if NULL, comes from canonical form
+	 * 2 - canonical form (if nullptr, comes from full form)
+	 * 3 - short form (if nullptr, comes from canonical form
 	 * 4 - variants (used for detection, so no duplicates are allowed)
 	 * 5 - flags */
-	/* 1             2     3          4                                            5 */
-	{ "Avenue",     NULL, "Ave.",  { "avenue", "ave",                      NULL }, 0 },
-	{ "Close",      NULL, NULL,    { "close",                              NULL }, 0 },
-	{ "Court",      NULL, NULL,    { "court",                              NULL }, 0 },
-	{ "Crescent",   NULL, NULL,    { "crescent",                           NULL }, 0 },
-	{ "Gardens",    NULL, NULL,    { "gardens",                            NULL }, 0 },
-	{ "Grove",      NULL, NULL,    { "grove",                              NULL }, 0 },
-	{ "Lane",       NULL, NULL,    { "lane",                               NULL }, 0 },
-	{ "Mews",       NULL, NULL,    { "mews",                               NULL }, 0 },
-	{ "Place",      NULL, NULL,    { "place",                              NULL }, 0 },
-	{ "Road",       NULL, "Rd.",   { "road", "rd",                         NULL }, 0 },
-	{ "Square",     NULL, "Sq.",   { "square", "sq",                       NULL }, 0 },
-	{ "Street",     NULL, "St.",   { "street", "st",                       NULL }, 0 },
-	{ "Terrace",    NULL, NULL,    { "terrace",                            NULL }, 0 },
-	{ "Walk",       NULL, NULL,    { "walk",                               NULL }, 0 },
-	{ "Way",        NULL, NULL,    { "way",                                NULL }, 0 },
-
-	{ NULL,         NULL, NULL,    {                                       NULL }, 0 },
+	/* 1          2        3          4                  5 */
+	{ "Avenue",   nullptr, "Ave.",  { "avenue", "ave" }, 0 },
+	{ "Close",    nullptr, nullptr, { "close"         }, 0 },
+	{ "Court",    nullptr, nullptr, { "court"         }, 0 },
+	{ "Crescent", nullptr, nullptr, { "crescent"      }, 0 },
+	{ "Gardens",  nullptr, nullptr, { "gardens"       }, 0 },
+	{ "Grove",    nullptr, nullptr, { "grove"         }, 0 },
+	{ "Lane",     nullptr, nullptr, { "lane"          }, 0 },
+	{ "Mews",     nullptr, nullptr, { "mews"          }, 0 },
+	{ "Place",    nullptr, nullptr, { "place"         }, 0 },
+	{ "Road",     nullptr, "Rd.",   { "road", "rd"    }, 0 },
+	{ "Square",   nullptr, "Sq.",   { "square", "sq"  }, 0 },
+	{ "Street",   nullptr, "St.",   { "street", "st"  }, 0 },
+	{ "Terrace",  nullptr, nullptr, { "terrace"       }, 0 },
+	{ "Walk",     nullptr, nullptr, { "walk"          }, 0 },
+	{ "Way",      nullptr, nullptr, { "way"           }, 0 },
 };
 
-/* register this locale data so it may be used as Locale("ru_RU") */
+/* register this locale data so it may be used as Locale("en_GB") */
 Locale::Registrar registrars[] = {
-	Locale::Registrar("en_GB", status_parts),
+	Locale::Registrar("en_GB", &status_parts),
 };
 
 }

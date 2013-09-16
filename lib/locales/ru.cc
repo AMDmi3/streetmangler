@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2012 Dmitry Marakasov
+ * Copyright (C) 2011-2013 Dmitry Marakasov
  *
  * This file is part of streetmangler.
  *
@@ -24,62 +24,60 @@ namespace {
 
 using StreetMangler::Locale;
 
-Locale::StatusPartData status_parts[] = {
+Locale::StatusPartDataList status_parts = {
 	/* 1 - full form
-	 * 2 - canonical form (if NULL, comes from full form)
-	 * 3 - short form (if NULL, comes from canonical form
+	 * 2 - canonical form (if nullptr, comes from full form)
+	 * 3 - short form (if nullptr, comes from canonical form
 	 * 4 - variants (used for detection, so no duplicates are allowed)
 	 * 5 - flags */
-	/* 1             2     3          4                                            5 */
-	{ "улица",      NULL, "ул.",   { "улица", "ул",                        NULL }, 0 },
+	/* 1            2        3          4                                       5 */
+	{ "улица",      nullptr, "ул.",   { "улица", "ул"                        }, 0 },
 
-	{ "переулок",   NULL, "пер.",  { "переулок", "пер", "пер-к",           NULL }, 0 },
+	{ "переулок",   nullptr, "пер.",  { "переулок", "пер", "пер-к"           }, 0 },
 	/* после переулка, т.к. "переулок Одесский проезд" */
-	{ "проезд",     NULL, "пр-д.", { "проезд", "пр-д",                     NULL }, 0 },
+	{ "проезд",     nullptr, "пр-д.", { "проезд", "пр-д"                     }, 0 },
 	/* после переулка, т.к. "переулок Пролетарская Площадь" */
-	{ "площадь",    NULL, "пл.",   { "площадь", "пл",                      NULL }, 0 },
-	{ "шоссе",      NULL, "ш.",    { "шоссе", "ш",                         NULL }, 0 },
+	{ "площадь",    nullptr, "пл.",   { "площадь", "пл"                      }, 0 },
+	{ "шоссе",      nullptr, "ш.",    { "шоссе", "ш"                         }, 0 },
 
-	{ "бульвар",    NULL, "бул.",  { "бульвар", "бул", "б-р",              NULL }, 0 },
-	{ "тупик",      NULL, "туп.",  { "тупик", "туп",                       NULL }, 0 },
-	{ "набережная", NULL, "наб.",  { "набережная", "наб",                  NULL }, 0 },
-	{ "проспект",   NULL, "пр-т.", { "проспект", "просп", "пр-кт", "пр-т", NULL }, 0 },
-	{ "линия",      NULL, NULL,    { "линия",                              NULL }, 0 },
-	{ "аллея",      NULL, NULL,    { "аллея",                              NULL }, 0 },
+	{ "бульвар",    nullptr, "бул.",  { "бульвар", "бул", "б-р"              }, 0 },
+	{ "тупик",      nullptr, "туп.",  { "тупик", "туп"                       }, 0 },
+	{ "набережная", nullptr, "наб.",  { "набережная", "наб"                  }, 0 },
+	{ "проспект",   nullptr, "пр-т.", { "проспект", "просп", "пр-кт", "пр-т" }, 0 },
+	{ "линия",      nullptr, nullptr, { "линия"                              }, 0 },
+	{ "аллея",      nullptr, nullptr, { "аллея"                              }, 0 },
 
-	{ "метромост",  NULL, NULL,    { "метромост",                          NULL }, 0 },
-	{ "мост",       NULL, NULL,    { "мост",                               NULL }, 0 },
-	{ "просек",     NULL, NULL,    { "просек",                             NULL }, 0 },
-	{ "просека",    NULL, NULL,    { "просека",                            NULL }, 0 },
-	{ "путепровод", NULL, NULL,    { "путепровод",                         NULL }, 0 },
+	{ "метромост",  nullptr, nullptr, { "метромост"                          }, 0 },
+	{ "мост",       nullptr, nullptr, { "мост"                               }, 0 },
+	{ "просек",     nullptr, nullptr, { "просек"                             }, 0 },
+	{ "просека",    nullptr, nullptr, { "просека"                            }, 0 },
+	{ "путепровод", nullptr, nullptr, { "путепровод"                         }, 0 },
 	/* после шоссе т.к. "шоссе ***й Тракт" */
-	{ "тракт",      NULL, NULL,    { "тракт", "тр-т", "тр",                NULL }, 0 },
-	{ "тропа",      NULL, NULL,    { "тропа",                              NULL }, 0 },
-	{ "туннель",    NULL, NULL,    { "туннель",                            NULL }, 0 },
-	{ "тоннель",    NULL, NULL,    { "тоннель",                            NULL }, 0 },
-	{ "эстакада",   NULL, NULL,    { "эстакада", "эст",                    NULL }, 0 },
-	/*{ "дорога",     NULL, "дор.",  { "дорога", "дор",                      NULL }, true },*/
+	{ "тракт",      nullptr, nullptr, { "тракт", "тр-т", "тр"                }, 0 },
+	{ "тропа",      nullptr, nullptr, { "тропа"                              }, 0 },
+	{ "туннель",    nullptr, nullptr, { "туннель"                            }, 0 },
+	{ "тоннель",    nullptr, nullptr, { "тоннель"                            }, 0 },
+	{ "эстакада",   nullptr, nullptr, { "эстакада", "эст"                    }, 0 },
+//	{ "дорога",     nullptr, "дор.",  { "дорога", "дор"                      }, true },*/
 
-	{ "спуск",      NULL, NULL,    { "спуск",                              NULL }, 0 },
-	{ "подход",     NULL, NULL,    { "подход",                             NULL }, 0 },
-	/*{ "подъезд",    NULL, NULL,    { "подъезд",                            NULL }, 0 },*/
-	{ "съезд",      NULL, NULL,    { "съезд",                              NULL }, 0 },
-	{ "заезд",      NULL, NULL,    { "заезд",                              NULL }, 0 },
-	{ "разъезд",    NULL, NULL,    { "разъезд",                            NULL }, 0 },
-	{ "слобода",    NULL, NULL,    { "слобода",                            NULL }, 0 },
+	{ "спуск",      nullptr, nullptr, { "спуск"                              }, 0 },
+	{ "подход",     nullptr, nullptr, { "подход"                             }, 0 },
+//	{ "подъезд",    nullptr, nullptr, { "подъезд"                            }, 0 },*/
+	{ "съезд",      nullptr, nullptr, { "съезд"                              }, 0 },
+	{ "заезд",      nullptr, nullptr, { "заезд"                              }, 0 },
+	{ "разъезд",    nullptr, nullptr, { "разъезд"                            }, 0 },
+	{ "слобода",    nullptr, nullptr, { "слобода"                            }, 0 },
 
-	{ "район",      NULL, NULL,    { "район", "р-н",                       NULL }, Locale::ORDER_RANDOM_IF_RIGHT },
-	{ "микрорайон", NULL, NULL,    { "микрорайон", "мкр-н", "мк-н", "мкр-он", "мкр", "мкрн", NULL }, Locale::ORDER_RANDOM_IF_RIGHT },
-	{ "посёлок",    NULL, NULL,    { "посёлок", "поселок", "пос",          NULL }, Locale::ORDER_RANDOM_IF_RIGHT },
-	{ "деревня",    NULL, NULL,    { "деревня", "дер", "д",                NULL }, Locale::ORDER_RANDOM_IF_RIGHT },
-	{ "квартал",    NULL, NULL,    { "квартал", "кв-л", "кв",              NULL }, Locale::ORDER_RANDOM_IF_RIGHT },
-
-	{ NULL,         NULL, NULL,    {                                       NULL }, 0 },
+	{ "район",      nullptr, nullptr, { "район", "р-н"                       }, Locale::ORDER_RANDOM_IF_RIGHT },
+	{ "микрорайон", nullptr, nullptr, { "микрорайон", "мкр-н", "мк-н", "мкр-он", "мкр", "мкрн" }, Locale::ORDER_RANDOM_IF_RIGHT },
+	{ "посёлок",    nullptr, nullptr, { "посёлок", "поселок", "пос"          }, Locale::ORDER_RANDOM_IF_RIGHT },
+	{ "деревня",    nullptr, nullptr, { "деревня", "дер", "д"                }, Locale::ORDER_RANDOM_IF_RIGHT },
+	{ "квартал",    nullptr, nullptr, { "квартал", "кв-л", "кв"              }, Locale::ORDER_RANDOM_IF_RIGHT },
 };
 
 /* register this locale data so it may be used as Locale("ru_RU") */
 Locale::Registrar registrars[] = {
-	Locale::Registrar("ru_RU", status_parts),
+	Locale::Registrar("ru_RU", &status_parts),
 };
 
 }

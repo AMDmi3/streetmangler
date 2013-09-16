@@ -45,20 +45,44 @@ public:
 		const char* full;
 		const char* canonical;
 		const char* abbrev;
-		const char* variants[10];
+		std::vector<const char*> variants;
 		int flags;
 	};
 
+	typedef std::vector<StatusPartData> StatusPartDataList;
+
 	struct Registrar {
 		std::string name_;
-		StatusPartData* status_parts_;
+		const StatusPartDataList* status_parts_;
 		Registrar* next_;
 
-		Registrar(const std::string& name, StatusPartData* status_parts);
+		Registrar(const std::string& name, const StatusPartDataList* status_parts);
 	};
 
 	class UnknownLocale : public std::exception {
-		/* TODO: what() */
+	private:
+		const char* what_;
+
+	public:
+		UnknownLocale(const char* what = "") : what_(what) {
+		}
+
+		const char* what() const noexcept {
+			return what_;
+		}
+	};
+
+	class BadLocale : public std::exception {
+	private:
+		const char* what_;
+
+	public:
+		BadLocale(const char* what = "") : what_(what) {
+		}
+
+		const char* what() const noexcept {
+			return what_;
+		}
 	};
 
 private:

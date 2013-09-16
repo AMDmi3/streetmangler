@@ -17,7 +17,6 @@
  * along with streetmangler.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cassert>
 
 #include <streetmangler/locale.hh>
 
@@ -25,14 +24,15 @@ namespace StreetMangler {
 
 Locale::Registrar* Locale::locales_ = NULL;
 
-Locale::Registrar::Registrar(const std::string& name, StatusPartData* status_parts)
+Locale::Registrar::Registrar(const std::string& name, const StatusPartDataList* status_parts)
 	  : name_(name),
 	    status_parts_(status_parts),
 	    next_(Locale::locales_) {
 #ifndef NDEBUG
 	/* check for duplicate locale name */
 	for (const Registrar* cur = Locale::locales_; cur; cur = cur->next_)
-		assert(cur->name_ != name);
+		if (cur->name_ == name)
+			throw BadLocale("duplicate locale name (attempt to register multiple locales with a same name)");
 #endif
 
 	Locale::locales_ = this;
@@ -53,9 +53,10 @@ Locale::Locale(const std::string& name) {
 
 	/* process locale data */
 	int priority = 1;
-	for (StatusPartData* in = locale->status_parts_; in->full; ++in, ++priority) {
+	for (StatusPartDataList::const_iterator in = locale->status_parts_->cbegin(); in != locale->status_parts_->cend(); ++in, ++priority) {
 		/* (use full status as abbreviation where there's no canonical abbreviation */
-		assert(in->full);
+		if (in->full == nullptr)
+			throw BadLocale("full form of a status part not specified");
 		std::string canonical = in->canonical ? in->canonical : in->full;
 		std::string abbrev = in->abbrev ? in->abbrev : canonical;
 		status_parts_.push_back(StatusPart(priority, in->full, canonical, abbrev, in->flags));
@@ -64,10 +65,11 @@ Locale::Locale(const std::string& name) {
 	/* now vector won't change so it's safe to use pointers */
 	int i = 0;
 	std::pair<StatusPartMap::iterator, bool> res;
-	for (StatusPartData* in = locale->status_parts_; in->full; ++in, ++i) {
-		for (const char** variant = in->variants; *variant; ++variant) {
+	for (StatusPartDataList::const_iterator in = locale->status_parts_->cbegin(); in != locale->status_parts_->cend(); ++in, ++i) {
+		for (std::vector<const char*>::const_iterator variant = in->variants.cbegin(); variant != in->variants.cend(); ++variant) {
 			res = status_part_by_any_.insert(std::make_pair(*variant, &status_parts_[i]));
-			assert(res.second); /* duplicate keys not allowed */
+			if (!res.second)
+				throw BadLocale("duplicate status part variants not allowed");
 		}
 	}
 }

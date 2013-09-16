@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Dmitry Marakasov
+ * Copyright (C) 2012-2013 Dmitry Marakasov
  *
  * This file is part of streetmangler.
  *
@@ -24,21 +24,19 @@ namespace {
 
 using StreetMangler::Locale;
 
-Locale::StatusPartData status_parts[] = {
+Locale::StatusPartDataList status_parts = {
 	/* 1 - full form
-	 * 2 - canonical form (if NULL, comes from full form)
-	 * 3 - short form (if NULL, comes from canonical form
+	 * 2 - canonical form (if nullptr, comes from full form)
+	 * 3 - short form (if nullptr, comes from canonical form
 	 * 4 - variants (used for detection, so no duplicates are allowed)
 	 * 5 - flags */
-	/* 1             2     3          4                                            5 */
-	{ "вулиця",     NULL, "вул.",  { "вулиця", "вул",                      NULL }, 0 },
-
-	{ NULL,         NULL, NULL,    {                                       NULL }, 0 },
+	/* 1        2        3         4                   5 */
+	{ "вулиця", nullptr, "вул.", { "вулиця", "вул", }, 0 },
 };
 
-/* register this locale data so it may be used as Locale("ru_RU") */
+/* register this locale data so it may be used as Locale("uk_UA") */
 Locale::Registrar registrars[] = {
-	Locale::Registrar("uk_UA", status_parts),
+	Locale::Registrar("uk_UA", &status_parts),
 };
 
 }
