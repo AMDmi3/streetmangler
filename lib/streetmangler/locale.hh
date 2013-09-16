@@ -111,7 +111,7 @@ public:
 		const std::string& GetAbbrev() const { return abbrev_; }
 		int GetFlags() const { return flags_; }
 
-		bool IsPrior(const StatusPart* other) const { return other == NULL || priority_ < other->priority_; }
+		bool IsPrior(const StatusPart* other) const { return other == nullptr || priority_ < other->priority_; }
 	};
 
 private:

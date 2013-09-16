@@ -36,22 +36,22 @@ BEGIN_TEST()
 	const Locale::StatusPart* p2;
 
 	/* finding status part should work */
-	EXPECT_TRUE((p = locale.FindStatus("улица")) != NULL);
+	EXPECT_TRUE((p = locale.FindStatus("улица")) != nullptr);
 	EXPECT_TRUE(locale.FindStatus("ул") == p);
 
 	/* finding nonexistent status parts should not work */
-	EXPECT_TRUE(locale.FindStatus("неттакогосттуса") == NULL);
-	EXPECT_TRUE(locale.FindStatus("у") == NULL);
-	EXPECT_TRUE(locale.FindStatus("") == NULL);
+	EXPECT_TRUE(locale.FindStatus("неттакогосттуса") == nullptr);
+	EXPECT_TRUE(locale.FindStatus("у") == nullptr);
+	EXPECT_TRUE(locale.FindStatus("") == nullptr);
 
 	/* correct values returned */
 	EXPECT_TRUE(p->GetFull() == "улица");
 	EXPECT_TRUE(p->GetAbbrev() == "ул.");
 
 	/* correct ordering */
-	EXPECT_TRUE((p1 = locale.FindStatus("шоссе")) != NULL);
-	EXPECT_TRUE((p2 = locale.FindStatus("тракт")) != NULL);
+	EXPECT_TRUE((p1 = locale.FindStatus("шоссе")) != nullptr);
+	EXPECT_TRUE((p2 = locale.FindStatus("тракт")) != nullptr);
 
 	EXPECT_TRUE(p1->IsPrior(p2));
-	EXPECT_TRUE(p1->IsPrior(NULL));
+	EXPECT_TRUE(p1->IsPrior(nullptr));
 END_TEST()

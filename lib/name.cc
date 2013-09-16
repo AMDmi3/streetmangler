@@ -49,13 +49,13 @@ Name::Name(const std::string& name, const Locale& locale) : locale_(locale), sta
 		tokens_.push_back(curtoken);
 
 	/* find status part */
-	const Locale::StatusPart* bestpart = NULL;
+	const Locale::StatusPart* bestpart = nullptr;
 	for (unsigned int i = 0; i < tokens_.size(); ++i) {
 		std::string lowercase;
 		UnicodeString::fromUTF8(tokens_[i].text).toLower().toUTF8String(lowercase);
 
 		const Locale::StatusPart* part;
-		if ((part = locale_.FindStatus(lowercase)) != NULL) {
+		if ((part = locale_.FindStatus(lowercase)) != nullptr) {
 			tokens_[i].status_part = part;
 
 			if (part->IsPrior(bestpart)) {

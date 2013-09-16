@@ -22,7 +22,7 @@
 
 namespace StreetMangler {
 
-Locale::Registrar* Locale::locales_ = NULL;
+Locale::Registrar* Locale::locales_ = nullptr;
 
 Locale::Registrar::Registrar(const std::string& name, const StatusPartDataList* status_parts)
 	  : name_(name),
@@ -40,7 +40,7 @@ Locale::Registrar::Registrar(const std::string& name, const StatusPartDataList* 
 
 Locale::Locale(const std::string& name) {
 	/* first, find locale in linked list */
-	const Registrar* locale = NULL;
+	const Registrar* locale = nullptr;
 	for (const Registrar* cur = locales_; cur; cur = cur->next_) {
 		if (cur->name_ == name) {
 			locale = cur;
@@ -77,7 +77,7 @@ Locale::Locale(const std::string& name) {
 const Locale::StatusPart* Locale::FindStatus(const std::string& name) const {
 	StatusPartMap::const_iterator status = status_part_by_any_.find(name);
 	if (status == status_part_by_any_.end())
-		return NULL;
+		return nullptr;
 	return status->second;
 }
 

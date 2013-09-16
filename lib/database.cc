@@ -283,7 +283,7 @@ void Database::Add(const std::string& name) {
 
 		/* for stripped status */
 		UnicodeString stripped_uhashordered;
-		private_->NameToHashes(tokenized, NULL, NULL, &stripped_uhashordered, NULL, Name::REMOVE_ALL_STATUSES);
+		private_->NameToHashes(tokenized, nullptr, nullptr, &stripped_uhashordered, nullptr, Name::REMOVE_ALL_STATUSES);
 		stripped_uhashordered.findAndReplace(g_yo, g_ye);
 		if (stripped_uhashordered != uhashordered)
 			private_->stripped_map_.insert(std::make_pair(stripped_uhashordered, *canonical));
@@ -299,7 +299,7 @@ int Database::CheckExactMatch(const Name& name) const {
 
 int Database::CheckCanonicalForm(const Name& name, std::vector<std::string>& suggestions) const {
 	std::string hash;
-	private_->NameToHashes(name, &hash, NULL, NULL, NULL);
+	private_->NameToHashes(name, &hash, nullptr, nullptr, nullptr);
 
 	int count = 0;
 	std::pair<Private::NamesMap::const_iterator, Private::NamesMap::const_iterator> range =
@@ -313,7 +313,7 @@ int Database::CheckCanonicalForm(const Name& name, std::vector<std::string>& sug
 
 int Database::CheckSpelling(const Name& name, std::vector<std::string>& suggestions, int depth) const {
 	UnicodeString hashordered, hashunordered;
-	private_->NameToHashes(name, NULL, NULL, &hashordered, &hashunordered);
+	private_->NameToHashes(name, nullptr, nullptr, &hashordered, &hashunordered);
 
 	int realdepth = 0;
 	std::set<UnicodeString> matches;
@@ -350,7 +350,7 @@ int Database::CheckSpelling(const Name& name, std::vector<std::string>& suggesti
 
 int Database::CheckStrippedStatus(const Name& name, std::vector<std::string>& matches) const {
 	UnicodeString uhashordered;
-	private_->NameToHashes(name, NULL, NULL, &uhashordered, NULL);
+	private_->NameToHashes(name, nullptr, nullptr, &uhashordered, nullptr);
 	uhashordered.findAndReplace(g_yo, g_ye);
 
 	int count = 0;
