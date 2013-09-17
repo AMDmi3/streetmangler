@@ -336,8 +336,8 @@ int Database::CheckSpelling(const Name& name, std::vector<std::string>& suggesti
 		std::pair<Private::UnicodeNamesMap::const_iterator, Private::UnicodeNamesMap::const_iterator> range =
 			private_->spelling_map_.equal_range(*i);
 
-		for (Private::UnicodeNamesMap::const_iterator i = range.first; i != range.second; ++i)
-			suggestions_unique.insert(i->second);
+		for (Private::UnicodeNamesMap::const_iterator j = range.first; j != range.second; ++j)
+			suggestions_unique.insert(j->second);
 	}
 
 	suggestions.reserve(suggestions.size() + suggestions_unique.size());
