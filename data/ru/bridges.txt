@@ -1,3 +1,4 @@
+# vim: tabstop=29 expandtab softtabstop=29 syntax=conf
 # Мосты
 1-й Бауманский мост
 1-й Елагин мост
