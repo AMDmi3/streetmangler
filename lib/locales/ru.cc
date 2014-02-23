@@ -66,6 +66,7 @@ Locale::StatusPartDataList status_parts = {
 	{ "съезд",      nullptr, nullptr, { "съезд"                              }, 0 },
 	{ "заезд",      nullptr, nullptr, { "заезд"                              }, 0 },
 	{ "разъезд",    nullptr, nullptr, { "разъезд"                            }, 0 },
+	{ "взвоз",      nullptr, nullptr, { "взвоз"                              }, 0 },
 	{ "слобода",    nullptr, nullptr, { "слобода"                            }, 0 },
 
 	{ "район",      nullptr, nullptr, { "район", "р-н"                       }, Locale::ORDER_RANDOM_IF_RIGHT },
