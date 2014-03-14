@@ -57,6 +57,9 @@ INCLUDE_DIRECTORIES(${EXPAT_INCLUDE_DIRS})
 ADD_EXECUTABLE(process_names ${PROCESS_NAMES_SRCS})
 TARGET_LINK_LIBRARIES(process_names streetmangler ${EXPAT_LIBRARY})
 
+ADD_EXECUTABLE(cluster_names utils/cluster_names.cc)
+TARGET_LINK_LIBRARIES(cluster_names streetmangler ${ICU_LIBRARY})
+
 # tests
 ADD_EXECUTABLE(locale_test tests/locale_test.cc)
 TARGET_LINK_LIBRARIES(locale_test streetmangler)
