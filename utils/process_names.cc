@@ -103,7 +103,7 @@ int usage(const char* progname, int exitcode) {
 	exit(exitcode);
 }
 
-int main(int argc, char** argv) {
+int realmain(int argc, char** argv) {
 	const char* progname = argv[0];
 	const char* localename = DEFAULT_LOCALE;
 	bool dumpflag = false;
@@ -213,4 +213,16 @@ int main(int argc, char** argv) {
 	aggregator.DumpStats();
 
 	return 0;
+}
+
+int main(int argc, char** argv) {
+	try {
+		return realmain(argc, argv);
+	} catch(std::exception& e) {
+		std::cerr << "Caught error: " << e.what() << std::endl;
+	} catch(...) {
+		std::cerr << "Unknown error caught" << std::endl;
+	}
+
+	return 1;
 }
