@@ -55,7 +55,7 @@ Locale::StatusPartDataList status_parts = {
 	{ "путепровод", nullptr, nullptr, { "путепровод"                         }, 0 },
 	/* после шоссе т.к. "шоссе ***й Тракт" */
 	{ "тракт",      nullptr, nullptr, { "тракт", "тр-т", "тр"                }, 0 },
-	{ "тропа",      nullptr, nullptr, { "тропа"                              }, 0 },
+//	{ "тропа",      nullptr, nullptr, { "тропа"                              }, 0 },
 	{ "туннель",    nullptr, nullptr, { "туннель"                            }, 0 },
 	{ "тоннель",    nullptr, nullptr, { "тоннель"                            }, 0 },
 	{ "эстакада",   nullptr, nullptr, { "эстакада", "эст"                    }, 0 },
