@@ -8,7 +8,7 @@ before_install:
   - sudo apt-get install -qq cmake g++-4.8 libicu-dev libexpat1-dev
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
 script:
-  - cmake .
+  - cmake -DCMAKE_CXX_FLAGS="-Werror" .
   - VERBOSE=1 make && make test
   - env LC_ALL=ru_RU.UTF-8 scripts/dbmaint.sh
   - git diff --exit-code; echo $?; true
