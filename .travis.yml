@@ -1,0 +1,15 @@
+language: cpp
+compiler:
+  - gcc
+  - clang
+before_install:
+  - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq cmake g++-4.8 libicu-dev libexpat1-dev
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+script:
+  - cmake .
+  - VERBOSE=1 make && make test
+  - env LC_ALL=ru_RU.UTF-8 scripts/dbmaint.sh
+  - git diff --exit-code; echo $?; true
+  - "if ! git diff --exit-code; then echo 'FATAL: run scripts/dbmaint.sh and commit changes'; false; fi"
