@@ -1,11 +1,18 @@
+sudo: false
 language: cpp
 compiler:
   - gcc
   - clang
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - cmake
+    - g++-4.8
+    - libicu-dev
+    - libexpat1-dev
 before_install:
-  - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq cmake g++-4.8 libicu-dev libexpat1-dev
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
 script:
   - cmake -DCMAKE_CXX_FLAGS="-Werror" .
