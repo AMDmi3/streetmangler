@@ -59,11 +59,11 @@ Locale::StatusPartDataList status_parts = {
 	{ "туннель",    nullptr, nullptr, { "туннель"                            }, 0 },
 	{ "тоннель",    nullptr, nullptr, { "тоннель"                            }, 0 },
 	{ "эстакада",   nullptr, nullptr, { "эстакада", "эст"                    }, 0 },
-//	{ "дорога",     nullptr, "дор.",  { "дорога", "дор"                      }, true },*/
+//	{ "дорога",     nullptr, "дор.",  { "дорога", "дор"                      }, true },
 
 	{ "спуск",      nullptr, nullptr, { "спуск"                              }, 0 },
 	{ "подход",     nullptr, nullptr, { "подход"                             }, 0 },
-//	{ "подъезд",    nullptr, nullptr, { "подъезд"                            }, 0 },*/
+//	{ "подъезд",    nullptr, nullptr, { "подъезд"                            }, 0 },
 	{ "съезд",      nullptr, nullptr, { "съезд"                              }, 0 },
 	{ "заезд",      nullptr, nullptr, { "заезд"                              }, 0 },
 	{ "разъезд",    nullptr, nullptr, { "разъезд"                            }, 0 },
