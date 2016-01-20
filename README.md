@@ -55,16 +55,18 @@
 
 ## База
 
-Данные берутся из OpenStreetMap. Используются все тэги addr:street
-и аналогичные (addr:street2, addr2:street и т.д.), name линейных
-объектов с тегом highway, за исключением bus_stop и
-emergency_access_point, а также name отношений указанных типов.
+Данные берутся из [OpenStreetMap](http://openstreetmap.org).
+Используются все тэги addr:street и аналогичные (addr:street2,
+addr2:street и т.д.), name линейных объектов с тегом highway, за
+исключением bus_stop и emergency_access_point, а также name отношений
+указанных типов.
 
 Формат базы тривиален - текстовый файл в кодировке UTF-8, по одному
 названию улицы на строку, текст после символа # считается
 комментарием и игнорируется, равно как и лишние пробелы.
 
-Смотри [data/ru.txt](data/ru.txt)
+Основкой список улиц - [data/ru/main.txt](data/ru/main.txt), см.
+также другие файлы в [data/ru/](data/ru/).
 
 ## Библиотека
 
