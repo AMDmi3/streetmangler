@@ -2,8 +2,8 @@
 FIND_PACKAGE(SWIG REQUIRED)
 INCLUDE(${SWIG_USE_FILE})
 
-# definitions
-ADD_DEFINITIONS(-w) # disable warnings for generated code
+# flags
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w") # disable warnings for generated code
 
 # bindings
 IF(WITH_PYTHON)
