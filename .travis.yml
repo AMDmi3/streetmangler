@@ -1,22 +1,20 @@
-sudo: false
 language: cpp
-compiler:
-  - gcc
-  - clang
-addons:
-  apt:
-    sources:
-    - ubuntu-toolchain-r-test
-    packages:
-    - cmake
-    - g++-4.8
-    - libicu-dev
-    - libexpat1-dev
+sudo: required
+dist: trusty
+matrix:
+  include:
+    - compiler: gcc
+      env: BUILD_TYPE=Coverage
+    - compiler: clang
 before_install:
-  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+  - sudo apt-get update -qq
+  - sudo apt-get install libicu-dev libexpat1-dev
+  - if [ "$BUILD_TYPE" = "Coverage" ]; then pip install --user pyyaml cpp-coveralls; fi
 script:
-  - cmake -DCMAKE_CXX_FLAGS="-Werror" .
+  - cmake -DCMAKE_CXX_FLAGS="-Werror" -DCMAKE_BUILD_TYPE=$BUILD_TYPE .
   - make && make test
   - env LC_ALL=ru_RU.UTF-8 scripts/dbmaint.sh
-  - git diff --exit-code; echo $?; true
-  - "if ! git diff --exit-code; then echo 'FATAL: run scripts/dbmaint.sh and commit changes'; false; fi"
+#  - git diff --exit-code; echo $?; true
+#  - "if ! git diff --exit-code; then echo 'FATAL: run scripts/dbmaint.sh and commit changes'; false; fi"
+after_success:
+  - if [ "$BUILD_TYPE" = "Coverage" ]; then coveralls -i lib; fi
