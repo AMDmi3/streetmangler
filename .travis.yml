@@ -14,6 +14,7 @@ script:
   - cmake -DCMAKE_CXX_FLAGS="-Werror" -DCMAKE_BUILD_TYPE=$BUILD_TYPE .
   - make && make test
   - env LC_ALL=ru_RU.UTF-8 scripts/dbmaint.sh
+# This check is broken as it depends on collation
 #  - git diff --exit-code; echo $?; true
 #  - "if ! git diff --exit-code; then echo 'FATAL: run scripts/dbmaint.sh and commit changes'; false; fi"
 after_success:
