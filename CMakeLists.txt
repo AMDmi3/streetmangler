@@ -61,19 +61,9 @@ ADD_EXECUTABLE(process_names ${PROCESS_NAMES_SRCS})
 TARGET_LINK_LIBRARIES(process_names streetmangler ${EXPAT_LIBRARY})
 
 # tests
-ADD_EXECUTABLE(locale_test tests/locale_test.cc)
-TARGET_LINK_LIBRARIES(locale_test streetmangler)
-
-ADD_EXECUTABLE(tokenizer_test tests/tokenizer_test.cc)
-TARGET_LINK_LIBRARIES(tokenizer_test streetmangler)
-
-ADD_EXECUTABLE(database_test tests/database_test.cc)
-TARGET_LINK_LIBRARIES(database_test streetmangler)
-
-ADD_EXECUTABLE(canonical_test tests/canonical_test.cc)
-TARGET_LINK_LIBRARIES(canonical_test streetmangler)
-
-ADD_TEST(locale_test locale_test)
-ADD_TEST(tokenizer_test tokenizer_test)
-ADD_TEST(database_test database_test)
-ADD_TEST(canonical_test canonical_test)
+SET(TESTS locale_test locale_internal_test tokenizer_test database_test canonical_test)
+FOREACH(TEST ${TESTS})
+	ADD_EXECUTABLE(${TEST} tests/${TEST}.cc)
+	TARGET_LINK_LIBRARIES(${TEST} streetmangler)
+	ADD_TEST(${TEST} ${TEST})
+ENDFOREACH(TEST ${TESTS})
