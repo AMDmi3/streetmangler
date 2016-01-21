@@ -138,6 +138,10 @@ BEGIN_TEST()
 	CHECK_NO_SPELLING(db, "2-я улица Строителей", 2);
 	CHECK_NO_SPELLING(db, "11-я улица Строителей", 1);
 	CHECK_NO_SPELLING(db, "11-я улица Строителей", 2);
+	CHECK_NO_SPELLING(db, "12-я улица Строителей", 1);
+	CHECK_NO_SPELLING(db, "12-я улица Строителей", 2);
+	CHECK_NO_SPELLING(db, "21-я улица Строителей", 1);
+	CHECK_NO_SPELLING(db, "21-я улица Строителей", 2);
 
 	CHECK_SPELLING(db, "улица -го Интернационала", "улица 3-го Интернационала", 1);
 
