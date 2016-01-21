@@ -32,6 +32,8 @@ BEGIN_TEST()
 
 	Database db(locale);
 
+	EXPECT_TRUE(&db.GetLocale() == &locale);
+
 	db.Add("улица Ленина");
 	db.Add("Зелёная улица");
 	db.Add("МКАД");
