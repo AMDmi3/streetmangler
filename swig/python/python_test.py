@@ -6,7 +6,7 @@ from streetmangler import Locale, Name, Database
 locale = Locale('ru_RU')
 
 street = u'улица Ленина'
-street_list = [u'улица Ленина', u'Ленина улица', u'ул. Ленина']
+street_list = [u'улица Ленина', u'Ленина улица', u'ул. Ленина', u'УЛ ЛЕНИНА']
 
 def test_exact():
 	db = Database(locale)
