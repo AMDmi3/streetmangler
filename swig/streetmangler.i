@@ -5,13 +5,13 @@
 
 class StatusPart {
 public:
-        StatusPart(int priority, const std::string& full, const std::string& canonical, const std::string& abbrev, int flags);
-        const std::string& GetFull() const;
-        const std::string& GetCanonical() const;
-        const std::string& GetAbbrev() const;
-        int GetFlags() const;
+	StatusPart(int priority, const std::string& full, const std::string& canonical, const std::string& abbrev, int flags);
+	const std::string& GetFull() const;
+	const std::string& GetCanonical() const;
+	const std::string& GetAbbrev() const;
+	int GetFlags() const;
 
-        bool IsPrior(const StatusPart* other) const;
+	bool IsPrior(const StatusPart* other) const;
 };
 
 %nestedworkaround Locale::StatusPart;
@@ -32,25 +32,25 @@ typedef Locale::StatusPart StatusPart;
 
 class Locale {
 public:
-        Locale(const std::string& name);
+	Locale(const std::string& name);
 
-        const StatusPart* FindStatus(const std::string& name) const;
+	const StatusPart* FindStatus(const std::string& name) const;
 };
 
 class Name {
 public:
-        Name(const std::string& name, const Locale& locale);
+	Name(const std::string& name, const Locale& locale);
 
-        bool HasStatusPart() const;
-        bool IsStatusPartAtLeft() const;
-        bool IsStatusPartAtRight() const;
-        int GetStatusFlags() const;
+	bool HasStatusPart() const;
+	bool IsStatusPartAtLeft() const;
+	bool IsStatusPartAtRight() const;
+	int GetStatusFlags() const;
 
-        std::string Join(int flags = 0) const;
+	std::string Join(int flags = 0) const;
 };
 
 namespace std {
-        %template(StringVector) vector<string>;
+	%template(StringVector) vector<string>;
 };
 
 #ifdef SWIGPYTHON
@@ -65,51 +65,51 @@ namespace std {
 
 class Database {
 public:
-        Database(const Locale& locale);
-        virtual ~Database();
-        void Load(const char* filename);
-        void Add(const std::string& name);
+	Database(const Locale& locale);
+	virtual ~Database();
+	void Load(const char* filename);
+	void Add(const std::string& name);
 
-        int CheckExactMatch(const std::string& name) const;
-        int CheckExactMatch(Name& name) const;
+	int CheckExactMatch(const std::string& name) const;
+	int CheckExactMatch(Name& name) const;
 };
 
 %extend Database {
-        std::vector<std::string> CheckCanonicalForm(const std::string &name) {
-                std::vector<std::string> v;
-                self->CheckCanonicalForm(name, v);
-                return v;
-        }
+	std::vector<std::string> CheckCanonicalForm(const std::string &name) {
+		std::vector<std::string> v;
+		self->CheckCanonicalForm(name, v);
+		return v;
+	}
 
-        std::vector<std::string> CheckSpelling(const std::string &name, int depth = 1) {
-                std::vector<std::string> v;
-                self->CheckSpelling(name, v, depth);
-                return v;
-        }
+	std::vector<std::string> CheckSpelling(const std::string &name, int depth = 1) {
+		std::vector<std::string> v;
+		self->CheckSpelling(name, v, depth);
+		return v;
+	}
 
-        std::vector<std::string> CheckStrippedStatus(const std::string &name) {
-                std::vector<std::string> v;
-                self->CheckStrippedStatus(name, v);
-                return v;
-        }
+	std::vector<std::string> CheckStrippedStatus(const std::string &name) {
+		std::vector<std::string> v;
+		self->CheckStrippedStatus(name, v);
+		return v;
+	}
 
-        std::vector<std::string> CheckCanonicalForm(Name &name) {
-                std::vector<std::string> v;
-                self->CheckCanonicalForm(name, v);
-                return v;
-        }
+	std::vector<std::string> CheckCanonicalForm(Name &name) {
+		std::vector<std::string> v;
+		self->CheckCanonicalForm(name, v);
+		return v;
+	}
 
-        std::vector<std::string> CheckSpelling(Name &name, int depth = 1) {
-                std::vector<std::string> v;
-                self->CheckSpelling(name, v, depth);
-                return v;
-        }
+	std::vector<std::string> CheckSpelling(Name &name, int depth = 1) {
+		std::vector<std::string> v;
+		self->CheckSpelling(name, v, depth);
+		return v;
+	}
 
-        std::vector<std::string> CheckStrippedStatus(Name &name) {
-                std::vector<std::string> v;
-                self->CheckStrippedStatus(name, v);
-                return v;
-        }
+	std::vector<std::string> CheckStrippedStatus(Name &name) {
+		std::vector<std::string> v;
+		self->CheckStrippedStatus(name, v);
+		return v;
+	}
 };
 
 #ifdef SWIGPERL
