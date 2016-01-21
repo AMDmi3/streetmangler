@@ -34,10 +34,37 @@ namespace StreetMangler {
 class Locale {
 public:
 	enum StatusFlags {
+		// if status part is at left in database, canonical variants are with
+		// status part on either side
 		ORDER_RANDOM_IF_LEFT = 0x01,
+
+		// if status part is at right in database, canonical variants are with
+		// status part on either side
+		// Example:
+		//   Database: "Морской микрорайон"
+		//   Database: "микрорайон Ленина"
+		//   CanonicalForm("Морской микрорайон") -> "Морской микрорайон", "микрорайон Морской"
+		//   CanonicalForm("микрорайон Морской") -> "Морской микрорайон" "микрорайон Морской"
+		//   CanonicalForm("Ленина микрорайон") -> "микрорайон Ленина"
+		//   CanonicalForm("микрорайон Ленина") -> "микрорайон Ленина"
 		ORDER_RANDOM_IF_RIGHT = 0x02,
+
+		// combination of above two
 		ORDER_RANDOM_IF_SIDE = ORDER_RANDOM_IF_LEFT | ORDER_RANDOM_IF_RIGHT,
+
+		// override database order, canonical variant is with status always at left
+		// Example:
+		//   Database: "Морская улица"
+		//   Database: "улица Ленина"
+		//   CanonicalForm("Морская улица") -> "улица Морская"
+		//   CanonicalForm("улица Морская") -> "улица Морская"
+		//   CanonicalForm("Ленина улица") -> "улица Ленина"
+		//   CanonicalForm("улица Ленина") -> "улица Ленина"
+		// Useful if you have canonical database with natural word order, but
+		// nevertheless want a locale which always places status part at fixed side
 		STATUS_AT_LEFT = 0x04,
+
+		// override database order, canonical variant is with status always at right
 		STATUS_AT_RIGHT = 0x08,
 	};
 
