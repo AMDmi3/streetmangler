@@ -8,11 +8,12 @@ matrix:
     - compiler: clang
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install libicu-dev libexpat1-dev
+  - sudo apt-get install -qq libicu-dev libexpat1-dev
+  - sudo apt-get install -qq libperl-dev python-dev swig # for bindings
   - if [ "$BUILD_TYPE" = "Coverage" ]; then pip install --user pyyaml cpp-coveralls; fi
 script:
-  - cmake -DCMAKE_CXX_FLAGS="-Werror" -DCMAKE_BUILD_TYPE=$BUILD_TYPE .
-  - make && make test
+  - cmake -DCMAKE_CXX_FLAGS="-Werror" -DWITH_PYTHON=YES -DCMAKE_BUILD_TYPE=$BUILD_TYPE .
+  - VERBOSE=yes make && CTEST_OUTPUT_ON_FAILURE=yes make test
   - env LC_ALL=ru_RU.UTF-8 scripts/dbmaint.sh
 # This check is broken as it depends on collation
 #  - git diff --exit-code; echo $?; true
