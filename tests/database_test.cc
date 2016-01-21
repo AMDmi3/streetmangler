@@ -19,11 +19,13 @@
 
 #include <streetmangler/database.hh>
 #include <streetmangler/locale.hh>
+#include <streetmangler/name.hh>
 #include "database_testing.hh"
 
 BEGIN_TEST()
 	using StreetMangler::Database;
 	using StreetMangler::Locale;
+	using StreetMangler::Name;
 
 	/* assumes working locale, see locale_test */
 	Locale locale("ru_RU");
@@ -51,6 +53,11 @@ BEGIN_TEST()
 	CHECK_EXACT_MATCH(db, "Зелёная улица");
 	CHECK_NO_EXACT_MATCH(db, "улица Сталина");
 	CHECK_NO_EXACT_MATCH(db, "переулок Ленина");
+
+	CHECK_EXACT_MATCH(db, Name("улица Ленина", locale));
+	CHECK_EXACT_MATCH(db, Name("Зелёная улица", locale));
+	CHECK_NO_EXACT_MATCH(db, Name("улица Сталина", locale));
+	CHECK_NO_EXACT_MATCH(db, Name("переулок Ленина", locale));
 
 	/*
 	 * canonical forms (see also tokenizer_test.cc)
