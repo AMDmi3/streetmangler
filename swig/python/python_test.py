@@ -38,4 +38,4 @@ test_exact()
 test_canonical()
 test_spelling()
 
-print "All OK"
+print("All OK")
