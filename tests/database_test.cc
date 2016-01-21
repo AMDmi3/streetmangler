@@ -130,8 +130,12 @@ BEGIN_TEST()
 
 	/* numeric issues */
 	CHECK_SPELLING(db, "1-й улица Строителей", "1-я улица Строителей", 1);
+	CHECK_SPELLING(db, "ули1ца Ленина", "улица Ленина", 1);
+	CHECK_SPELLING(db, "-я улица Строителей", "1-я улица Строителей", 1);
 	CHECK_NO_SPELLING(db, "2-я улица Строителей", 1);
 	CHECK_NO_SPELLING(db, "2-я улица Строителей", 2);
+	CHECK_NO_SPELLING(db, "11-я улица Строителей", 1);
+	CHECK_NO_SPELLING(db, "11-я улица Строителей", 2);
 
 	CHECK_SPELLING(db, "улица -го Интернационала", "улица 3-го Интернационала", 1);
 
