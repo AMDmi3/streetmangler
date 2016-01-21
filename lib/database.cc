@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Dmitry Marakasov
+ * Copyright (C) 2011-2016 Dmitry Marakasov
  *
  * This file is part of streetmangler.
  *
@@ -45,6 +45,7 @@
 namespace {
 	static const std::string g_include_command = ".include";
 
+	// XXX: unhardcode, move to locale
 	static const UnicodeString g_yo = UnicodeString::fromUTF8("ё");
 	static const UnicodeString g_ye = UnicodeString::fromUTF8("е");
 

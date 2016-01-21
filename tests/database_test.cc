@@ -106,7 +106,9 @@ BEGIN_TEST()
 
 	CHECK_SPELLING(db, "Учительская улицца", "Учительская улица", 1); /* error in status part, reorder issue */
 
-	/* error prioriyy */
+	CHECK_SPELLING(db, "Зеленая улица", "Зелёная улица", 0); /* е/ё */
+
+	/* error priority */
 	CHECK_SPELLING(db, "улица Безымянного Петра", "улица Петра Безымянного", 0);
 	CHECK_SPELLING(db, "улица Безымянного Петра", "улица Петра Безымянного", 1);
 
