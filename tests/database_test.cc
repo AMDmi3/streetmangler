@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Dmitry Marakasov
+ * Copyright (C) 2011-2016 Dmitry Marakasov
  *
  * This file is part of streetmangler.
  *
@@ -21,6 +21,19 @@
 #include <streetmangler/locale.hh>
 #include <streetmangler/name.hh>
 #include "database_testing.hh"
+
+namespace {
+
+StreetMangler::Locale::StatusPartDataList status_parts_test = {
+	{ "всегдаслева", nullptr, nullptr, { "всегдаслева" }, StreetMangler::Locale::STATUS_AT_LEFT },
+	{ "всегдасправа", nullptr, nullptr, { "всегдасправа" }, StreetMangler::Locale::STATUS_AT_RIGHT },
+	{ "еслислеватослюбой", nullptr, nullptr, { "еслислеватослюбой" }, StreetMangler::Locale::ORDER_RANDOM_IF_LEFT },
+	{ "еслисправатослюбой", nullptr, nullptr, { "еслисправатослюбой" }, StreetMangler::Locale::ORDER_RANDOM_IF_RIGHT },
+};
+
+StreetMangler::Locale::Registrar reg("test", &status_parts_test);
+
+}
 
 BEGIN_TEST()
 	using StreetMangler::Database;
@@ -143,4 +156,38 @@ BEGIN_TEST()
 	CHECK_CANONICAL_FORM_HAS(db, "р-н Измайловский", "район Измайловский");
 	CHECK_CANONICAL_FORM_HAS(db, "Измайловский р-н", "Измайловский район");
 
+	//
+	// Special tests for status part ordering
+	//
+	Locale test_locale("test");
+
+	Database test_db(test_locale);
+
+	test_db.Add("всегдаслева Один");
+	test_db.Add("Два всегдаслева");
+	test_db.Add("всегдасправа Один");
+	test_db.Add("Два всегдасправа");
+
+	CHECK_CANONICAL_FORM(test_db, "всегдаслева Один", "всегдаслева Один");
+	CHECK_CANONICAL_FORM(test_db, "Один всегдаслева", "всегдаслева Один");
+	CHECK_CANONICAL_FORM(test_db, "всегдаслева Два", "всегдаслева Два");
+	CHECK_CANONICAL_FORM(test_db, "Два всегдаслева", "всегдаслева Два");
+	CHECK_CANONICAL_FORM(test_db, "всегдасправа Один", "Один всегдасправа");
+	CHECK_CANONICAL_FORM(test_db, "Один всегдасправа", "Один всегдасправа");
+	CHECK_CANONICAL_FORM(test_db, "всегдасправа Два", "Два всегдасправа");
+	CHECK_CANONICAL_FORM(test_db, "Два всегдасправа", "Два всегдасправа");
+
+	test_db.Add("еслислеватослюбой Один");
+	test_db.Add("Два еслислеватослюбой");
+	test_db.Add("еслисправатослюбой Один");
+	test_db.Add("Два еслисправатослюбой");
+
+	CHECK_CANONICAL_FORM2(test_db, "еслислеватослюбой Один", "еслислеватослюбой Один", "Один еслислеватослюбой");
+	CHECK_CANONICAL_FORM2(test_db, "Один еслислеватослюбой", "еслислеватослюбой Один", "Один еслислеватослюбой");
+	CHECK_CANONICAL_FORM(test_db, "еслислеватослюбой Два", "Два еслислеватослюбой");
+	CHECK_CANONICAL_FORM(test_db, "Два еслислеватослюбой", "Два еслислеватослюбой");
+	CHECK_CANONICAL_FORM(test_db, "еслисправатослюбой Один", "еслисправатослюбой Один");
+	CHECK_CANONICAL_FORM(test_db, "Один еслисправатослюбой", "еслисправатослюбой Один");
+	CHECK_CANONICAL_FORM2(test_db, "еслисправатослюбой Два", "Два еслисправатослюбой", "еслисправатослюбой Два");
+	CHECK_CANONICAL_FORM2(test_db, "Два еслисправатослюбой", "Два еслисправатослюбой", "еслисправатослюбой Два");
 END_TEST()

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Dmitry Marakasov
+ * Copyright (C) 2011-2016 Dmitry Marakasov
  *
  * This file is part of streetmangler.
  *
@@ -31,6 +31,14 @@
 		std::vector<std::string> suggestions; \
 		EXPECT_TRUE(database.CheckCanonicalForm(sample, suggestions) == 1); \
 		if (!suggestions.empty()) EXPECT_STRING(suggestions.front(), expected); \
+	}
+
+#define CHECK_CANONICAL_FORM2(database, sample, expected1, expected2) { \
+		std::vector<std::string> suggestions; \
+		EXPECT_TRUE(database.CheckCanonicalForm(sample, suggestions) == 2); \
+		if (!suggestions.empty()) EXPECT_TRUE( \
+				(suggestions.front() == expected1 && suggestions.back() == expected2) || \
+				(suggestions.front() == expected2 && suggestions.back() == expected1)); \
 	}
 
 #define CHECK_CANONICAL_FORM_HAS(database, sample, expected) { \
