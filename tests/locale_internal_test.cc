@@ -55,4 +55,17 @@ BEGIN_TEST()
 	// Throw on locale entry without full name
 	Locale::Registrar r_nofull("nofull", &status_parts_nofull);
 	EXPECT_EXCEPTION(Locale("nofull"), Locale::BadLocale);
+
+	// Locale exceptions
+	try {
+		throw Locale::BadLocale("BadLocaleString");
+	} catch (std::exception& e) {
+		EXPECT_TRUE(std::string(e.what()) == "BadLocaleString");
+	}
+
+	try {
+		throw Locale::UnknownLocale("UnknownLocaleString");
+	} catch (std::exception& e) {
+		EXPECT_TRUE(std::string(e.what()) == "UnknownLocaleString");
+	}
 END_TEST()
