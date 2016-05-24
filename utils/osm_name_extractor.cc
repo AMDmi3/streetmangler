@@ -120,7 +120,7 @@ void OsmNameExtractor::StartElement(void* userData, const char* name, const char
 
 	/* save relevant tags which will be processed in EndElement */
 	if (k == "highway") {
-		if (v != "bus_stop" && v != "emergency_access_point")
+		if (v != "bus_stop" && v != "emergency_access_point" && v != "platform")
 			parser->highway_ = v;
 	} else if (k == "type") {
 		parser->type_ = v;
