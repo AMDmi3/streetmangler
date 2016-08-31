@@ -304,6 +304,11 @@ process_names [-cdhsAN] [-p N] [-l locale] [-a tag] [-n tag] [-r type] [-f datab
   * [wiki Усть-Лабинска]
     (http://www.ust-labinsk.ru/w/index.php/Заглавная_страница)
 
+* Чебоксары:
+  * [cheb.ru]
+    (http://www.cheb.ru/doma/) (для некоторых улиц есть информация
+    в честь кого они названы)
+
 * Челябинск:
   * [Энциклопедия «Челябинск»]
     (http://book-chel.ru/)
