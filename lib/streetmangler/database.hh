@@ -51,7 +51,7 @@ public:
 
 private:
 	class Private;
-	std::auto_ptr<Private> private_;
+	std::unique_ptr<Private> private_;
 };
 
 }
