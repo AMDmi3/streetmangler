@@ -230,98 +230,72 @@ process_names [-cdhsAN] [-p N] [-l locale] [-a tag] [-n tag] [-r type] [-f datab
 ## Проверочные источники
 
 * Москва:
-  * [Общемосковский классификатор улиц Москвы]
-    (http://www.mosclassific.ru/mClass/omkum_view.php)
-  * [Имена московских улиц. Топонимический словарь]
-    (http://slovari.yandex.ru/~книги/Московские%20улицы/)
+  * [Общемосковский классификатор улиц Москвы](http://www.mosclassific.ru/mClass/omkum_view.php)
+  * [Имена московских улиц. Топонимический словарь](http://slovari.yandex.ru/~книги/Московские%20улицы/)
 
 * Санкт-Петербург:
-  * [Реестр названий объектов городской среды Санкт-Петербурга]
-    (http://spbculture.ru/ru/registry.html)
-  * [Петербургская топонимика]
-    (http://slovari.yandex.ru/~книги/Петербургская%20топонимика/)
+  * [Реестр названий объектов городской среды Санкт-Петербурга](http://spbculture.ru/ru/registry.html)
+  * [Петербургская топонимика](http://slovari.yandex.ru/~книги/Петербургская%20топонимика/)
 
 * Архангельск:
-  * [Овсянкин Е.И., Имена Архангельских улиц]
-    (http://lit.lib.ru/o/owsjankin_e_i/text_0080.shtml)
-  * [Овсянкин Е.И.  Имена Архангельских улиц. Часть 2. Топонимия города.]
-    (http://lit.lib.ru/o/owsjankin_e_i/text_0170.shtml)
-  * [Энциклопедия улиц Архангельска]
-    (http://arkh-street.ru)
+  * [Овсянкин Е.И., Имена Архангельских улиц](http://lit.lib.ru/o/owsjankin_e_i/text_0080.shtml)
+  * [Овсянкин Е.И.  Имена Архангельских улиц. Часть 2. Топонимия города.](http://lit.lib.ru/o/owsjankin_e_i/text_0170.shtml)
+  * [Энциклопедия улиц Архангельска](http://arkh-street.ru)
 
 * Владивосток:
-  * [VladCity.com: Улицы Владивостока]
-    (http://vladcity.com/streets-of-vladivostok/)
+  * [VladCity.com: Улицы Владивостока](http://vladcity.com/streets-of-vladivostok/)
 
 * Грязовец:
-  * [Грязовец.ру]
-    (http://gryazovets.ru/Категория:Улицы_Грязовца)
+  * [Грязовец.ру](http://gryazovets.ru/Категория:Улицы_Грязовца)
 
 * Иваново:
-  * [Интернет-энциклопедия Ивановсой области]
-    (http://wiki.ivanovoweb.ru/index.php/Заглавная_страница)
+  * [Интернет-энциклопедия Ивановсой области](http://wiki.ivanovoweb.ru/index.php/Заглавная_страница)
 
 * Ирбит:
-  * ["Библиотечкая система" г.Ирбит, улицы Ирбита]
-    (http://biblio-irbit.ru/index.php/kraevedenie/ulitsy-irbita)
+  * ["Библиотечкая система" г.Ирбит, улицы Ирбита](http://biblio-irbit.ru/index.php/kraevedenie/ulitsy-irbita)
 
 * Иркутск:
-  * [Ценрализованная библиотечная система города Иркутска: Улицы Иркутска]
-    (http://cbs.irkutsk.ru/street.htm)
+  * [Ценрализованная библиотечная система города Иркутска: Улицы Иркутска](http://cbs.irkutsk.ru/street.htm)
 
 * Нижний Новгород:
-  * [Нижегородская энциклопедия]
-    (http://www.nnov.org/Главная_страница)
+  * [Нижегородская энциклопедия](http://www.nnov.org/Главная_страница)
 
 * Орск:
-  * [Историческая страница Орска: улицы]
-    (http://history.opck.org/ulitsy.html)
+  * [Историческая страница Орска: улицы](http://history.opck.org/ulitsy.html)
 
 * Осташков:
-  * [Улицы города Осташкова]
-    (http://ostashkov.codis.ru/ivaul.htm)
+  * [Улицы города Осташкова](http://ostashkov.codis.ru/ivaul.htm)
 
 * Ростов-на-Дону:
-  * [Централизованная библиотечная система Ростова-на-Дону: улицы Ростова]
-    (http://www.donlib.ru/rostov-streets.html)
+  * [Централизованная библиотечная система Ростова-на-Дону: улицы Ростова](http://www.donlib.ru/rostov-streets.html)
 
 * Стерлитамак:
-  * [Централизованная библиотечная система г.Стерлитамак: Краеведенние]
-    (http://libstr.ru/local_history), [2](http://libstr.ru/pomnit_gorod)
-  * [Город-на-Стерле.Ру: История улиц]
-    (http://gorod-na-sterle.ru/category/istoriya-ulic/)
+  * [Централизованная библиотечная система г.Стерлитамак: Краеведенние](http://libstr.ru/local_history), [2](http://libstr.ru/pomnit_gorod)
+  * [Город-на-Стерле.Ру: История улиц](http://gorod-na-sterle.ru/category/istoriya-ulic/)
 
 * Тверь:
-  * [Улицы Твери]
-    (http://www.tverplanet.ru/ulitsy-tveri/) (порядок слов неправильный,
+  * [Улицы Твери](http://www.tverplanet.ru/ulitsy-tveri/) (порядок слов неправильный,
     но есть история названий)
 
 * Томск:
-  * [Товики]
-    (http://towiki.ru/)
+  * [Товики](http://towiki.ru/)
 
 * Усть-Лабинск:
-  * [wiki Усть-Лабинска]
-    (http://www.ust-labinsk.ru/w/index.php/Заглавная_страница)
+  * [wiki Усть-Лабинска](http://www.ust-labinsk.ru/w/index.php/Заглавная_страница)
 
 * Чебоксары:
-  * [cheb.ru]
-    (http://www.cheb.ru/doma/) (для некоторых улиц есть информация
+  * [cheb.ru](http://www.cheb.ru/doma/) (для некоторых улиц есть информация
     в честь кого они названы)
 
 * Челябинск:
-  * [Энциклопедия «Челябинск»]
-    (http://book-chel.ru/)
+  * [Энциклопедия «Челябинск»](http://book-chel.ru/)
 
 * Общее:
-  * [Википедия]
-    (http://wikipedia.ru) (статьи об отдельных улицах, списки улиц
+  * [Википедия](http://wikipedia.ru) (статьи об отдельных улицах, списки улиц
     отдельных городов, статьи о персонах, событиях и местах, в честь
     которых назывались улицы, списки героев)
-  * [Герои страны]
-    (http://warheroes.ru/)
-  * [Красные Соколы: лучшие лётчики-асы России 1914-1953 гг.]
-    (http://airaces.narod.ru/)
+  * [Герои страны](http://warheroes.ru/)
+  * [Красные Соколы: лучшие лётчики-асы России 1914-1953 гг.](http://airaces.narod.ru/)
   * КЛАДР
 
 ## Лицензия
