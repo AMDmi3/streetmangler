@@ -52,7 +52,7 @@ Name::Name(const std::string& name, const Locale& locale) : locale_(locale), sta
 	const Locale::StatusPart* bestpart = nullptr;
 	for (unsigned int i = 0; i < tokens_.size(); ++i) {
 		std::string lowercase;
-		UnicodeString::fromUTF8(tokens_[i].text).toLower().toUTF8String(lowercase);
+		icu::UnicodeString::fromUTF8(tokens_[i].text).toLower().toUTF8String(lowercase);
 
 		const Locale::StatusPart* part;
 		if ((part = locale_.FindStatus(lowercase)) != nullptr) {

@@ -46,8 +46,8 @@ namespace {
 	static const std::string g_include_command = ".include";
 
 	// XXX: unhardcode, move to locale
-	static const UnicodeString g_yo = UnicodeString::fromUTF8("ё");
-	static const UnicodeString g_ye = UnicodeString::fromUTF8("е");
+	static const icu::UnicodeString g_yo = icu::UnicodeString::fromUTF8("ё");
+	static const icu::UnicodeString g_ye = icu::UnicodeString::fromUTF8("е");
 
 	int PickDist(int olddist, int newdist) {
 		return (olddist < 0 || (newdist >= 0 && newdist < olddist)) ? newdist : olddist;
@@ -100,10 +100,10 @@ protected:
 		return locale_;
 	}
 
-	void NameToHashes(const Name& name, std::string* plainhash, UnicodeString* uhash, UnicodeString* uhashordered, UnicodeString* uhashunordered, int extraflags = 0) const {
+	void NameToHashes(const Name& name, std::string* plainhash, icu::UnicodeString* uhash, icu::UnicodeString* uhashordered, icu::UnicodeString* uhashunordered, int extraflags = 0) const {
 		static const int flags = Name::STATUS_TO_LEFT | Name::EXPAND_STATUS | Name::NORMALIZE_WHITESPACE | Name::NORMALIZE_PUNCT;
 		/* base for a hash - lowercase name with status part at left */
-		UnicodeString base_hash = UnicodeString::fromUTF8(name.Join(flags | extraflags)).toLower();
+		icu::UnicodeString base_hash = icu::UnicodeString::fromUTF8(name.Join(flags | extraflags)).toLower();
 
 		if (uhash)
 			*uhash = base_hash;
@@ -112,24 +112,24 @@ protected:
 			base_hash.toUTF8String(*plainhash);
 
 		if (uhashordered) {
-			std::vector<UnicodeString> words;
+			std::vector<icu::UnicodeString> words;
 
 			int32_t start = 0;
 			int32_t end;
 			while ((end = base_hash.indexOf(' ', start)) != -1) {
 				if (start != end)
-					words.push_back(UnicodeString(base_hash, start, end-start));
+					words.push_back(icu::UnicodeString(base_hash, start, end-start));
 				start = end + 1;
 			}
 			if (start != base_hash.length())
-				words.push_back(UnicodeString(base_hash, start));
+				words.push_back(icu::UnicodeString(base_hash, start));
 
 			/* sort all words except for the status part */
 			bool sortall = (extraflags & Name::REMOVE_ALL_STATUSES) || !name.HasStatusPart();
 			std::sort(sortall ? words.begin() : ++words.begin(), words.end());
 
-			*uhashordered = UnicodeString();
-			for (std::vector<UnicodeString>::iterator i = words.begin(); i != words.end(); ++i) {
+			*uhashordered = icu::UnicodeString();
+			for (std::vector<icu::UnicodeString>::iterator i = words.begin(); i != words.end(); ++i) {
 				if (i != words.begin())
 					*uhashordered += " ";
 				*uhashordered += *i;
@@ -137,16 +137,16 @@ protected:
 		}
 
 		if (uhashunordered)
-			*uhashunordered = UnicodeString::fromUTF8(name.Join((flags & ~Name::STATUS_TO_LEFT) | extraflags)).toLower();
+			*uhashunordered = icu::UnicodeString::fromUTF8(name.Join((flags & ~Name::STATUS_TO_LEFT) | extraflags)).toLower();
 	}
 
-	static int GetRealApproxDistance(const UnicodeString& sample, const UnicodeString& match, int realdepth) {
+	static int GetRealApproxDistance(const icu::UnicodeString& sample, const icu::UnicodeString& match, int realdepth) {
 		/* exact match */
 		if (realdepth == 0)
 			return 0;
 
-		const UnicodeString& shorter = sample.length() < match.length() ? sample : match;
-		const UnicodeString& longer = sample.length() < match.length() ? match : sample;
+		const icu::UnicodeString& shorter = sample.length() < match.length() ? sample : match;
+		const icu::UnicodeString& longer = sample.length() < match.length() ? match : sample;
 
 		int left, right;
 
@@ -159,8 +159,8 @@ protected:
 			/* empty */
 		}
 
-		UnicodeString shorterdiff = shorter.tempSubString(left, shorter.length() - left - right);
-		UnicodeString longerdiff = longer.tempSubString(left, longer.length() - left - right);
+		icu::UnicodeString shorterdiff = shorter.tempSubString(left, shorter.length() - left - right);
+		icu::UnicodeString longerdiff = longer.tempSubString(left, longer.length() - left - right);
 
 		/* check if there're any non-numeric character in the diff */
 		bool shorterdiff_numeric = false;
@@ -205,7 +205,7 @@ protected:
 protected:
 	typedef std::unordered_set<std::string> NamesSet;
 	typedef std::unordered_multimap<std::string, std::string> NamesMap;
-	typedef std::multimap<UnicodeString, std::string> UnicodeNamesMap; // XXX: no hasher fn for UnicodeString
+	typedef std::multimap<icu::UnicodeString, std::string> UnicodeNamesMap; // XXX: no hasher fn for UnicodeString
 
 protected:
 	const Locale& locale_;
@@ -236,9 +236,9 @@ void Database::Add(const std::string& name) {
 	Name tokenized(name, private_->locale_);
 
 	std::string hash;
-	UnicodeString uhash;
-	UnicodeString uhashordered;
-	UnicodeString uhashunordered;
+	icu::UnicodeString uhash;
+	icu::UnicodeString uhashordered;
+	icu::UnicodeString uhashunordered;
 
 	private_->NameToHashes(tokenized, &hash, &uhash, &uhashordered, &uhashunordered);
 
@@ -283,7 +283,7 @@ void Database::Add(const std::string& name) {
 		}
 
 		/* for stripped status */
-		UnicodeString stripped_uhashordered;
+		icu::UnicodeString stripped_uhashordered;
 		private_->NameToHashes(tokenized, nullptr, nullptr, &stripped_uhashordered, nullptr, Name::REMOVE_ALL_STATUSES);
 		stripped_uhashordered.findAndReplace(g_yo, g_ye);
 		if (stripped_uhashordered != uhashordered)
@@ -313,11 +313,11 @@ int Database::CheckCanonicalForm(const Name& name, std::vector<std::string>& sug
 }
 
 int Database::CheckSpelling(const Name& name, std::vector<std::string>& suggestions, int depth) const {
-	UnicodeString hashordered, hashunordered;
+	icu::UnicodeString hashordered, hashunordered;
 	private_->NameToHashes(name, nullptr, nullptr, &hashordered, &hashunordered);
 
 	int realdepth = 0;
-	std::set<UnicodeString> matches;
+	std::set<icu::UnicodeString> matches;
 	for (int i = 0; matches.empty() && i <= depth + 1; ++i) {
 		private_->spell_trie_.FindApprox(hashordered, i, matches);
 		private_->spell_trie_.FindApprox(hashunordered, i, matches);
@@ -325,7 +325,7 @@ int Database::CheckSpelling(const Name& name, std::vector<std::string>& suggesti
 	}
 
 	std::set<std::string> suggestions_unique;
-	for (std::set<UnicodeString>::const_iterator i = matches.begin(); i != matches.end(); ++i) {
+	for (std::set<icu::UnicodeString>::const_iterator i = matches.begin(); i != matches.end(); ++i) {
 		/* skip matches that differ only in numeric parts */
 		int dist = -1;
 		dist = PickDist(dist, private_->GetRealApproxDistance(hashordered, *i, realdepth));
@@ -350,7 +350,7 @@ int Database::CheckSpelling(const Name& name, std::vector<std::string>& suggesti
 }
 
 int Database::CheckStrippedStatus(const Name& name, std::vector<std::string>& matches) const {
-	UnicodeString uhashordered;
+	icu::UnicodeString uhashordered;
 	private_->NameToHashes(name, nullptr, nullptr, &uhashordered, nullptr);
 	uhashordered.findAndReplace(g_yo, g_ye);
 

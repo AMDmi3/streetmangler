@@ -32,7 +32,7 @@ class UnicodeStringSetAppender {
 public:
 	typedef Node<UChar> node_type;
 
-	typedef std::set<UnicodeString> set_type;
+	typedef std::set<icu::UnicodeString> set_type;
 
 private:
 	set_type& set_;
@@ -42,7 +42,7 @@ public:
 	}
 
 	void Append(const node_type* node) {
-		UnicodeString str;
+		icu::UnicodeString str;
 		for (const node_type* cur = node; cur; cur = cur->parent)
 			str += cur->ch;
 		str.reverse();
@@ -56,15 +56,15 @@ private:
 	typedef TrieBase<UChar, UnicodeStringSetAppender> base_type;
 
 public:
-	void Insert(const UnicodeString& string) {
+	void Insert(const icu::UnicodeString& string) {
 		base_type::Insert(string.getBuffer(), string.length());
 	}
 
-	bool FindExact(const UnicodeString& string) const {
+	bool FindExact(const icu::UnicodeString& string) const {
 		return base_type::FindExact(string.getBuffer(), string.length());
 	}
 
-	void FindApprox(const UnicodeString& string, int distance, std::set<UnicodeString>& out) const {
+	void FindApprox(const icu::UnicodeString& string, int distance, std::set<icu::UnicodeString>& out) const {
 		UnicodeStringSetAppender a(out);
 		base_type::FindApprox(string.getBuffer(), string.length(), distance, a);
 	}
