@@ -1,7 +1,7 @@
 # streetmangler - реестр и конвертер названий улиц
 
-[![Build Status](https://travis-ci.org/AMDmi3/streetmangler.svg?branch=master)](https://travis-ci.org/AMDmi3/streetmangler)
-[![Coverage Status](https://coveralls.io/repos/github/AMDmi3/streetmangler/badge.svg?branch=master)](https://coveralls.io/github/AMDmi3/streetmangler?branch=master)
+![CI](https://github.com/AMDmi3/streetmangler/workflows/CI/badge.svg)
+[![codecov](https://codecov.io/gh/AMDmi3/streetmangler/branch/master/graph/badge.svg)](https://codecov.io/gh/AMDmi3/streetmangler)
 
 В российском OSM принято [соглашение о правилах именования улиц][1],
 позволяющее (при соответствии ему подавляющей части базы, разумеется)
