@@ -132,8 +132,8 @@ int realmain(int argc, char** argv) {
 			case 'c': flags |= NameAggregator::COUNT_NAMES; break;
 			case 'A': use_default_addr_tags = false; break;
 			case 'N': use_default_name_tags = false; break;
-			case 'h': usage(progname, 0);
-			default:  usage(progname, 1);
+			case 'h': usage(progname, 0); break;
+			default:  usage(progname, 1); break;
 		}
 	}
 
